@@ -6,24 +6,574 @@
     "quality": "flac",
     "note": "仅存曲目标识，不含播放链接。播放链接在点击时实时换取，有时效、不做缓存。",
     "tracks": [
-      { "id": "228908",   "title": "晴天",            "artist": "周杰伦",       "duration": 269, "album": "叶惠美",                      "bitrate": 2000 },
-      { "id": "324244",   "title": "青花瓷",          "artist": "周杰伦",       "duration": 239, "album": "我很忙",                      "bitrate": 2000 },
-      { "id": "118980",   "title": "夜曲",            "artist": "周杰伦",       "duration": 226, "album": "十一月的萧邦",                "bitrate": 2000 },
-      { "id": "440613",   "title": "稻香",            "artist": "周杰伦",       "duration": 223, "album": "魔杰座",                      "bitrate": 2000 },
-      { "id": "80403",    "title": "十年",            "artist": "陈奕迅",       "duration": 205, "album": "黑白灰",                      "bitrate": 2000 },
-      { "id": "28423286", "title": "富士山下",        "artist": "陈奕迅",       "duration": 259, "album": "What's Going On...?",         "bitrate": 2000 },
-      { "id": "5886682",  "title": "海阔天空",        "artist": "BEYOND",       "duration": 324, "album": "乐与怒",                      "bitrate": 2000 },
-      { "id": "19534406", "title": "光辉岁月",        "artist": "BEYOND",       "duration": 302, "album": "命运派对",                    "bitrate": 2000 },
-      { "id": "443603",   "title": "突然好想你",      "artist": "五月天",       "duration": 265, "album": "后青春期的诗",                "bitrate": 2000 },
-      { "id": "404779",   "title": "知足",            "artist": "五月天",       "duration": 256, "album": "知足 最真杰作选",             "bitrate": 2000 },
-      { "id": "142683102","title": "漠河舞厅",        "artist": "柳爽",         "duration": 334, "album": "1st.星球",                    "bitrate": 2000 },
-      { "id": "9918220",  "title": "成都",            "artist": "赵雷",         "duration": 328, "album": "成都",                        "bitrate": 2000 },
-      { "id": "3493737",  "title": "Love Story",      "artist": "Taylor Swift", "duration": 236, "album": "Fearless (Platinum Edition)", "bitrate": 2000 },
-      { "id": "388245",   "title": "Viva la Vida",    "artist": "Coldplay",     "duration": 241, "album": "NBA 2K13 Original Soundtrack","bitrate": 2000 },
-      { "id": "240945",   "title": "Yellow",          "artist": "Coldplay",     "duration": 266, "album": "Yellow",                      "bitrate": 2000 },
-      { "id": "978473",   "title": "Hotel California","artist": "Eagles",       "duration": 391, "album": "Hotel California",            "bitrate": 2000 },
-      { "id": "15240778", "title": "Shape of You",    "artist": "Ed Sheeran",   "duration": 233, "album": "Shape of You",                "bitrate": 2000 },
-      { "id": "82513606", "title": "Blinding Lights", "artist": "The Weeknd",   "duration": 200, "album": "Blinding Lights",             "bitrate": 2000 }
+      {
+        "id": "171985035",
+        "title": "航行",
+        "artist": "蒋小呢",
+        "duration": 168,
+        "album": "航行",
+        "bitrate": 2000
+      },
+      {
+        "id": "3654875",
+        "title": "那时雨",
+        "artist": "徐良",
+        "duration": 214,
+        "album": "那时雨",
+        "bitrate": 2000
+      },
+      {
+        "id": "557277208",
+        "title": "你像风一样出现",
+        "artist": "玉芬",
+        "duration": 187,
+        "album": "你像风一样出现",
+        "bitrate": 2000
+      },
+      {
+        "id": "51387053",
+        "title": "一万次悲伤",
+        "artist": "逃跑计划",
+        "duration": 255,
+        "album": "世界",
+        "bitrate": 2000
+      },
+      {
+        "id": "75897710",
+        "title": "关山酒",
+        "artist": "邓寓君(等什么君)",
+        "duration": 234,
+        "album": "关山酒",
+        "bitrate": 2000
+      },
+      {
+        "id": "326284218",
+        "title": "吻得太逼真",
+        "artist": "张敬轩",
+        "duration": 231,
+        "album": "他在耳边",
+        "bitrate": 2000
+      },
+      {
+        "id": "348929",
+        "title": "我的未来式-《爱情公寓》电视剧片头曲",
+        "artist": "郭采洁",
+        "duration": 196,
+        "album": "隐形超人",
+        "bitrate": 2000
+      },
+      {
+        "id": "56047253",
+        "title": "只为你着迷",
+        "artist": "李秉成",
+        "duration": 240,
+        "album": "只为你着迷",
+        "bitrate": 2000
+      },
+      {
+        "id": "497101589",
+        "title": "一点点",
+        "artist": "董唧唧&芊芊龍",
+        "duration": 177,
+        "album": "一点点 (为什么晚上总是有星星)",
+        "bitrate": 2000
+      },
+      {
+        "id": "489377684",
+        "title": "后会无期",
+        "artist": "汪苏泷&徐良",
+        "duration": 211,
+        "album": "借用一下你的爱 电视剧原声带",
+        "bitrate": 2000
+      },
+      {
+        "id": "455880",
+        "title": "有何不可",
+        "artist": "许嵩",
+        "duration": 241,
+        "album": "自定义",
+        "bitrate": 2000
+      },
+      {
+        "id": "993960",
+        "title": "爱就一个字-《宝莲灯》动画电影插曲",
+        "artist": "张信哲",
+        "duration": 272,
+        "album": "我好想",
+        "bitrate": 2000
+      },
+      {
+        "id": "9950164",
+        "title": "刚好遇见你",
+        "artist": "李玉刚",
+        "duration": 200,
+        "album": "刚好遇见你",
+        "bitrate": 2000
+      },
+      {
+        "id": "315706",
+        "title": "月牙湾",
+        "artist": "F.I.R.飞儿乐团",
+        "duration": 305,
+        "album": "爱‧歌姬",
+        "bitrate": 2000
+      },
+      {
+        "id": "1245657",
+        "title": "泡沫",
+        "artist": "G.E.M.邓紫棋",
+        "duration": 258,
+        "album": "Xposed",
+        "bitrate": 2000
+      },
+      {
+        "id": "6686319",
+        "title": "日落大道",
+        "artist": "梁博",
+        "duration": 275,
+        "album": "迷藏",
+        "bitrate": 2000
+      },
+      {
+        "id": "238215",
+        "title": "第一次-《白色恋曲》电视剧片尾曲",
+        "artist": "光良",
+        "duration": 263,
+        "album": "第1次个人创作专辑",
+        "bitrate": 2000
+      },
+      {
+        "id": "436126241",
+        "title": "跳楼机",
+        "artist": "LBI利比（时柏尘）",
+        "duration": 201,
+        "album": "跳楼机",
+        "bitrate": 2000
+      },
+      {
+        "id": "54916976",
+        "title": "赤伶",
+        "artist": "HITA",
+        "duration": 266,
+        "album": "赤伶",
+        "bitrate": 2000
+      },
+      {
+        "id": "6304356",
+        "title": "牵丝戏",
+        "artist": "银临&Aki阿杰",
+        "duration": 239,
+        "album": "牵丝戏",
+        "bitrate": 2000
+      },
+      {
+        "id": "52876626",
+        "title": "可不可以",
+        "artist": "张紫豪",
+        "duration": 240,
+        "album": "可不可以",
+        "bitrate": 2000
+      },
+      {
+        "id": "230969811",
+        "title": "难却",
+        "artist": "平生不晚",
+        "duration": 186,
+        "album": "难却",
+        "bitrate": 2000
+      },
+      {
+        "id": "309354570",
+        "title": "探故知",
+        "artist": "浅影阿&汐音社",
+        "duration": 201,
+        "album": "探故知",
+        "bitrate": 2000
+      },
+      {
+        "id": "317511307",
+        "title": "我期待的不是雪 (而是有你的冬天)",
+        "artist": "张妙格",
+        "duration": 166,
+        "album": "我期待的不是雪 (而是有你的冬天)",
+        "bitrate": 2000
+      },
+      {
+        "id": "255983486",
+        "title": "精卫",
+        "artist": "王悦辰",
+        "duration": 162,
+        "album": "精卫",
+        "bitrate": 2000
+      },
+      {
+        "id": "144914539",
+        "title": "春庭雪",
+        "artist": "邓寓君(等什么君)",
+        "duration": 240,
+        "album": "春庭雪",
+        "bitrate": 2000
+      },
+      {
+        "id": "261696407",
+        "title": "姑娘在远方",
+        "artist": "柯柯柯啊",
+        "duration": 202,
+        "album": "姑娘在远方",
+        "bitrate": 2000
+      },
+      {
+        "id": "111814",
+        "title": "夏天的风",
+        "artist": "元卫觉醒",
+        "duration": 271,
+        "album": "元卫觉醒",
+        "bitrate": 2000
+      },
+      {
+        "id": "856124",
+        "title": "情非得已-《流星花园》电视剧主题曲",
+        "artist": "庾澄庆",
+        "duration": 273,
+        "album": "海啸",
+        "bitrate": 2000
+      },
+      {
+        "id": "93151",
+        "title": "美人鱼",
+        "artist": "林俊杰",
+        "duration": 254,
+        "album": "第二天堂",
+        "bitrate": 2000
+      },
+      {
+        "id": "481786768",
+        "title": "爱过的你 (黑哥现场版)",
+        "artist": "承桓",
+        "duration": 279,
+        "album": "爱过的你（新版）",
+        "bitrate": 2000
+      },
+      {
+        "id": "4890172",
+        "title": "夜空中最亮的星",
+        "artist": "逃跑计划",
+        "duration": 252,
+        "album": "世界",
+        "bitrate": 2000
+      },
+      {
+        "id": "151728901",
+        "title": "迷失幻境",
+        "artist": "IN-K&王忻辰",
+        "duration": 156,
+        "album": "回忆观影券",
+        "bitrate": 2000
+      },
+      {
+        "id": "103135",
+        "title": "就是爱你",
+        "artist": "陶喆",
+        "duration": 263,
+        "album": "太平盛世",
+        "bitrate": 2000
+      },
+      {
+        "id": "291555",
+        "title": "梦一场-《新闻小姐》电视剧插曲|《春娇救志明》电影插曲",
+        "artist": "那英",
+        "duration": 232,
+        "album": "干脆",
+        "bitrate": 2000
+      },
+      {
+        "id": "12018064",
+        "title": "水星记",
+        "artist": "郭顶",
+        "duration": 325,
+        "album": "飞行器的执行周期",
+        "bitrate": 2000
+      },
+      {
+        "id": "11160257",
+        "title": "爱丫爱丫",
+        "artist": "BY2",
+        "duration": 232,
+        "album": "爱情是从告白开始的 电视剧原声带",
+        "bitrate": 2000
+      },
+      {
+        "id": "10007521",
+        "title": "The Show",
+        "artist": "Lenka",
+        "duration": 235,
+        "album": "Lenka",
+        "bitrate": 2000
+      },
+      {
+        "id": "118980",
+        "title": "夜曲",
+        "artist": "周杰伦",
+        "duration": 226,
+        "album": "十一月的萧邦",
+        "bitrate": 2000
+      },
+      {
+        "id": "33849066",
+        "title": "平凡之路",
+        "artist": "朴树",
+        "duration": 301,
+        "album": "猎户星座实体CD版",
+        "bitrate": 2000
+      },
+      {
+        "id": "231323",
+        "title": "我怀念的-《第二回合我爱你（幸运日)》电视剧主题曲",
+        "artist": "孙燕姿",
+        "duration": 289,
+        "album": "逆光",
+        "bitrate": 2000
+      },
+      {
+        "id": "1108461",
+        "title": "Letting Go",
+        "artist": "蔡健雅",
+        "duration": 263,
+        "album": "说到爱",
+        "bitrate": 2000
+      },
+      {
+        "id": "321260769",
+        "title": "唯一",
+        "artist": "G.E.M.邓紫棋",
+        "duration": 253,
+        "album": "T.I.M.E.",
+        "bitrate": 2000
+      },
+      {
+        "id": "498392",
+        "title": "你在，不在-《幸福一定强》电视剧插曲",
+        "artist": "郭采洁",
+        "duration": 263,
+        "album": "爱异想",
+        "bitrate": 2000
+      },
+      {
+        "id": "15213376",
+        "title": "That Girl",
+        "artist": "Olly Murs",
+        "duration": 176,
+        "album": "24 HRS (Deluxe)",
+        "bitrate": 2000
+      },
+      {
+        "id": "36290894",
+        "title": "So Far Away",
+        "artist": "Martin Garrix&David Guetta&Jamie Scott&Romy Dya",
+        "duration": 183,
+        "album": "So Far Away",
+        "bitrate": 2000
+      },
+      {
+        "id": "29848265",
+        "title": "最好的安排",
+        "artist": "曲婉婷",
+        "duration": 250,
+        "album": "LLL",
+        "bitrate": 2000
+      },
+      {
+        "id": "79531914",
+        "title": "悬溺",
+        "artist": "葛东琪",
+        "duration": 197,
+        "album": "第二街区",
+        "bitrate": 2000
+      },
+      {
+        "id": "48958847",
+        "title": "溯 (Reverse) feat. 马吟吟",
+        "artist": "CORSAK胡梦周&马吟吟",
+        "duration": 192,
+        "album": "溯 (Reverse) feat. 马吟吟",
+        "bitrate": 2000
+      },
+      {
+        "id": "174044937",
+        "title": "Friendships",
+        "artist": "Pascal Letoublon",
+        "duration": 242,
+        "album": "Beautiful Songs (Explicit)",
+        "bitrate": 2000
+      },
+      {
+        "id": "55827761",
+        "title": "Once upon a Time",
+        "artist": "Max Oazo&Moonessa",
+        "duration": 206,
+        "album": "Once upon a Time",
+        "bitrate": 2000
+      },
+      {
+        "id": "81441660",
+        "title": "Reality",
+        "artist": "Lost Frequencies&Janieck",
+        "duration": 159,
+        "album": "Reality",
+        "bitrate": 2000
+      },
+      {
+        "id": "391316578",
+        "title": "Reay",
+        "artist": "Oliver Stock",
+        "duration": 127,
+        "album": "Reay",
+        "bitrate": 2000
+      },
+      {
+        "id": "87998554",
+        "title": "River Flows in You",
+        "artist": "HAUSER&London Symphony Orchestra&Robert Ziegler&Yiruma",
+        "duration": 180,
+        "album": "River Flows in You",
+        "bitrate": 2000
+      },
+      {
+        "id": "257934682",
+        "title": "Sensation (Remix)",
+        "artist": "Enzo Saccone&Mr. Diddy",
+        "duration": 148,
+        "album": "Sensation (Remix)",
+        "bitrate": 2000
+      },
+      {
+        "id": "296816",
+        "title": "With an Orchid",
+        "artist": "Yanni",
+        "duration": 307,
+        "album": "If I Could Tell You",
+        "bitrate": 2000
+      },
+      {
+        "id": "28512320",
+        "title": "城南花已开",
+        "artist": "三亩地",
+        "duration": 271,
+        "album": "城南花已开",
+        "bitrate": 2000
+      },
+      {
+        "id": "9948047",
+        "title": "春风十里",
+        "artist": "鹿先森乐队",
+        "duration": 375,
+        "album": "所有的酒，都不如你",
+        "bitrate": 2000
+      },
+      {
+        "id": "450444",
+        "title": "红色高跟鞋-《爱情左右》电影主题曲",
+        "artist": "蔡健雅",
+        "duration": 206,
+        "album": "若你碰到他",
+        "bitrate": 2000
+      },
+      {
+        "id": "226524008",
+        "title": "每当我（每当我看到花瓣脱离花蕊慢慢枯萎）",
+        "artist": "6诗人&酱子",
+        "duration": 153,
+        "album": "每当我正式版",
+        "bitrate": 2000
+      },
+      {
+        "id": "320462",
+        "title": "青花",
+        "artist": "周传雄",
+        "duration": 297,
+        "album": "蓝色土耳其",
+        "bitrate": 2000
+      },
+      {
+        "id": "68687198",
+        "title": "青空",
+        "artist": "Candy_Wind",
+        "duration": 201,
+        "album": "雨之翼",
+        "bitrate": 2000
+      },
+      {
+        "id": "412352990",
+        "title": "所念皆星河",
+        "artist": "CMJ",
+        "duration": 220,
+        "album": "所念皆星河",
+        "bitrate": 2000
+      },
+      {
+        "id": "69991592",
+        "title": "爱人错过",
+        "artist": "告五人",
+        "duration": 292,
+        "album": "我肯定在几百年前就说过爱你",
+        "bitrate": 2000
+      },
+      {
+        "id": "6975033",
+        "title": "Me and My Guitar",
+        "artist": "Tep No",
+        "duration": 246,
+        "album": "Me and My Guitar",
+        "bitrate": 2000
+      },
+      {
+        "id": "154034542",
+        "title": "嘉宾",
+        "artist": "张远",
+        "duration": 333,
+        "album": "嘉宾",
+        "bitrate": 2000
+      },
+      {
+        "id": "455702205",
+        "title": "第57次取消发送",
+        "artist": "菲菲公主（陆绮菲）",
+        "duration": 180,
+        "album": "第57次取消发送",
+        "bitrate": 2000
+      },
+      {
+        "id": "325842",
+        "title": "开始懂了",
+        "artist": "孙燕姿",
+        "duration": 271,
+        "album": "我要的幸福",
+        "bitrate": 2000
+      },
+      {
+        "id": "28114481",
+        "title": "Creep",
+        "artist": "GAMPER & DADONI",
+        "duration": 174,
+        "album": "Creep",
+        "bitrate": 2000
+      },
+      {
+        "id": "23543064",
+        "title": "曾经的你",
+        "artist": "许巍",
+        "duration": 261,
+        "album": "2014现场版",
+        "bitrate": 2000
+      },
+      {
+        "id": "51567593",
+        "title": "Lost Control (feat. Bianca)",
+        "artist": "Tyron Hapi&Bianca",
+        "duration": 269,
+        "album": "Lost Control (feat. Bianca)",
+        "bitrate": 2000
+      }
     ]
   }
 }
