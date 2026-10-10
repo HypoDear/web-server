@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#f4efe4">
-<title>我的歌单 · FLAC</title>
+<title>FLAC 歌单</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27><rect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23f4efe4%27/><path d=%27M16 6v13.5A4.5 4.5 0 1 0 18.5 24V10h5V6h-7.5z%27 fill=%27%231f6f8b%27/></svg>">
 <style>
   :root{
@@ -13,7 +13,7 @@
     --ink:#2f2a24; --ink-soft:#7d7265; --ink-dim:#a39887;
     --line:#d8cfbe; --line-soft:#e6ddcd;
     --accent:#1f6f8b; --accent-soft:#eaf2f5;
-    --bar-h:80px;
+    --top-h:58px; --bar-h:58px;
     --font:"Kaiti SC","STKaiti",KaiTi,"Noto Serif SC","Songti SC",Georgia,"Times New Roman",serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -22,12 +22,33 @@
     background:var(--paper);color:var(--ink);min-height:100vh;
     font-family:var(--font);
     -webkit-font-smoothing:antialiased;line-height:1.6;
-    padding:max(24px,env(safe-area-inset-top)) 16px calc(var(--bar-h) + 30px);
+    padding:calc(var(--top-h) + env(safe-area-inset-top) + 14px) 16px calc(var(--bar-h) + env(safe-area-inset-bottom) + 18px);
   }
   .wrap{max-width:700px;margin:0 auto}
-  header{margin-bottom:20px;text-align:center}
-  h1{font-size:23px;font-weight:600;margin:0 0 6px;letter-spacing:4px}
-  .sub{font-size:12.5px;color:var(--ink-soft);letter-spacing:1px}
+
+  /* 顶部固定工具栏：桌面一行，窄屏两行 */
+  .topbar{
+    position:fixed;left:0;right:0;top:0;z-index:20;
+    min-height:calc(var(--top-h) + env(safe-area-inset-top));
+    padding:env(safe-area-inset-top) 16px 0;
+    background:rgba(244,239,228,.97);border-bottom:1px solid var(--line);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  }
+  .top-in{
+    width:100%;max-width:760px;height:var(--top-h);margin:0 auto;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,270px);padding-right:34px;
+    align-items:center;gap:18px;
+  }
+  .stats{font-size:13px;color:var(--ink-soft);letter-spacing:.8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .search-wrap{position:relative;width:100%}
+  .search{
+    width:100%;height:34px;padding:0 32px 0 13px;border:1px solid var(--line);
+    border-radius:9px;background:var(--paper2);color:var(--ink);font-family:var(--font);
+    font-size:13px;outline:none;transition:border-color .15s,background .15s;
+  }
+  .search:focus{border-color:var(--accent);background:var(--paper3)}
+  .search::placeholder{color:var(--ink-dim)}
+  .search-ico{position:absolute;right:10px;top:8px;width:17px;height:17px;fill:var(--ink-dim);pointer-events:none}
 
   .list{display:flex;flex-direction:column;gap:8px}
   .tr{
@@ -59,41 +80,45 @@
   .loading,.err{padding:24px 2px;font-size:14px;color:var(--ink-soft);text-align:center}
   .err{color:#b4472f}
 
-  /* 底部播放条 */
+  /* 紧凑底部播放条：进度条贴顶，信息与控制同一行 */
   .bar{
-    position:fixed;left:0;right:0;bottom:0;height:var(--bar-h);
+    position:fixed;left:0;right:0;bottom:0;height:calc(var(--bar-h) + env(safe-area-inset-bottom));
     background:rgba(251,248,241,.97);border-top:1px solid var(--line);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    padding:0 16px calc(env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;justify-content:center;z-index:20;
+    padding:0 16px env(safe-area-inset-bottom);
+    display:flex;align-items:center;z-index:20;
   }
-  .bar-in{max-width:700px;margin:0 auto;width:100%}
-  .now{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .bar-in{
+    position:relative;max-width:760px;margin:0 auto;width:100%;height:var(--bar-h);
+    display:grid;grid-template-columns:minmax(120px,1fr) auto;align-items:center;gap:18px;
+  }
+  .now{display:flex;align-items:center;gap:10px;min-width:0;margin:0}
   .now-t{flex:1;min-width:0;font-size:13px;color:var(--ink);letter-spacing:.5px;
          white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .time{flex:0 0 auto;font-size:11.5px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
   .prog{
+    position:absolute;left:0;right:0;top:-7px;
     -webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;
-    background:#ddd4c4;outline:none;margin:0 0 7px;cursor:pointer;
+    background:#ddd4c4;outline:none;margin:0;cursor:pointer;
   }
   .prog::-webkit-slider-thumb{
-    -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+    -webkit-appearance:none;width:11px;height:11px;border-radius:50%;
     background:var(--accent);cursor:pointer;border:none;
   }
-  .prog::-moz-range-thumb{width:12px;height:12px;border:none;border-radius:50%;background:var(--accent);cursor:pointer}
-  .ctrls{display:flex;align-items:center;justify-content:center;gap:20px;position:relative}
+  .prog::-moz-range-thumb{width:11px;height:11px;border:none;border-radius:50%;background:var(--accent);cursor:pointer}
+  .ctrls{display:flex;align-items:center;justify-content:flex-end;gap:15px;position:static}
   .cb{
     background:none;border:none;color:var(--ink);cursor:pointer;padding:0;
     display:flex;align-items:center;justify-content:center;font-family:inherit;
   }
-  .cb svg{width:20px;height:20px;fill:currentColor}
+  .cb svg{width:19px;height:19px;fill:currentColor}
   .cb:hover:not(:disabled){color:var(--accent)}
   .cb:disabled{opacity:.3;cursor:not-allowed}
-  .cb.play svg{width:26px;height:26px}
-  .mode{position:absolute;right:0;display:flex;gap:15px;align-items:center}
+  .cb.play svg{width:24px;height:24px}
+  .mode{position:static;display:flex;gap:13px;align-items:center;margin-left:4px}
   .mt{background:none;border:none;padding:0;cursor:pointer;color:var(--ink-dim);position:relative;
       display:flex;align-items:center;font-family:inherit}
-  .mt svg{width:18px;height:18px;fill:currentColor}
+  .mt svg{width:17px;height:17px;fill:currentColor}
   .mt:hover{color:var(--accent)}
   .mt.on{color:var(--accent)}
   .mt:disabled{opacity:.3;cursor:not-allowed}
@@ -101,19 +126,44 @@
     position:absolute;right:-5px;top:-4px;font-size:9px;line-height:1;
     background:var(--accent);color:#fff;border-radius:5px;padding:1px 3px;font-family:var(--font);
   }
-  @media(max-width:430px){
-    .mode{position:static;margin-left:auto;gap:13px}
-    .ctrls{justify-content:flex-start;gap:16px}
+  @media(max-width:600px){
+    :root{--top-h:88px;--bar-h:62px}
+    .top-in{
+      height:var(--top-h);grid-template-columns:1fr;grid-template-rows:30px 38px;
+      gap:4px;padding:8px 0;
+    }
+    .stats{align-self:end}
+    .search-wrap{align-self:start}
+    .search{height:34px}
+    .bar-in{gap:10px}
+    .now{gap:6px}
+    .time{display:none}
+    .ctrls{gap:11px}
+    .mode{gap:10px;margin-left:1px}
+    .cb svg{width:18px;height:18px}
+    .cb.play svg{width:23px;height:23px}
+    .mt svg{width:16px;height:16px}
+  }
+  @media(max-width:360px){
+    .now-t{font-size:12px}
+    .ctrls{gap:8px}
+    .mode{gap:8px}
   }
   @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
 </style>
 </head>
 <body>
+<div class="topbar">
+  <div class="top-in">
+    <div class="stats" id="pl-stats">正在载入歌单…</div>
+    <label class="search-wrap">
+      <input class="search" id="search" type="search" placeholder="搜索歌名 / 歌手 / 专辑" autocomplete="off" aria-label="搜索当前歌单">
+      <svg class="search-ico" viewBox="0 0 24 24"><path d="M9.5 3a6.5 6.5 0 1 0 3.96 11.65L19.81 21 21 19.81l-6.35-6.35A6.5 6.5 0 0 0 9.5 3zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/></svg>
+    </label>
+  </div>
+</div>
+
 <div class="wrap">
-  <header>
-    <h1 id="pl-name">我的歌单</h1>
-    <div class="sub" id="pl-sub">加载中…</div>
-  </header>
   <div id="root"><div class="loading">正在载入歌单…</div></div>
 </div>
 
@@ -154,18 +204,15 @@
 (function () {
   'use strict';
 
-  // ============================================================
-  // 播放配置
-  // ============================================================
   var URL_API    = 'https://mobi.kuwo.cn/mobi.s';
   var APK_SOURCE = 'kwplayercar_ar_6.0.0.9_B_jiakong_vh.apk';
-  var FLAC_TAGS  = ['2000kflac', 'flac'];   // 依次尝试，均要求返回 FLAC
-  var PLAYLIST   = 'playlist.json';         // 歌单文件，与本源文件同级
-  var LOOP_MODES = ['off', 'all', 'one'];   // 顺序播完即止 / 列表循环 / 单曲循环
+  var FLAC_TAGS  = ['2000kflac', 'flac'];
+  var PLAYLIST   = 'playlist.json';
+  var LOOP_MODES = ['off', 'all', 'one'];
 
   var $root = document.getElementById('root');
-  var $name = document.getElementById('pl-name');
-  var $sub  = document.getElementById('pl-sub');
+  var $stats = document.getElementById('pl-stats');
+  var $search = document.getElementById('search');
   var $nowT = document.getElementById('now-t');
   var $nowTime = document.getElementById('now-time');
   var $prog = document.getElementById('prog');
@@ -179,21 +226,20 @@
   var $locate = document.getElementById('locate');
 
   var audio = document.createElement('audio');
-  audio.preload = 'none';          // 永不预加载
+  audio.preload = 'none';
   audio.volume = 1;
 
   var tracks = [];
-  var cur = -1;                    // 当前曲目下标
+  var cur = -1;
   var loopMode = 'off';
   var shuffleOn = false;
-  var history = [];                // 随机模式下的播放足迹，供「上一首」回退
-  var seq = 0;                     // 请求序号，防止旧请求覆盖新播放
+  var history = [];
+  var seq = 0;
   var seeking = false;
-  var baseTitle = '我的歌单 · FLAC';
+  var baseTitle = 'FLAC 歌单';
+  var playlistMeta = {};
+  var query = '';
 
-  // ============================================================
-  // 工具
-  // ============================================================
   function qs(o) {
     return Object.keys(o).map(function (k) {
       return encodeURIComponent(k) + '=' + encodeURIComponent(o[k]);
@@ -219,11 +265,9 @@
     if (!t) return '';
     return (t.title || '') + (t.artist ? ' — ' + t.artist : '');
   }
-  // 标签页标题跟随当前播放
   function setTabTitle(t) {
     document.title = t ? label(t) : baseTitle;
   }
-  // 页面是 HTTPS，直链是 HTTP，会被浏览器拦截；先升级协议再回退
   function candidates(u) {
     if (/^http:\/\//i.test(u)) return [u.replace(/^http:/i, 'https:'), u];
     return [u];
@@ -232,13 +276,10 @@
     try {
       audio.pause();
       audio.removeAttribute('src');
-      audio.load();               // 立即丢弃已缓冲数据
+      audio.load();
     } catch (e) {}
   }
 
-  // ============================================================
-  // 取直链：每次点击都实时换取，不缓存、不预取
-  // ============================================================
   function resolveUrl(id) {
     var i = 0;
     function attempt() {
@@ -253,7 +294,6 @@
         .then(function (d) {
           var dd = (d && d.data) || {};
           var fmtv = String(dd.format || '').toLowerCase();
-          // 以实际返回格式为准，避免无损档位回落成有损
           if (!dd.url || dd.url === 'None' || fmtv.indexOf('flac') === -1) {
             if (i < FLAC_TAGS.length) return attempt();
             throw new Error('该曲目无 FLAC 音源');
@@ -268,21 +308,48 @@
     return Promise.resolve().then(attempt);
   }
 
-  // ============================================================
-  // 渲染列表
-  // ============================================================
+  function matchTrack(t, q) {
+    if (!q) return true;
+    var hay = [t.title, t.artist, t.album].join(' ').toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  function visibleIndices() {
+    var out = [];
+    for (var i = 0; i < tracks.length; i++) {
+      if (matchTrack(tracks[i], query)) out.push(i);
+    }
+    return out;
+  }
+
+  function updateStats(shown) {
+    var total = tracks.length;
+    var lead = query ? ('找到 ' + shown + ' / 共 ' + total + ' 首') : (total + ' 首');
+    $stats.textContent = lead + ' · ' + String(playlistMeta.quality || 'flac').toUpperCase()
+      + (playlistMeta.updatedAt ? ' · 更新于 ' + playlistMeta.updatedAt : '');
+  }
+
   function render() {
     $root.innerHTML = '';
+    var indices = visibleIndices();
+    updateStats(indices.length);
+    if (!indices.length) {
+      $root.innerHTML = '<div class="loading">没有匹配的歌曲</div>';
+      markActive();
+      return;
+    }
     var list = document.createElement('div');
     list.className = 'list';
-    tracks.forEach(function (t, i) {
+    indices.forEach(function (trackIndex) {
+      var t = tracks[trackIndex];
       var row = document.createElement('div');
       row.className = 'tr';
-      row.dataset.no = String(i + 1);
+      row.dataset.track = String(trackIndex);
+      row.dataset.no = String(trackIndex + 1);
 
       var idx = document.createElement('div');
       idx.className = 'idx';
-      idx.textContent = String(i + 1);
+      idx.textContent = String(trackIndex + 1);
 
       var meta = document.createElement('div');
       meta.className = 'meta';
@@ -302,7 +369,7 @@
       row.appendChild(idx);
       row.appendChild(meta);
       row.appendChild(dur);
-      row.onclick = function () { playIndex(i, true); };
+      row.onclick = function () { playIndex(trackIndex, true); };
       list.appendChild(row);
     });
     $root.appendChild(list);
@@ -312,7 +379,7 @@
   function markActive() {
     var rows = $root.querySelectorAll('.tr');
     for (var i = 0; i < rows.length; i++) {
-      var on = (i === cur);
+      var on = (parseInt(rows[i].dataset.track, 10) === cur);
       rows[i].classList.toggle('on', on);
       var idx = rows[i].querySelector('.idx');
       if (on) idx.innerHTML = '<span class="bars"><i></i><i></i><i></i></span>';
@@ -321,11 +388,14 @@
     $locate.disabled = (cur < 0);
   }
 
-  // 定位到当前播放的那一行
   function locate() {
     if (cur < 0) return;
-    var rows = $root.querySelectorAll('.tr');
-    var el = rows[cur];
+    if (query) {
+      query = '';
+      $search.value = '';
+      render();
+    }
+    var el = $root.querySelector('.tr[data-track="' + cur + '"]');
     if (!el) return;
     try {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -334,9 +404,6 @@
     }
   }
 
-  // ============================================================
-  // 播放控制
-  // ============================================================
   function setPlayIcon(playing) {
     $playIco.innerHTML = playing
       ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'
@@ -354,12 +421,12 @@
     $nowT.textContent = label(t);
     $nowTime.textContent = '--:-- / ' + fmt(t.duration);
     $prog.value = 0;
-    freeAudio();                     // 换歌即释放上一首的缓冲
+    freeAudio();
     setPlayIcon(false);
     $play.disabled = true;
 
     resolveUrl(t.id).then(function (u) {
-      if (my !== seq) return;        // 期间已切歌，丢弃本次结果
+      if (my !== seq) return;
       $play.disabled = false;
       var list = candidates(u), k = 0;
       (function go() {
@@ -407,7 +474,6 @@
       return;
     }
 
-    // 手动下一首
     if (shuffleOn) {
       var r2 = n === 1 ? 0 : Math.floor(Math.random() * n);
       if (n > 1 && r2 === cur) r2 = (r2 + 1) % n;
@@ -425,9 +491,6 @@
     playIndex((cur - 1 + n) % n, false);
   }
 
-  // ============================================================
-  // 事件
-  // ============================================================
   $play.onclick = function () {
     if (cur < 0) { playIndex(0, true); return; }
     if (!audio.getAttribute('src')) { playIndex(cur, false); return; }
@@ -459,14 +522,12 @@
     if (d && isFinite(d)) audio.currentTime = $prog.value / 1000 * d;
   };
 
-  // 随机
   $shuffle.onclick = function () {
     shuffleOn = !shuffleOn;
     $shuffle.classList.toggle('on', shuffleOn);
     $shuffle.title = shuffleOn ? '随机播放：开' : '随机播放：关';
     history = [];
   };
-  // 循环模式：关 → 列表循环 → 单曲循环
   function applyLoop() {
     $loop.classList.toggle('on', loopMode !== 'off');
     $loop.title = loopMode === 'off' ? '顺序播完即止'
@@ -479,10 +540,21 @@
   };
   applyLoop();
 
-  // 离开页面立即释放，避免后台占用
+  $search.addEventListener('input', function () {
+    query = this.value.trim().toLowerCase();
+    render();
+  });
+  $search.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      this.value = '';
+      query = '';
+      render();
+      this.blur();
+    }
+  });
+
   window.addEventListener('pagehide', function () { freeAudio(); });
 
-  // 键盘：空格播放暂停，左右切歌
   document.addEventListener('keydown', function (e) {
     if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
     if (e.code === 'Space') { e.preventDefault(); $play.click(); }
@@ -490,9 +562,6 @@
     else if (e.code === 'ArrowLeft') { $prev.click(); }
   });
 
-  // ============================================================
-  // 载入歌单
-  // ============================================================
   fetch(PLAYLIST, { cache: 'no-store' })
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -502,15 +571,13 @@
       var pl = (d && d.playlist) || {};
       tracks = (pl.tracks || []).filter(function (t) { return t && t.id; });
       if (!tracks.length) throw new Error('歌单为空');
-      $name.textContent = pl.name || '我的歌单';
-      $sub.textContent = tracks.length + ' 首 · ' + String(pl.quality || 'flac').toUpperCase()
-                       + (pl.updatedAt ? ' · 更新于 ' + pl.updatedAt : '');
-      baseTitle = $name.textContent + ' · FLAC';
+      playlistMeta = pl;
+      baseTitle = 'FLAC 歌单';
       setTabTitle(null);
       render();
     })
     .catch(function (e) {
-      $sub.textContent = '载入失败';
+      $stats.textContent = '歌单载入失败';
       $root.innerHTML = '<div class="err">歌单载入失败：' + (e.message || '') +
                         '<br>请确认同目录下存在 playlist.json</div>';
     });
