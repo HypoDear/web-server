@@ -1,0 +1,29 @@
+{
+  "playlist": {
+    "name": "我的歌单",
+    "updatedAt": "2026-10-10",
+    "source": "kuwo",
+    "quality": "flac",
+    "note": "仅存曲目标识，不含播放链接。播放链接在点击时实时换取，有时效、不做缓存。",
+    "tracks": [
+      { "id": "228908",   "title": "晴天",            "artist": "周杰伦",       "duration": 269, "album": "叶惠美",                      "bitrate": 2000 },
+      { "id": "324244",   "title": "青花瓷",          "artist": "周杰伦",       "duration": 239, "album": "我很忙",                      "bitrate": 2000 },
+      { "id": "118980",   "title": "夜曲",            "artist": "周杰伦",       "duration": 226, "album": "十一月的萧邦",                "bitrate": 2000 },
+      { "id": "440613",   "title": "稻香",            "artist": "周杰伦",       "duration": 223, "album": "魔杰座",                      "bitrate": 2000 },
+      { "id": "80403",    "title": "十年",            "artist": "陈奕迅",       "duration": 205, "album": "黑白灰",                      "bitrate": 2000 },
+      { "id": "28423286", "title": "富士山下",        "artist": "陈奕迅",       "duration": 259, "album": "What's Going On...?",         "bitrate": 2000 },
+      { "id": "5886682",  "title": "海阔天空",        "artist": "BEYOND",       "duration": 324, "album": "乐与怒",                      "bitrate": 2000 },
+      { "id": "19534406", "title": "光辉岁月",        "artist": "BEYOND",       "duration": 302, "album": "命运派对",                    "bitrate": 2000 },
+      { "id": "443603",   "title": "突然好想你",      "artist": "五月天",       "duration": 265, "album": "后青春期的诗",                "bitrate": 2000 },
+      { "id": "404779",   "title": "知足",            "artist": "五月天",       "duration": 256, "album": "知足 最真杰作选",             "bitrate": 2000 },
+      { "id": "142683102","title": "漠河舞厅",        "artist": "柳爽",         "duration": 334, "album": "1st.星球",                    "bitrate": 2000 },
+      { "id": "9918220",  "title": "成都",            "artist": "赵雷",         "duration": 328, "album": "成都",                        "bitrate": 2000 },
+      { "id": "3493737",  "title": "Love Story",      "artist": "Taylor Swift", "duration": 236, "album": "Fearless (Platinum Edition)", "bitrate": 2000 },
+      { "id": "388245",   "title": "Viva la Vida",    "artist": "Coldplay",     "duration": 241, "album": "NBA 2K13 Original Soundtrack","bitrate": 2000 },
+      { "id": "240945",   "title": "Yellow",          "artist": "Coldplay",     "duration": 266, "album": "Yellow",                      "bitrate": 2000 },
+      { "id": "978473",   "title": "Hotel California","artist": "Eagles",       "duration": 391, "album": "Hotel California",            "bitrate": 2000 },
+      { "id": "15240778", "title": "Shape of You",    "artist": "Ed Sheeran",   "duration": 233, "album": "Shape of You",                "bitrate": 2000 },
+      { "id": "82513606", "title": "Blinding Lights", "artist": "The Weeknd",   "duration": 200, "album": "Blinding Lights",             "bitrate": 2000 }
+    ]
+  }
+}
