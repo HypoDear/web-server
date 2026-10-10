@@ -4,51 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="个人网页应用合集 · 纯静态、零依赖、开箱即用">
-<meta name="theme-color" content="#0e1116">
+<meta name="theme-color" content="#f4efe4">
 <title>应用合集</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27><rect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23f4efe4%27/><g fill=%27%231f6f8b%27><rect x=%276%27 y=%2718%27 width=%274%27 height=%279%27 rx=%272%27/><rect x=%2714%27 y=%2712%27 width=%274%27 height=%2715%27 rx=%272%27/><rect x=%2722%27 y=%275%27 width=%274%27 height=%2722%27 rx=%272%27/></g></svg>">
 <style>
 :root{
-  --bg:#0e1116; --card:#161b22; --card-h:#1b2230; --ink:#e6edf3;
-  --ink-soft:#8b949e; --ink-dim:#6e7681; --line:#21262d; --accent:#2563eb;
+  --paper:#f4efe4; --paper2:#fbf8f1; --paper3:#fffdf8;
+  --ink:#2f2a24; --ink-soft:#7d7265; --ink-dim:#a39887;
+  --line:#d8cfbe; --line-soft:#e6ddcd;
+  --accent:#1f6f8b;
   --radius:12px;
+  --font:"Kaiti SC","STKaiti",KaiTi,"Noto Serif SC","Songti SC",Georgia,"Times New Roman",serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%}
 body{
-  background:var(--bg);color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--paper);color:var(--ink);
+  font-family:var(--font);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:max(32px,env(safe-area-inset-top)) 20px max(32px,env(safe-area-inset-bottom));
-  -webkit-font-smoothing:antialiased;line-height:1.55;
+  -webkit-font-smoothing:antialiased;line-height:1.6;
 }
 .wrap{width:100%;max-width:480px}
 header{text-align:center;margin-bottom:28px}
-h1{font-size:24px;font-weight:600;letter-spacing:3px;margin:0 0 8px}
-header p{margin:0;color:var(--ink-soft);font-size:12.5px;letter-spacing:1px}
+h1{font-size:26px;font-weight:600;letter-spacing:6px;margin:0 0 8px}
+header p{margin:0;color:var(--ink-soft);font-size:13px;letter-spacing:1px}
 .list{display:flex;flex-direction:column;gap:10px}
 .card{
   display:flex;align-items:center;gap:14px;
   text-decoration:none;color:inherit;
-  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  padding:16px 18px;transition:transform .15s,border-color .15s,background .15s;
+  background:var(--paper2);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;transition:transform .15s,box-shadow .15s,border-color .15s,background .15s;
 }
-.card:hover{transform:translateY(-2px);border-color:var(--accent);background:var(--card-h)}
+.card:hover{
+  transform:translateY(-2px);background:var(--paper3);
+  border-color:var(--accent);box-shadow:0 4px 14px rgba(47,42,36,.08);
+}
 .ico{
   flex:0 0 auto;width:38px;height:38px;border-radius:10px;
-  background:#0f1b2e;border:1px solid #1e3252;
+  background:#eaf2f5;border:1px solid #cfe2e9;
   display:flex;align-items:center;justify-content:center;
 }
-.ico svg{width:19px;height:19px;fill:#3b82f6}
+.ico svg{width:19px;height:19px;fill:var(--accent)}
 .txt{flex:1;min-width:0}
-.card h2{margin:0 0 2px;font-size:15.5px;font-weight:500;letter-spacing:.5px}
-.card p{margin:0;font-size:12px;color:var(--ink-soft)}
-.arrow{flex:0 0 auto;color:var(--ink-dim);font-size:16px}
+.card h2{margin:0 0 2px;font-size:17px;font-weight:600;letter-spacing:2px}
+.card p{margin:0;font-size:12.5px;color:var(--ink-soft)}
+.arrow{flex:0 0 auto;color:var(--ink-dim);font-size:18px}
 .card:hover .arrow{color:var(--accent)}
-footer{margin-top:30px;text-align:center;font-size:11px;color:#565d66;letter-spacing:.3px;line-height:1.8}
-footer a{color:#565d66}
+footer{margin-top:30px;text-align:center;font-size:11.5px;color:var(--ink-dim);letter-spacing:.5px;line-height:1.8}
+footer a{color:var(--ink-dim)}
+footer a:hover{color:var(--accent)}
 @media(max-width:360px){
   .card{padding:14px}
-  .card p{font-size:11.5px}
+  .card p{font-size:12px}
 }
 @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
 </style>
