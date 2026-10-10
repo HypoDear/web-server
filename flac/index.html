@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0e1116">
+<title>我的歌单 · FLAC</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27><rect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%230e1116%27/><path d=%27M16 6v13.5A4.5 4.5 0 1 0 18.5 24V10h5V6h-7.5z%27 fill=%27%232563eb%27/></svg>">
+<style>
+  :root{
+    --bg:#0e1116; --card:#161b22; --card-h:#1b2230; --ink:#e6edf3;
+    --ink-soft:#8b949e; --ink-dim:#6e7681; --line:#21262d; --accent:#2563eb;
+    --bar-h:78px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.5;
+    padding:max(18px,env(safe-area-inset-top)) 16px calc(var(--bar-h) + 26px);
+  }
+  .wrap{max-width:700px;margin:0 auto}
+  .back{display:inline-block;font-size:12px;color:var(--ink-dim);text-decoration:none;margin-bottom:12px}
+  .back:hover{color:var(--accent)}
+  header{margin-bottom:18px}
+  h1{font-size:19px;font-weight:600;margin:0 0 4px;letter-spacing:.3px}
+  .sub{font-size:12px;color:var(--ink-dim)}
+
+  .list{display:flex;flex-direction:column;gap:6px}
+  .tr{
+    display:flex;align-items:center;gap:12px;
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;cursor:pointer;transition:border-color .15s,background .15s;
+  }
+  .tr:hover{background:var(--card-h);border-color:#2d3743}
+  .tr.on{border-color:var(--accent);background:#111a2b}
+  .idx{
+    flex:0 0 auto;width:26px;text-align:center;font-size:12px;color:var(--ink-dim);
+    font-variant-numeric:tabular-nums;
+  }
+  .tr.on .idx{color:var(--accent)}
+  .bars{display:flex;align-items:flex-end;gap:2px;height:13px}
+  .bars i{width:2px;background:var(--accent);border-radius:1px;animation:eq .9s ease-in-out infinite}
+  .bars i:nth-child(1){height:5px;animation-delay:-.2s}
+  .bars i:nth-child(2){height:11px;animation-delay:-.5s}
+  .bars i:nth-child(3){height:7px;animation-delay:-.8s}
+  @keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+  .meta{flex:1;min-width:0}
+  .t1{font-size:14.5px;font-weight:500;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .t2{font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dur{flex:0 0 auto;font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+
+  .loading,.err{padding:22px 2px;font-size:13.5px;color:var(--ink-soft)}
+  .err{color:#f85149}
+
+  /* 底部播放条 */
+  .bar{
+    position:fixed;left:0;right:0;bottom:0;height:var(--bar-h);
+    background:rgba(15,19,25,.96);border-top:1px solid var(--line);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    padding:0 14px calc(env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;justify-content:center;z-index:20;
+  }
+  .bar-in{max-width:700px;margin:0 auto;width:100%}
+  .now{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+  .now-t{flex:1;min-width:0;font-size:12.5px;color:var(--ink-soft);
+         white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .now-t b{color:var(--ink);font-weight:500}
+  .time{flex:0 0 auto;font-size:11px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+  .prog{
+    -webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;
+    background:#2a313a;outline:none;margin:0 0 6px;cursor:pointer;
+  }
+  .prog::-webkit-slider-thumb{
+    -webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--accent);cursor:pointer;
+  }
+  .prog::-moz-range-thumb{width:11px;height:11px;border:none;border-radius:50%;background:var(--accent);cursor:pointer}
+  .ctrls{display:flex;align-items:center;justify-content:center;gap:18px;position:relative}
+  .cb{
+    background:none;border:none;color:var(--ink);cursor:pointer;padding:0;
+    display:flex;align-items:center;justify-content:center;font-family:inherit;
+  }
+  .cb svg{width:19px;height:19px;fill:currentColor}
+  .cb:hover:not(:disabled){color:var(--accent)}
+  .cb:disabled{opacity:.35;cursor:not-allowed}
+  .cb.play svg{width:25px;height:25px}
+  .mode{position:absolute;right:0;display:flex;gap:14px}
+  .mt{background:none;border:none;padding:0;cursor:pointer;color:var(--ink-dim);position:relative}
+  .mt svg{width:17px;height:17px;fill:currentColor}
+  .mt.on{color:var(--accent)}
+  .mt .badge{
+    position:absolute;right:-4px;top:-3px;font-size:9px;line-height:1;
+    background:var(--accent);color:#fff;border-radius:5px;padding:1px 3px;
+  }
+  @media(max-width:400px){
+    .mode{position:static;margin-left:auto}
+    .ctrls{justify-content:flex-start;gap:16px}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">返回合集</a>
+  <header>
+    <h1 id="pl-name">我的歌单</h1>
+    <div class="sub" id="pl-sub">加载中…</div>
+  </header>
+  <div id="root"><div class="loading">正在载入歌单…</div></div>
+</div>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="now">
+      <div class="now-t" id="now-t">未播放</div>
+      <div class="time" id="now-time">--:-- / --:--</div>
+    </div>
+    <input class="prog" id="prog" type="range" min="0" max="1000" value="0" step="1" aria-label="播放进度">
+    <div class="ctrls">
+      <button class="cb" id="prev" title="上一首" aria-label="上一首">
+        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button class="cb play" id="play" title="播放 / 暂停" aria-label="播放或暂停">
+        <svg id="play-ico" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="cb" id="next" title="下一首" aria-label="下一首">
+        <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+      </button>
+      <span class="mode">
+        <button class="mt" id="shuffle" title="随机播放" aria-label="随机播放">
+          <svg viewBox="0 0 24 24"><path d="M10.6 9.2L9.2 7.8 5 12l4.2 4.2 1.4-1.4L8.8 13H11c1.1 0 1.7-.4 2.6-1.4l2.2-2.4c.6-.7 1-1 1.8-1H21v2h-3.2c-.2 0-.5.2-.8.5l-2.3 2.5C13.6 10.3 12.6 11 11 11H9.7l1 1.1zM5 8.7L6.4 10 8.8 7.5 7.4 6.1zm9 5.9l-1.4-1.4-1.4 1.5c.4.4.7.6 1.2.6zM21 13v2h-3.2c-1.1 0-1.7-.4-2.6-1.4l-.4-.4 1.4-1.5.7.8c.3.3.5.5.9.5z"/></svg>
+        </button>
+        <button class="mt" id="loop" title="循环模式" aria-label="循环模式">
+          <svg id="loop-ico" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+          <span class="badge" id="loop-badge" style="display:none">1</span>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // 播放配置
+  // ============================================================
+  var URL_API    = 'https://mobi.kuwo.cn/mobi.s';
+  var APK_SOURCE = 'kwplayercar_ar_6.0.0.9_B_jiakong_vh.apk';
+  var FLAC_TAGS  = ['2000kflac', 'flac'];   // 依次尝试，均要求返回 FLAC
+  var PLAYLIST   = 'playlist.json';         // 歌单文件，与本源文件同级
+  var LOOP_MODES = ['off', 'all', 'one'];   // 顺序播完即止 / 列表循环 / 单曲循环
+
+  var $root = document.getElementById('root');
+  var $name = document.getElementById('pl-name');
+  var $sub  = document.getElementById('pl-sub');
+  var $nowT = document.getElementById('now-t');
+  var $nowTime = document.getElementById('now-time');
+  var $prog = document.getElementById('prog');
+  var $play = document.getElementById('play');
+  var $playIco = document.getElementById('play-ico');
+  var $prev = document.getElementById('prev');
+  var $next = document.getElementById('next');
+  var $shuffle = document.getElementById('shuffle');
+  var $loop = document.getElementById('loop');
+  var $loopBadge = document.getElementById('loop-badge');
+
+  var audio = document.createElement('audio');
+  audio.preload = 'none';          // 永不预加载
+  audio.volume = 1;
+
+  var tracks = [];
+  var cur = -1;                    // 当前曲目下标
+  var loopMode = 'off';
+  var shuffleOn = false;
+  var history = [];                // 随机模式下的播放足迹，供「上一首」回退
+  var seq = 0;                     // 请求序号，防止旧请求覆盖新播放
+  var seeking = false;
+
+  // ============================================================
+  // 工具
+  // ============================================================
+  function qs(o) {
+    return Object.keys(o).map(function (k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(o[k]);
+    }).join('&');
+  }
+  function nonce() {
+    var r = '';
+    if (window.crypto && window.crypto.getRandomValues) {
+      var a = new Uint32Array(2);
+      window.crypto.getRandomValues(a);
+      r = String(a[0]) + String(a[1]);
+    } else {
+      r = String(Math.floor(Math.random() * 1e9));
+    }
+    return 'C_APK_guanwang_' + Date.now() + '_' + r;
+  }
+  function fmt(s) {
+    s = parseInt(s, 10) || 0;
+    if (s <= 0) return '--:--';
+    return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+  }
+  // 页面是 HTTPS，直链是 HTTP，会被浏览器拦截；先升级协议再回退
+  function candidates(u) {
+    if (/^http:\/\//i.test(u)) return [u.replace(/^http:/i, 'https:'), u];
+    return [u];
+  }
+  function freeAudio() {
+    try {
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();               // 立即丢弃已缓冲数据
+    } catch (e) {}
+  }
+
+  // ============================================================
+  // 取直链：每次点击都实时换取，不缓存、不预取
+  // ============================================================
+  function resolveUrl(id) {
+    var i = 0;
+    function attempt() {
+      if (i >= FLAC_TAGS.length) return Promise.reject(new Error('无可用无损音源'));
+      var br = FLAC_TAGS[i++];
+      var url = URL_API + '?' + qs({
+        f: 'web', source: APK_SOURCE, from: 'PC',
+        type: 'convert_url_with_sign', br: br, rid: id, user: nonce(), _: Date.now()
+      });
+      return fetch(url, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+        .then(function (d) {
+          var dd = (d && d.data) || {};
+          var fmtv = String(dd.format || '').toLowerCase();
+          // 以实际返回格式为准，避免无损档位回落成有损
+          if (!dd.url || dd.url === 'None' || fmtv.indexOf('flac') === -1) {
+            if (i < FLAC_TAGS.length) return attempt();
+            throw new Error('该曲目无 FLAC 音源');
+          }
+          return dd.url;
+        })
+        .catch(function (e) {
+          if (i < FLAC_TAGS.length) return attempt();
+          throw e;
+        });
+    }
+    return Promise.resolve().then(attempt);
+  }
+
+  // ============================================================
+  // 渲染列表
+  // ============================================================
+  function paintRow(row, on) {
+    var idx = row.querySelector('.idx');
+    var t2 = row.querySelector('.t2');
+    t2.textContent = row.dataset.artist + (row.dataset.album ? ' · ' + row.dataset.album : '');
+    if (on) {
+      idx.innerHTML = '<span class="bars"><i></i><i></i><i></i></span>';
+    } else {
+      idx.textContent = row.dataset.no;
+    }
+  }
+
+  function render() {
+    $root.innerHTML = '';
+    var list = document.createElement('div');
+    list.className = 'list';
+    tracks.forEach(function (t, i) {
+      var row = document.createElement('div');
+      row.className = 'tr';
+      row.dataset.no = String(i + 1);
+      row.dataset.artist = t.artist || '未知歌手';
+      row.dataset.album = t.album || '';
+
+      var idx = document.createElement('div');
+      idx.className = 'idx';
+      idx.textContent = String(i + 1);
+
+      var meta = document.createElement('div');
+      meta.className = 'meta';
+      var t1 = document.createElement('div');
+      t1.className = 't1';
+      t1.textContent = t.title || '(无标题)';
+      var t2 = document.createElement('div');
+      t2.className = 't2';
+      t2.textContent = (t.artist || '未知歌手') + (t.album ? ' · ' + t.album : '');
+      meta.appendChild(t1);
+      meta.appendChild(t2);
+
+      var dur = document.createElement('div');
+      dur.className = 'dur';
+      dur.textContent = fmt(t.duration);
+
+      row.appendChild(idx);
+      row.appendChild(meta);
+      row.appendChild(dur);
+      row.onclick = function () { playIndex(i, true); };
+      list.appendChild(row);
+    });
+    $root.appendChild(list);
+    markActive();
+  }
+
+  function markActive() {
+    var rows = $root.querySelectorAll('.tr');
+    for (var i = 0; i < rows.length; i++) {
+      paintRow(rows[i], i === cur);
+    }
+  }
+
+  // ============================================================
+  // 播放控制
+  // ============================================================
+  function setPlayIcon(playing) {
+    $playIco.innerHTML = playing
+      ? '<path d="M6 5h4v14H6zm8 0h4v14h-4z"/>'
+      : '<path d="M8 5v14l11-7z"/>';
+  }
+
+  function playIndex(i, userPick) {
+    if (!tracks.length || i < 0 || i >= tracks.length) return;
+    if (userPick) history = [];
+    cur = i;
+    var t = tracks[i];
+    var my = ++seq;
+
+    markActive();
+    $nowT.textContent = (t.title || '') + ' — ' + (t.artist || '');
+    $nowTime.textContent = '--:-- / ' + fmt(t.duration);
+    $prog.value = 0;
+    freeAudio();                     // 换歌即释放上一首的缓冲
+    setPlayIcon(false);
+    $play.disabled = true;
+
+    resolveUrl(t.id).then(function (u) {
+      if (my !== seq) return;        // 期间已切歌，丢弃本次结果
+      $play.disabled = false;
+      var list = candidates(u), k = 0;
+      (function go() {
+        if (k >= list.length) { $nowT.textContent = '加载失败：' + (t.title || ''); return; }
+        audio.onerror = function () { k++; go(); };
+        audio.src = list[k++];
+        var p = audio.play();
+        if (p && p.catch) {
+          p.then(function () {
+            setPlayIcon(true);
+            $nowT.textContent = (t.title || '') + ' — ' + (t.artist || '');
+          }).catch(function () {
+            if (k < list.length) { go(); } else { $nowT.textContent = '播放被拦截，请再点一次'; }
+          });
+        }
+      })();
+    }).catch(function (e) {
+      if (my !== seq) return;
+      $play.disabled = false;
+      $nowT.textContent = '取源失败：' + (e.message || '') + ' — ' + (t.title || '');
+    });
+  }
+
+  function onNext(auto) {
+    var n = tracks.length;
+    if (!n) return;
+
+    if (auto) {
+      if (loopMode === 'one') { playIndex(cur, false); return; }
+      if (shuffleOn) {
+        var r = n === 1 ? 0 : Math.floor(Math.random() * n);
+        if (n > 1 && r === cur) r = (r + 1) % n;
+        history.push(cur);
+        playIndex(r, false);
+        return;
+      }
+      if (loopMode === 'off' && cur === n - 1) {
+        freeAudio(); setPlayIcon(false);
+        $nowT.textContent = '播放结束'; $prog.value = 0;
+        return;
+      }
+      playIndex((cur + 1) % n, false);
+      return;
+    }
+
+    // 手动下一首
+    if (shuffleOn) {
+      var r2 = n === 1 ? 0 : Math.floor(Math.random() * n);
+      if (n > 1 && r2 === cur) r2 = (r2 + 1) % n;
+      history.push(cur);
+      playIndex(r2, false);
+      return;
+    }
+    playIndex((cur + 1 + n) % n, false);
+  }
+
+  function onPrev() {
+    var n = tracks.length;
+    if (!n) return;
+    if (shuffleOn && history.length) { cur = history.pop(); playIndex(cur, false); return; }
+    playIndex((cur - 1 + n) % n, false);
+  }
+
+  // ============================================================
+  // 事件
+  // ============================================================
+  $play.onclick = function () {
+    if (cur < 0) { playIndex(0, true); return; }
+    if (!audio.getAttribute('src')) { playIndex(cur, false); return; }
+    if (audio.paused) { audio.play(); } else { audio.pause(); }
+  };
+  $next.onclick = function () { onNext(false); };
+  $prev.onclick = function () { onPrev(); };
+
+  audio.onplay  = function () { setPlayIcon(true); markActive(); };
+  audio.onpause = function () { setPlayIcon(false); };
+  audio.onended = function () { onNext(true); };
+  audio.ontimeupdate = function () {
+    if (seeking) return;
+    var d = audio.duration;
+    if (d && isFinite(d)) {
+      $prog.value = Math.round(audio.currentTime / d * 1000);
+      $nowTime.textContent = fmt(audio.currentTime) + ' / ' + fmt(d);
+    }
+  };
+  $prog.oninput = function () { seeking = true; };
+  $prog.onchange = function () {
+    seeking = false;
+    var d = audio.duration;
+    if (d && isFinite(d)) audio.currentTime = $prog.value / 1000 * d;
+  };
+
+  // 随机
+  $shuffle.onclick = function () {
+    shuffleOn = !shuffleOn;
+    $shuffle.classList.toggle('on', shuffleOn);
+    history = [];
+  };
+  // 循环模式：关 → 列表循环 → 单曲循环
+  function applyLoop() {
+    $loop.classList.toggle('on', loopMode !== 'off');
+    $loop.title = loopMode === 'off' ? '顺序播完即止'
+               : loopMode === 'all' ? '列表循环' : '单曲循环';
+    $loopBadge.style.display = loopMode === 'one' ? 'inline' : 'none';
+    $loop.querySelector('svg').style.opacity = loopMode === 'off' ? '.55' : '1';
+  }
+  $loop.onclick = function () {
+    loopMode = LOOP_MODES[(LOOP_MODES.indexOf(loopMode) + 1) % LOOP_MODES.length];
+    applyLoop();
+  };
+  applyLoop();
+
+  // 离开页面立即释放，避免后台占用
+  window.addEventListener('pagehide', function () { freeAudio(); });
+
+  // 键盘：空格播放暂停，左右切歌
+  document.addEventListener('keydown', function (e) {
+    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.code === 'Space') { e.preventDefault(); $play.click(); }
+    else if (e.code === 'ArrowRight') { $next.click(); }
+    else if (e.code === 'ArrowLeft') { $prev.click(); }
+  });
+
+  // ============================================================
+  // 载入歌单
+  // ============================================================
+  fetch(PLAYLIST, { cache: 'no-store' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (d) {
+      var pl = (d && d.playlist) || {};
+      tracks = (pl.tracks || []).filter(function (t) { return t && t.id; });
+      if (!tracks.length) throw new Error('歌单为空');
+      $name.textContent = pl.name || '我的歌单';
+      $sub.textContent = tracks.length + ' 首 · ' + String(pl.quality || 'flac').toUpperCase()
+                       + (pl.updatedAt ? ' · 更新于 ' + pl.updatedAt : '');
+      document.title = $name.textContent + ' · FLAC';
+      render();
+    })
+    .catch(function (e) {
+      $sub.textContent = '载入失败';
+      $root.innerHTML = '<div class="err">歌单载入失败：' + (e.message || '') +
+                        '<br>请确认同目录下存在 playlist.json</div>';
+    });
+})();
+</script>
+</body>
+</html>
