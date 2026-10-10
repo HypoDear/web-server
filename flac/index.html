@@ -95,8 +95,9 @@
   }
   .prog-row{grid-column:1/-1;display:flex;align-items:center;gap:9px}
   .info-row{
-    grid-column:1/-1;display:grid;grid-template-columns:minmax(120px,1fr) auto;
-    align-items:center;gap:18px;
+    grid-column:1/-1;
+    display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:center;gap:14px;
   }
   .now{display:flex;align-items:center;gap:10px;min-width:0;margin:0}
   .now-t{flex:1;min-width:0;font-size:13px;color:var(--ink);letter-spacing:.5px;
@@ -113,7 +114,7 @@
     background:var(--accent);cursor:pointer;border:none;
   }
   .prog::-moz-range-thumb{width:11px;height:11px;border:none;border-radius:50%;background:var(--accent);cursor:pointer}
-  .ctrls{display:flex;align-items:center;justify-content:flex-end;gap:15px;position:static}
+  .ctrls{display:flex;align-items:center;justify-content:center;gap:18px;position:static}
   .cb{
     background:none;border:none;color:var(--ink);cursor:pointer;padding:0;
     display:flex;align-items:center;justify-content:center;font-family:inherit;
@@ -122,10 +123,10 @@
   .cb:hover:not(:disabled){color:var(--accent)}
   .cb:disabled{opacity:.3;cursor:not-allowed}
   .cb.play svg{width:24px;height:24px}
-  .mode{position:static;display:flex;gap:13px;align-items:center;margin-left:4px}
+  .mode{position:static;display:flex;gap:14px;align-items:center;justify-content:flex-end}
   .mt{background:none;border:none;padding:0;cursor:pointer;color:var(--ink-dim);position:relative;
       display:flex;align-items:center;font-family:inherit}
-  .mt svg{width:17px;height:17px;fill:currentColor}
+  .mt svg{width:19px;height:19px;fill:currentColor}
   .mt:hover{color:var(--accent)}
   .mt.on{color:var(--accent)}
   .mt:disabled{opacity:.3;cursor:not-allowed}
@@ -142,18 +143,23 @@
     .stats{align-self:end}
     .search-wrap{align-self:start}
     .search{height:34px}
-    .info-row{gap:10px}
+    .info-row{gap:8px}
     .now{gap:6px}
-    .ctrls{gap:11px}
-    .mode{gap:10px;margin-left:1px}
+    .now-t{font-size:12.5px}
+    .ctrls{gap:15px}
+    .mode{gap:12px}
     .cb svg{width:18px;height:18px}
     .cb.play svg{width:23px;height:23px}
-    .mt svg{width:16px;height:16px}
+    .mt svg{width:18px;height:18px}
   }
   @media(max-width:360px){
-    .now-t{font-size:12px}
-    .ctrls{gap:8px}
-    .mode{gap:8px}
+    .info-row{gap:6px}
+    .now-t{font-size:11.5px}
+    .ctrls{gap:12px}
+    .mode{gap:10px}
+    .cb svg{width:17px;height:17px}
+    .cb.play svg{width:22px;height:22px}
+    .mt svg{width:17px;height:17px}
   }
   @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
 </style>
@@ -194,19 +200,19 @@
         <button class="cb" id="next" title="下一首" aria-label="下一首">
           <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
         </button>
-        <span class="mode">
-          <button class="mt" id="shuffle" title="随机播放" aria-label="随机播放">
-            <svg viewBox="0 0 24 24"><path d="M10.6 9.2L9.2 7.8 5 12l4.2 4.2 1.4-1.4L8.8 13H11c1.1 0 1.7-.4 2.6-1.4l2.2-2.4c.6-.7 1-1 1.8-1H21v2h-3.2c-.2 0-.5.2-.8.5l-2.3 2.5C13.6 10.3 12.6 11 11 11H9.7l1 1.1zM5 8.7L6.4 10 8.8 7.5 7.4 6.1zm9 5.9l-1.4-1.4-1.4 1.5c.4.4.7.6 1.2.6zM21 13v2h-3.2c-1.1 0-1.7-.4-2.6-1.4l-.4-.4 1.4-1.5.7.8c.3.3.5.5.9.5z"/></svg>
-          </button>
-          <button class="mt" id="loop" title="循环模式" aria-label="循环模式">
-            <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-            <span class="badge" id="loop-badge" style="display:none">1</span>
-          </button>
-          <button class="mt" id="locate" title="定位到当前播放" aria-label="定位到当前播放" disabled>
-            <svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm8.94-3a9 9 0 0 0-7.94-7.94V1h-2v2.06A9 9 0 0 0 3.06 11H1v2h2.06A9 9 0 0 0 11 20.94V23h2v-2.06A9 9 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
-          </button>
-        </span>
       </div>
+      <span class="mode">
+        <button class="mt" id="shuffle" title="随机播放" aria-label="随机播放">
+          <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+        </button>
+        <button class="mt" id="loop" title="循环模式" aria-label="循环模式">
+          <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+          <span class="badge" id="loop-badge" style="display:none">1</span>
+        </button>
+        <button class="mt" id="locate" title="定位到当前播放" aria-label="定位到当前播放" disabled>
+          <svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm8.94-3a9 9 0 0 0-7.94-7.94V1h-2v2.06A9 9 0 0 0 3.06 11H1v2h2.06A9 9 0 0 0 11 20.94V23h2v-2.06A9 9 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
+        </button>
+      </span>
     </div>
   </div>
 </div>
