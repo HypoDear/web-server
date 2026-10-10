@@ -80,7 +80,7 @@
   .loading,.err{padding:24px 2px;font-size:14px;color:var(--ink-soft);text-align:center}
   .err{color:#b4472f}
 
-  /* 紧凑底部播放条：进度条贴顶，信息与控制同一行 */
+  /* 底部播放条：进度条独立一行内嵌，信息与控制同行的第二行 */
   .bar{
     position:fixed;left:0;right:0;bottom:0;height:calc(var(--bar-h) + env(safe-area-inset-bottom));
     background:rgba(251,248,241,.97);border-top:1px solid var(--line);
@@ -89,15 +89,22 @@
     display:flex;align-items:center;z-index:20;
   }
   .bar-in{
-    position:relative;max-width:760px;margin:0 auto;width:100%;height:var(--bar-h);
-    display:grid;grid-template-columns:minmax(120px,1fr) auto;align-items:center;gap:18px;
+    max-width:760px;margin:0 auto;width:100%;height:var(--bar-h);
+    display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;
+    row-gap:2px;align-content:center;padding:4px 0;
+  }
+  .prog-row{grid-column:1/-1;display:flex;align-items:center;gap:9px}
+  .info-row{
+    grid-column:1/-1;display:grid;grid-template-columns:minmax(120px,1fr) auto;
+    align-items:center;gap:18px;
   }
   .now{display:flex;align-items:center;gap:10px;min-width:0;margin:0}
   .now-t{flex:1;min-width:0;font-size:13px;color:var(--ink);letter-spacing:.5px;
          white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .time{flex:0 0 auto;font-size:11.5px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+  .time.cur{color:var(--ink-soft)}
   .prog{
-    position:absolute;left:0;right:0;top:-7px;
+    flex:1;min-width:0;
     -webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;
     background:#ddd4c4;outline:none;margin:0;cursor:pointer;
   }
@@ -127,7 +134,7 @@
     background:var(--accent);color:#fff;border-radius:5px;padding:1px 3px;font-family:var(--font);
   }
   @media(max-width:600px){
-    :root{--top-h:88px;--bar-h:62px}
+    :root{--top-h:88px;--bar-h:66px}
     .top-in{
       height:var(--top-h);grid-template-columns:1fr;grid-template-rows:30px 38px;
       gap:4px;padding:8px 0;
@@ -135,9 +142,8 @@
     .stats{align-self:end}
     .search-wrap{align-self:start}
     .search{height:34px}
-    .bar-in{gap:10px}
+    .info-row{gap:10px}
     .now{gap:6px}
-    .time{display:none}
     .ctrls{gap:11px}
     .mode{gap:10px;margin-left:1px}
     .cb svg{width:18px;height:18px}
@@ -169,33 +175,38 @@
 
 <div class="bar">
   <div class="bar-in">
-    <div class="now">
-      <div class="now-t" id="now-t">未播放</div>
-      <div class="time" id="now-time">--:-- / --:--</div>
+    <div class="prog-row">
+      <span class="time cur" id="now-cur">--:--</span>
+      <input class="prog" id="prog" type="range" min="0" max="1000" value="0" step="1" aria-label="播放进度">
+      <span class="time" id="now-total">--:--</span>
     </div>
-    <input class="prog" id="prog" type="range" min="0" max="1000" value="0" step="1" aria-label="播放进度">
-    <div class="ctrls">
-      <button class="cb" id="prev" title="上一首" aria-label="上一首">
-        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-      </button>
-      <button class="cb play" id="play" title="播放 / 暂停" aria-label="播放或暂停">
-        <svg id="play-ico" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <button class="cb" id="next" title="下一首" aria-label="下一首">
-        <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
-      </button>
-      <span class="mode">
-        <button class="mt" id="shuffle" title="随机播放" aria-label="随机播放">
-          <svg viewBox="0 0 24 24"><path d="M10.6 9.2L9.2 7.8 5 12l4.2 4.2 1.4-1.4L8.8 13H11c1.1 0 1.7-.4 2.6-1.4l2.2-2.4c.6-.7 1-1 1.8-1H21v2h-3.2c-.2 0-.5.2-.8.5l-2.3 2.5C13.6 10.3 12.6 11 11 11H9.7l1 1.1zM5 8.7L6.4 10 8.8 7.5 7.4 6.1zm9 5.9l-1.4-1.4-1.4 1.5c.4.4.7.6 1.2.6zM21 13v2h-3.2c-1.1 0-1.7-.4-2.6-1.4l-.4-.4 1.4-1.5.7.8c.3.3.5.5.9.5z"/></svg>
+    <div class="info-row">
+      <div class="now">
+        <div class="now-t" id="now-t">未播放</div>
+      </div>
+      <div class="ctrls">
+        <button class="cb" id="prev" title="上一首" aria-label="上一首">
+          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
         </button>
-        <button class="mt" id="loop" title="循环模式" aria-label="循环模式">
-          <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-          <span class="badge" id="loop-badge" style="display:none">1</span>
+        <button class="cb play" id="play" title="播放 / 暂停" aria-label="播放或暂停">
+          <svg id="play-ico" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button class="mt" id="locate" title="定位到当前播放" aria-label="定位到当前播放" disabled>
-          <svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm8.94-3a9 9 0 0 0-7.94-7.94V1h-2v2.06A9 9 0 0 0 3.06 11H1v2h2.06A9 9 0 0 0 11 20.94V23h2v-2.06A9 9 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
+        <button class="cb" id="next" title="下一首" aria-label="下一首">
+          <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
         </button>
-      </span>
+        <span class="mode">
+          <button class="mt" id="shuffle" title="随机播放" aria-label="随机播放">
+            <svg viewBox="0 0 24 24"><path d="M10.6 9.2L9.2 7.8 5 12l4.2 4.2 1.4-1.4L8.8 13H11c1.1 0 1.7-.4 2.6-1.4l2.2-2.4c.6-.7 1-1 1.8-1H21v2h-3.2c-.2 0-.5.2-.8.5l-2.3 2.5C13.6 10.3 12.6 11 11 11H9.7l1 1.1zM5 8.7L6.4 10 8.8 7.5 7.4 6.1zm9 5.9l-1.4-1.4-1.4 1.5c.4.4.7.6 1.2.6zM21 13v2h-3.2c-1.1 0-1.7-.4-2.6-1.4l-.4-.4 1.4-1.5.7.8c.3.3.5.5.9.5z"/></svg>
+          </button>
+          <button class="mt" id="loop" title="循环模式" aria-label="循环模式">
+            <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+            <span class="badge" id="loop-badge" style="display:none">1</span>
+          </button>
+          <button class="mt" id="locate" title="定位到当前播放" aria-label="定位到当前播放" disabled>
+            <svg viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm8.94-3a9 9 0 0 0-7.94-7.94V1h-2v2.06A9 9 0 0 0 3.06 11H1v2h2.06A9 9 0 0 0 11 20.94V23h2v-2.06A9 9 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>
+          </button>
+        </span>
+      </div>
     </div>
   </div>
 </div>
@@ -214,7 +225,8 @@
   var $stats = document.getElementById('pl-stats');
   var $search = document.getElementById('search');
   var $nowT = document.getElementById('now-t');
-  var $nowTime = document.getElementById('now-time');
+  var $nowCur = document.getElementById('now-cur');
+  var $nowTotal = document.getElementById('now-total');
   var $prog = document.getElementById('prog');
   var $play = document.getElementById('play');
   var $playIco = document.getElementById('play-ico');
@@ -228,6 +240,9 @@
   var audio = document.createElement('audio');
   audio.preload = 'none';
   audio.volume = 1;
+  audio.setAttribute('aria-hidden', 'true');
+  audio.style.display = 'none';
+  document.body.appendChild(audio);
 
   var tracks = [];
   var cur = -1;
@@ -322,11 +337,14 @@
     return out;
   }
 
+  var droppedCount = 0;
+
   function updateStats(shown) {
     var total = tracks.length;
     var lead = query ? ('找到 ' + shown + ' / 共 ' + total + ' 首') : (total + ' 首');
     $stats.textContent = lead + ' · ' + String(playlistMeta.quality || 'flac').toUpperCase()
-      + (playlistMeta.updatedAt ? ' · 更新于 ' + playlistMeta.updatedAt : '');
+      + (playlistMeta.updatedAt ? ' · 更新于 ' + playlistMeta.updatedAt : '')
+      + (droppedCount ? ' · 跳过 ' + droppedCount + ' 条无效项' : '');
   }
 
   function render() {
@@ -419,35 +437,52 @@
 
     markActive();
     $nowT.textContent = label(t);
-    $nowTime.textContent = '--:-- / ' + fmt(t.duration);
+    $nowCur.textContent = '--:--';
+    $nowTotal.textContent = fmt(t.duration);
     $prog.value = 0;
     freeAudio();
     setPlayIcon(false);
     $play.disabled = true;
 
+    function fail(msg) {
+      if (my !== seq) return;
+      $play.disabled = false;
+      $nowT.textContent = msg + ' — ' + (t.title || '');
+      setTabTitle(null);
+    }
+
     resolveUrl(t.id).then(function (u) {
       if (my !== seq) return;
-      $play.disabled = false;
       var list = candidates(u), k = 0;
-      (function go() {
-        if (k >= list.length) { $nowT.textContent = '加载失败：' + (t.title || ''); return; }
-        audio.onerror = function () { k++; go(); };
-        audio.src = list[k++];
+
+      audio.onerror = function () {
+        if (my !== seq) return;
+        k++;
+        tryNext();
+      };
+
+      function tryNext() {
+        if (my !== seq) return;
+        if (k >= list.length) { fail('加载失败'); return; }
+        audio.src = list[k];
         var p = audio.play();
-        if (p && p.catch) {
-          p.then(function () {
-            setPlayIcon(true);
-            $nowT.textContent = label(t);
-            setTabTitle(t);
-          }).catch(function () {
-            if (k < list.length) { go(); } else { $nowT.textContent = '播放被拦截，请再点一次'; }
-          });
-        }
-      })();
+        if (!p || !p.then) return;
+        p.then(function () {
+          if (my !== seq) return;
+          $play.disabled = false;
+          setPlayIcon(true);
+          $nowT.textContent = label(t);
+          setTabTitle(t);
+          syncMedia(t);
+        }).catch(function () {
+          if (my !== seq) return;
+          if (k + 1 < list.length) { k++; tryNext(); }
+          else fail('播放被拦截，请再点一次');
+        });
+      }
+      tryNext();
     }).catch(function (e) {
-      if (my !== seq) return;
-      $play.disabled = false;
-      $nowT.textContent = '取源失败：' + (e.message || '') + ' — ' + (t.title || '');
+      fail('取源失败：' + (e.message || ''));
     });
   }
 
@@ -494,7 +529,12 @@
   $play.onclick = function () {
     if (cur < 0) { playIndex(0, true); return; }
     if (!audio.getAttribute('src')) { playIndex(cur, false); return; }
-    if (audio.paused) { audio.play(); } else { audio.pause(); }
+    if (audio.paused) {
+      var p = audio.play();
+      if (p && p.catch) p.catch(function () {});
+    } else {
+      audio.pause();
+    }
   };
   $next.onclick = function () { onNext(false); };
   $prev.onclick = function () { onPrev(); };
@@ -503,16 +543,36 @@
   audio.onplay  = function () {
     setPlayIcon(true);
     markActive();
-    if (cur >= 0) setTabTitle(tracks[cur]);
+    if (cur >= 0) { setTabTitle(tracks[cur]); syncMedia(tracks[cur]); }
   };
   audio.onpause = function () { setPlayIcon(false); };
+
+  function syncMedia(t) {
+    if (!t || !('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: t.title || '',
+        artist: t.artist || '',
+        album: t.album || ''
+      });
+    } catch (e) {}
+  }
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler && navigator.mediaSession.setActionHandler('play', function () {
+      var p = audio.play(); if (p && p.catch) p.catch(function () {});
+    });
+    navigator.mediaSession.setActionHandler && navigator.mediaSession.setActionHandler('pause', function () { audio.pause(); });
+    navigator.mediaSession.setActionHandler && navigator.mediaSession.setActionHandler('previoustrack', function () { onPrev(); });
+    navigator.mediaSession.setActionHandler && navigator.mediaSession.setActionHandler('nexttrack', function () { onNext(false); });
+  }
   audio.onended = function () { onNext(true); };
   audio.ontimeupdate = function () {
     if (seeking) return;
     var d = audio.duration;
     if (d && isFinite(d)) {
       $prog.value = Math.round(audio.currentTime / d * 1000);
-      $nowTime.textContent = fmt(audio.currentTime) + ' / ' + fmt(d);
+      $nowCur.textContent = fmt(audio.currentTime);
+      $nowTotal.textContent = fmt(d);
     }
   };
   $prog.oninput = function () { seeking = true; };
@@ -569,9 +629,24 @@
     })
     .then(function (d) {
       var pl = (d && d.playlist) || {};
-      tracks = (pl.tracks || []).filter(function (t) { return t && t.id; });
-      if (!tracks.length) throw new Error('歌单为空');
+      var raw = pl.tracks || [];
+      var dropped = 0;
+      tracks = [];
+      for (var i = 0; i < raw.length; i++) {
+        var t = raw[i];
+        if (!t) { dropped++; continue; }
+        var id = String(t.id == null ? '' : t.id).trim();
+        if (!/^\d+$/.test(id)) { dropped++; continue; }
+        t.id = id;
+        if (t.duration != null) {
+          var n = parseInt(t.duration, 10);
+          t.duration = isFinite(n) && n > 0 ? n : null;
+        }
+        tracks.push(t);
+      }
+      if (!tracks.length) throw new Error('歌单为空或格式有误');
       playlistMeta = pl;
+      droppedCount = dropped;
       baseTitle = 'FLAC 歌单';
       setTabTitle(null);
       render();
