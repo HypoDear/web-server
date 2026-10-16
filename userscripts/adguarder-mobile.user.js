@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         去广告
 // @namespace    https://github.com/HypoDear/web-server
-// @version      2.1
+// @version      2.2
 // @description  全站屏蔽谷歌广告；小红书额外拦截登录遮罩、解锁滚动、阻止唤起 App
 // @author       HypoDear
 // @match        *://*/*
