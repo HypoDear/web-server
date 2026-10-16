@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="个人用户脚本合集 · 点击即可安装到 Userscripts">
+<meta name="theme-color" content="#f4efe4">
+<title>脚本合集</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27><rect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23f4efe4%27/><g fill=%27%231f6f8b%27><rect x=%276%27 y=%2718%27 width=%274%27 height=%279%27 rx=%272%27/><rect x=%2714%27 y=%2712%27 width=%274%27 height=%2715%27 rx=%272%27/><rect x=%2722%27 y=%275%27 width=%274%27 height=%2722%27 rx=%272%27/></g></svg>">
+<style>
+:root{
+  --paper:#f4efe4; --paper2:#fbf8f1; --paper3:#fffdf8;
+  --ink:#2f2a24; --ink-soft:#7d7265; --ink-dim:#a39887;
+  --line:#d8cfbe; --line-soft:#e6ddcd;
+  --accent:#1f6f8b; --accent-soft:#eaf2f5;
+  --radius:12px;
+  --font:"Kaiti SC","STKaiti",KaiTi,"Noto Serif SC","Songti SC",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--font);
+  display:flex;flex-direction:column;align-items:center;
+  padding:max(32px,env(safe-area-inset-top)) 20px max(32px,env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;line-height:1.6;
+}
+.wrap{width:100%;max-width:520px}
+header{text-align:center;margin-bottom:24px}
+h1{font-size:26px;font-weight:600;letter-spacing:6px;margin:0 0 8px}
+header p{margin:0;color:var(--ink-soft);font-size:13px;letter-spacing:1px}
+.list{display:flex;flex-direction:column;gap:12px}
+.card{
+  background:var(--paper2);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;transition:border-color .15s,box-shadow .15s,background .15s;
+}
+.card:hover{background:var(--paper3);border-color:var(--accent);box-shadow:0 4px 14px rgba(47,42,36,.08)}
+.card .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card h2{margin:0;font-size:17px;font-weight:600;letter-spacing:2px}
+.ver{
+  font-size:11px;letter-spacing:.5px;color:var(--accent);
+  background:var(--accent-soft);border:1px solid #cfe2e9;border-radius:999px;
+  padding:1px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.desc{margin:6px 0 0;font-size:13px;color:var(--ink-soft)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{
+  font-size:11px;color:var(--ink-soft);background:var(--paper);
+  border:1px solid var(--line-soft);border-radius:6px;padding:1px 7px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.actions{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:inherit;font-size:13.5px;letter-spacing:1px;cursor:pointer;
+  border-radius:9px;padding:8px 16px;text-decoration:none;
+  border:1px solid var(--accent);background:var(--accent);color:#fff;
+  transition:opacity .15s,background .15s;
+}
+.btn:hover{opacity:.88}
+.btn.ghost{background:transparent;color:var(--accent);border-color:var(--line)}
+.btn.ghost:hover{background:var(--accent-soft);border-color:var(--accent);opacity:1}
+.btn svg{width:15px;height:15px;fill:currentColor;flex:0 0 auto}
+.state{
+  text-align:center;color:var(--ink-soft);font-size:13px;
+  padding:28px 12px;border:1px dashed var(--line);border-radius:var(--radius);
+  background:var(--paper2);
+}
+.state.err{color:#a3562f;border-color:#e0c3b0}
+.hint{
+  margin-top:26px;padding:14px 16px;border:1px solid var(--line-soft);
+  border-radius:var(--radius);background:var(--paper2);
+  font-size:12px;color:var(--ink-soft);line-height:1.9;
+}
+.hint b{color:var(--ink);font-weight:600}
+.hint ol{margin:6px 0 0;padding-left:1.25em}
+footer{margin-top:26px;text-align:center;font-size:11.5px;color:var(--ink-dim);letter-spacing:.5px;line-height:1.9}
+footer a{color:var(--ink-dim)}
+footer a:hover{color:var(--accent)}
+@media(max-width:360px){.card{padding:14px}.card h2{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>脚本合集</h1>
+    <p>点开即装 · 自动检查更新</p>
+  </header>
+
+  <div class="list" id="list">
+    <div class="state" id="state">正在读取脚本列表…</div>
+  </div>
+
+  <div class="hint">
+    <b>怎么装到 iOS / iPadOS</b>
+    <ol>
+      <li>装好 <b>Userscripts</b> App，并在 设置 → Safari → 扩展 里开启</li>
+      <li>回到本页，点某个脚本的「安装」</li>
+      <li>点 Safari 地址栏左侧的扩展图标，在弹窗里确认安装</li>
+    </ol>
+    <b style="display:block;margin-top:10px">关于自动更新</b>
+    脚本已内置 <code>@version</code> 与 <code>@updateURL</code>。但 Userscripts 的更新检查<b>默认是关闭的</b>，
+    需要到 App 的「设置 → Scripts Update Check Interval」里选一个间隔（如 1 天）；
+    之后它会在打开弹窗时自动比对版本，发现新版会在更新图标上显示小红点，再点一下即可应用。
+  </div>
+
+  <footer>
+    <a href="../">← 返回应用合集</a> ·
+    <a href="https://github.com/HypoDear/web-server/tree/main/userscripts">在 GitHub 上查看</a>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var REPO = 'HypoDear/web-server';
+  var BRANCH = 'main';
+  var DIR = 'userscripts';
+
+  function rawUrl(path) {
+    return 'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/' + encodeURI(path);
+  }
+  function cdnUrl(path) {
+    return 'https://cdn.jsdelivr.net/gh/' + REPO + '@' + BRANCH + '/' + encodeURI(path);
+  }
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function setState(msg, isErr) {
+    var list = document.getElementById('list');
+    list.innerHTML = '<div class="state' + (isErr ? ' err' : '') + '">' + esc(msg) + '</div>';
+  }
+
+  // 目录清单：优先 GitHub API（新增脚本立刻可见），
+  // 限流时退回 jsDelivr（无速率限制，但分支清单可能缓存最长达 12h）
+  function listScriptPaths() {
+    return fetch('https://api.github.com/repos/' + REPO + '/contents/' + DIR + '?ref=' + BRANCH)
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(0); })
+      .then(function (j) {
+        if (!Array.isArray(j)) return Promise.reject(0);
+        return j.filter(function (f) { return f.type === 'file'; })
+                .map(function (f) { return f.path; });
+      })
+      .catch(function () {
+        var jsdelivr = 'https://data.jsdelivr.com/v1/packages/gh/' + REPO + '@' + BRANCH + '?structure=flat';
+        return fetch(jsdelivr)
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+          .then(function (j) {
+            if (!j || !Array.isArray(j.files)) throw new Error('unexpected response');
+            return j.files.map(function (f) { return String(f.name).replace(/^\//, ''); });
+          });
+      });
+  }
+
+  // 解析 UserScript 元数据块
+  function parseMeta(text) {
+    var block = text.match(/==UserScript==([\s\S]*?)==\/UserScript==/);
+    if (!block) return null;
+    var meta = {}, order = [];
+    block[1].split(/\r?\n/).forEach(function (line) {
+      var m = line.match(/^\s*\/\/\s*@([\w-]+)[ \t]+(.+?)\s*$/);
+      if (!m) return;
+      var k = m[1], v = m[2];
+      if (!meta[k]) { meta[k] = []; order.push(k); }
+      meta[k].push(v);
+    });
+    return meta.name ? meta : null;
+  }
+
+  function fetchText(path) {
+    return fetch(rawUrl(path))
+      .then(function (r) { return r.ok ? r.text() : Promise.reject(0); })
+      .catch(function () {
+        return fetch(cdnUrl(path)).then(function (r) {
+          return r.ok ? r.text() : Promise.reject(new Error('HTTP ' + r.status));
+        });
+      });
+  }
+
+  function buildCard(script) {
+    var m = script.meta;
+    var name = m.name[0];
+    var version = m.version ? m.version[0] : '';
+    var desc = m.description ? m.description[0] : '';
+    var matches = (m.match || []).concat(m.include || []);
+    var install = rawUrl(script.path);
+
+    var card = document.createElement('article');
+    card.className = 'card';
+
+    var html = '<div class="top"><h2>' + esc(name) + '</h2>';
+    if (version) html += '<span class="ver">v' + esc(version) + '</span>';
+    html += '</div>';
+    if (desc) html += '<p class="desc">' + esc(desc) + '</p>';
+
+    if (matches.length) {
+      html += '<div class="tags">';
+      matches.slice(0, 6).forEach(function (p) {
+        var label = p === '*://*/*' ? '全站' : p;
+        html += '<span class="tag" title="' + esc(p) + '">' + esc(label) + '</span>';
+      });
+      if (matches.length > 6) {
+        html += '<span class="tag">+' + (matches.length - 6) + '</span>';
+      }
+      html += '</div>';
+    }
+
+    html += '<div class="actions">' +
+      '<a class="btn" href="' + esc(install) + '" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>安装</a>' +
+      '<button class="btn ghost" type="button" data-copy="' + esc(install) + '">复制链接</button>' +
+      '<a class="btn ghost" href="https://github.com/' + REPO + '/blob/' + BRANCH + '/' + esc(script.path) +
+      '" target="_blank" rel="noopener">源码</a>' +
+      '</div>';
+
+    card.innerHTML = html;
+    return card;
+  }
+
+  function render(scripts) {
+    var list = document.getElementById('list');
+    if (!scripts.length) {
+      setState('目录里还没有脚本。把 .user.js 放进 userscripts/ 即可自动出现。');
+      return;
+    }
+    list.innerHTML = '';
+    scripts.forEach(function (s) { list.appendChild(buildCard(s)); });
+  }
+
+  function load() {
+    setState('正在读取脚本列表…');
+    listScriptPaths()
+      .then(function (paths) {
+        return paths.filter(function (p) {
+          return p.indexOf(DIR + '/') === 0 &&
+                 p.slice(-8) === '.user.js' &&
+                 p.indexOf('/', DIR.length + 1) === -1;
+        });
+      })
+      .then(function (paths) {
+        return Promise.all(paths.map(function (p) {
+          return fetchText(p).then(
+            function (text) {
+              var meta = parseMeta(text);
+              return meta ? { path: p, meta: meta } : null;
+            },
+            function () { return null; }
+          );
+        }));
+      })
+      .then(function (items) {
+        var scripts = items.filter(Boolean).sort(function (a, b) {
+          return a.meta.name[0].localeCompare(b.meta.name[0], 'zh');
+        });
+        render(scripts);
+      })
+      .catch(function (err) {
+        setState('读取失败：' + (err && err.message ? err.message : '网络错误') +
+                 '。可直接去 GitHub 目录查看。', true);
+      });
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('[data-copy]');
+    if (!btn) return;
+    var url = btn.getAttribute('data-copy');
+    var done = function () {
+      var old = btn.textContent;
+      btn.textContent = '已复制';
+      setTimeout(function () { btn.textContent = old; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, function () {});
+    }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
