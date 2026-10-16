@@ -68,6 +68,10 @@ header p{margin:0;color:var(--ink-soft);font-size:13px;letter-spacing:1px}
   background:var(--paper2);
 }
 .state.err{color:#a3562f;border-color:#e0c3b0}
+.stale{
+  font-size:12px;color:#7a6a34;background:#fdf6e0;border:1px solid #e8dcb0;
+  border-radius:9px;padding:8px 12px;line-height:1.6;
+}
 .hint{
   margin-top:26px;padding:14px 16px;border:1px solid var(--line-soft);
   border-radius:var(--radius);background:var(--paper2);
@@ -137,23 +141,71 @@ footer a:hover{color:var(--accent)}
     list.innerHTML = '<div class="state' + (isErr ? ' err' : '') + '">' + esc(msg) + '</div>';
   }
 
-  // 目录清单：优先 GitHub API（新增脚本立刻可见），
-  // 限流时退回 jsDelivr（无速率限制，但分支清单可能缓存最长达 12h）
-  function listScriptPaths() {
+  // 目录清单按顺序尝试三条路：
+  //   1) GitHub API —— 最新，但未登录限 60 次/小时/IP（本页每次加载只占 1 次）
+  //   2) jsDelivr —— 不限流，但分支清单最长缓存 12h，新脚本可能看不到
+  //   3) 浏览器本地缓存的上次成功结果 —— 前两条都不可用时仍能显示
+  var CACHE_KEY = 'userscripts_list_v1';
+
+  function readCache() {
+    try {
+      var raw = localStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      return obj && obj.paths && obj.paths.length ? obj : null;
+    } catch (e) { return null; }
+  }
+
+  function writeCache(paths) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ paths: paths, at: Date.now() }));
+    } catch (e) { /* 隐私模式等场景写入失败，忽略 */ }
+  }
+
+  function listFromGitHub() {
     return fetch('https://api.github.com/repos/' + REPO + '/contents/' + DIR + '?ref=' + BRANCH)
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(0); })
+      .then(function (r) {
+        return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status));
+      })
       .then(function (j) {
-        if (!Array.isArray(j)) return Promise.reject(0);
+        if (!Array.isArray(j)) throw new Error('unexpected response');
         return j.filter(function (f) { return f.type === 'file'; })
                 .map(function (f) { return f.path; });
+      });
+  }
+
+  function listFromJsdelivr() {
+    var url = 'https://data.jsdelivr.com/v1/packages/gh/' + REPO + '@' + BRANCH + '?structure=flat';
+    return fetch(url)
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+      .then(function (j) {
+        if (!j || !Array.isArray(j.files)) throw new Error('unexpected response');
+        return j.files.map(function (f) { return String(f.name).replace(/^\//, ''); });
+      });
+  }
+
+  function isScript(p) {
+    return p.indexOf(DIR + '/') === 0 &&
+           p.slice(-8) === '.user.js' &&
+           p.indexOf('/', DIR.length + 1) === -1;
+  }
+
+  function listScriptPaths() {
+    return listFromGitHub()
+      .then(function (paths) {
+        writeCache(paths);
+        return { paths: paths, stale: false };
       })
       .catch(function () {
-        var jsdelivr = 'https://data.jsdelivr.com/v1/packages/gh/' + REPO + '@' + BRANCH + '?structure=flat';
-        return fetch(jsdelivr)
-          .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
-          .then(function (j) {
-            if (!j || !Array.isArray(j.files)) throw new Error('unexpected response');
-            return j.files.map(function (f) { return String(f.name).replace(/^\//, ''); });
+        return listFromJsdelivr()
+          .then(function (paths) {
+            if (paths.some(isScript)) return { paths: paths, stale: false };
+            throw new Error('jsdelivr listing stale');
+          })
+          .catch(function () {
+            var cached = readCache();
+            if (cached) return { paths: cached.paths, stale: true };
+            throw new Error('目录读取失败（GitHub API 可能已限流）');
           });
       });
   }
@@ -223,27 +275,37 @@ footer a:hover{color:var(--accent)}
     return card;
   }
 
-  function render(scripts) {
+  function render(scripts, stale, failed) {
     var list = document.getElementById('list');
     if (!scripts.length) {
-      setState('目录里还没有脚本。把 .user.js 放进 userscripts/ 即可自动出现。');
+      if (failed) {
+        setState('脚本元数据读取失败（可能是网络问题），请刷新重试。', true);
+      } else {
+        setState('目录里还没有脚本。把 .user.js 放进 userscripts/ 即可自动出现。');
+      }
       return;
     }
     list.innerHTML = '';
+    if (stale) {
+      var note = document.createElement('div');
+      note.className = 'stale';
+      note.textContent = '当前显示的是上次缓存的列表（GitHub 接口暂时不可用），可能有新脚本没显示出来。';
+      list.appendChild(note);
+    }
+    if (failed) {
+      var warn = document.createElement('div');
+      warn.className = 'stale';
+      warn.textContent = '有脚本的元数据没能读取成功，可能显示不全，刷新可重试。';
+      list.appendChild(warn);
+    }
     scripts.forEach(function (s) { list.appendChild(buildCard(s)); });
   }
 
   function load() {
     setState('正在读取脚本列表…');
     listScriptPaths()
-      .then(function (paths) {
-        return paths.filter(function (p) {
-          return p.indexOf(DIR + '/') === 0 &&
-                 p.slice(-8) === '.user.js' &&
-                 p.indexOf('/', DIR.length + 1) === -1;
-        });
-      })
-      .then(function (paths) {
+      .then(function (res) {
+        var paths = res.paths.filter(isScript);
         return Promise.all(paths.map(function (p) {
           return fetchText(p).then(
             function (text) {
@@ -252,13 +314,15 @@ footer a:hover{color:var(--accent)}
             },
             function () { return null; }
           );
-        }));
+        })).then(function (items) {
+          return { items: items, stale: res.stale };
+        });
       })
-      .then(function (items) {
-        var scripts = items.filter(Boolean).sort(function (a, b) {
+      .then(function (res) {
+        var scripts = res.items.filter(Boolean).sort(function (a, b) {
           return a.meta.name[0].localeCompare(b.meta.name[0], 'zh');
         });
-        render(scripts);
+        render(scripts, res.stale, scripts.length < res.items.length);
       })
       .catch(function (err) {
         setState('读取失败：' + (err && err.message ? err.message : '网络错误') +
