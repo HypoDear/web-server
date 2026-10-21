@@ -7,6 +7,12 @@
 <meta name="theme-color" content="#f4efe4">
 <title>脚本合集</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27><rect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23f4efe4%27/><g fill=%27%231f6f8b%27><rect x=%276%27 y=%2718%27 width=%274%27 height=%279%27 rx=%272%27/><rect x=%2714%27 y=%2712%27 width=%274%27 height=%2715%27 rx=%272%27/><rect x=%2722%27 y=%275%27 width=%274%27 height=%2722%27 rx=%272%27/></g></svg>">
+<script>
+/* 主题引导：首帧前恢复上次手动选择的深夜模式；默认保持白天 */
+(function(){try{
+  if(localStorage.getItem('hd-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');
+}catch(e){}})();
+</script>
 <style>
 :root{
   --paper:#f4efe4; --paper2:#fbf8f1; --paper3:#fffdf8;
@@ -16,6 +22,37 @@
   --radius:12px;
   --font:"Kaiti SC","STKaiti",KaiTi,"Noto Serif SC","Songti SC",Georgia,"Times New Roman",serif;
 }
+[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#15171c; --paper2:#1c1f26; --ink:#e8e4dc; --ink-soft:#9aa0ab;
+  --line:#2e333d; --accent:#5fb3d0; --bad:#e0796e; --good:#5ec08c;
+  --paper3:#20242b; --ink-dim:#71798a; --line-soft:#272c34; --accent-soft:#1b3a47;
+}
+[data-theme="dark"] .ico{background:#1b3a47;border-color:#2b5668}
+
+/* ===== 主题切换开关 ===== */
+.thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  flex:none;width:30px;height:30px;padding:0;cursor:pointer;
+  border:1px solid var(--thm-line,var(--line));border-radius:999px;
+  background:var(--thm-bg,var(--paper2));color:var(--thm-fg,var(--ink-soft,var(--ink)));
+  -webkit-tap-highlight-color:transparent;
+  transition:background .2s,border-color .2s,color .2s}
+.thm:hover{color:var(--thm-fg-on,var(--accent));border-color:var(--thm-line-on,var(--accent))}
+.thm:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.thm svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.thm .sun{transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
+.thm .moon{position:absolute;transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
+/* 浅色：显示月亮（点击去深色）；深色：显示太阳（点击回浅色） */
+.thm .sun{opacity:0;transform:rotate(-70deg) scale(.6)}
+.thm .moon{opacity:1;transform:none}
+[data-theme="dark"] .thm .sun{opacity:1;transform:none}
+[data-theme="dark"] .thm .moon{opacity:0;transform:rotate(70deg) scale(.6)}
+@media(prefers-reduced-motion:reduce){.thm,.thm svg,.thm .sun,.thm .moon{transition-duration:.01ms!important}}
+.wrap{position:relative}
+.wrap>.thm{position:absolute;right:0;top:2px;background:var(--paper2);color:var(--ink-soft)}
+.wrap>.thm:hover{color:var(--accent);border-color:var(--accent)}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%}
 body{
@@ -88,6 +125,10 @@ footer a:hover{color:var(--accent)}
 </head>
 <body>
 <div class="wrap">
+  <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
+<svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+<svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+</button>
   <header>
     <h1>脚本合集</h1>
     <p>点开即装 · 自动检查更新</p>
@@ -345,6 +386,29 @@ footer a:hover{color:var(--accent)}
   });
 
   load();
+})();
+</script>
+<script>
+/* 主题切换：仅在点击开关时切换，并记住选择 */
+(function(){
+  var k='hd-theme',root=document.documentElement,btn=document.getElementById('thmBtn');
+  var meta=document.querySelector('meta[name="theme-color"]');
+  var C={light:'#f4efe4',dark:'#15171c'};
+  function paint(v){
+    if(v==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');
+    if(meta)meta.setAttribute('content',C[v]);
+    if(btn){
+      btn.setAttribute('aria-label',v==='dark'?'切换浅色模式':'切换深色模式');
+      btn.setAttribute('title',btn.getAttribute('aria-label'));
+    }
+  }
+  paint(root.getAttribute('data-theme')==='dark'?'dark':'light');
+  if(btn)btn.addEventListener('click',function(){
+    var v=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    try{localStorage.setItem(k,v)}catch(e){}
+    paint(v);
+    try{document.dispatchEvent(new Event('hd-theme'))}catch(e){}
+  });
 })();
 </script>
 </body>
