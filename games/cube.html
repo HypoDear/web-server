@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="description" content="魔方，三/四/五阶随机打乱与逐步复原，单文件零依赖">
+<meta name="theme-color" content="#f4efe4">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>魔方</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fffdf7'/><stop offset='1' stop-color='%23dcc9a2'/></linearGradient><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ffffff' stop-opacity='.75'/><stop offset='1' stop-color='%23ffffff' stop-opacity='0'/></linearGradient></defs><rect width='32' height='32' rx='7' fill='url(%23g)'/><rect width='32' height='32' rx='7' fill='url(%23s)'/><g stroke='%233b3228' stroke-width='1.7' stroke-linejoin='round' fill='none'><path d='M16 4.5l9.5 5.5v11L16 26.5 6.5 21V10z'/><path d='M16 4.5L16 15.5M16 15.5l9.5-5.5M16 15.5L6.5 10M16 15.5L16 26.5'/><path d='M16 15.5l9.5 5.5M16 15.5l-9.5 5.5' stroke-opacity='.55'/></g><path d='M16 15.5l9.5-5.5v5.5l-9.5 5.5z' fill='%23b33f2b' opacity='.5'/></svg>">
+<script>
+/* 主题引导：首帧前恢复上次手动选择的深夜模式；默认保持白天 */
+(function(){try{
+  if(localStorage.getItem('hd-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');
+}catch(e){}})();
+</script>
+<style>
+:root{
+  --paper:#f4efe4; --paper2:#fbf8f1; --ink:#2f2a24; --ink-soft:#8c8275;
+  --line:#d8cfbe; --line-bold:#3d3630; --accent:#1f6f8b; --accent-soft:#dceaf0;
+  --bad:#c0463c; --good:#2e7d5b; --sel:#e8dcc2;
+  /* 魔方标准六色 */
+  --cU:#f7f9fb; --cD:#ffd426; --cF:#17c964; --cB:#2f7bff; --cL:#ff8c1a; --cR:#f3303f;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#15171c; --paper2:#1c1f26; --ink:#e8e4dc; --ink-soft:#9aa0ab;
+  --line:#2e333d; --accent:#5fb3d0; --bad:#e0796e; --good:#5ec08c;
+  --line-bold:#50586a; --accent-soft:#1b3a47; --sel:#33383f;
+}
+/* 魔方六色贴纸不改（标准色是功能性的），只压暗环境与内壁 */
+[data-theme="dark"] .tools button:active{background:#262b33}
+[data-theme="dark"] .tools button.snd .sndTr{background:#343a44}
+[data-theme="dark"] .tools button.snd .sndTr::after{background:#e8e4dc;box-shadow:0 1px 2px rgba(0,0,0,.5)}
+[data-theme="dark"] .mask{background:rgba(21,23,28,.95)}
+
+/* ===== 主题切换开关 ===== */
+.thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  flex:none;width:30px;height:30px;padding:0;cursor:pointer;
+  border:1px solid var(--thm-line,var(--line));border-radius:999px;
+  background:var(--thm-bg,var(--paper2));color:var(--thm-fg,var(--ink-soft,var(--ink)));
+  -webkit-tap-highlight-color:transparent;
+  transition:background .2s,border-color .2s,color .2s}
+.thm:hover{color:var(--thm-fg-on,var(--accent));border-color:var(--thm-line-on,var(--accent))}
+.thm:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.thm svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.thm .sun{transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
+.thm .moon{position:absolute;transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
+/* 浅色：显示月亮（点击去深色）；深色：显示太阳（点击回浅色） */
+.thm .sun{opacity:0;transform:rotate(-70deg) scale(.6)}
+.thm .moon{opacity:1;transform:none}
+[data-theme="dark"] .thm .sun{opacity:1;transform:none}
+[data-theme="dark"] .thm .moon{opacity:0;transform:rotate(70deg) scale(.6)}
+@media(prefers-reduced-motion:reduce){.thm,.thm svg,.thm .sun,.thm .moon{transition-duration:.01ms!important}}
+.tools button.thm{flex:0 0 auto;width:29px;min-width:29px;height:29px;padding:0;
+  background:var(--paper2);color:var(--ink-soft);border-color:var(--line);
+  display:inline-flex;align-items:center;justify-content:center}
+.tools button.thm:hover{color:var(--ink);border-color:var(--line)}
+.tools button.thm:active{background:var(--paper2)}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* 锁成单屏：拖拽不会演变成整页滚动 */
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--paper);color:var(--ink);
+  font-family:"Kaiti SC","STKaiti",KaiTi,"Noto Serif SC","Songti SC",Georgia,"Times New Roman",serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));
+  overscroll-behavior:none}
+.wrap{width:100%;max-width:470px;display:flex;flex-direction:column;gap:7px;
+  height:100%;min-height:0}
+.seg{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.seg button{flex:1;min-width:0;padding:5px 2px;height:31px;font:inherit;font-size:13px;cursor:pointer;
+  color:var(--ink-soft);background:var(--paper2);border:1px solid var(--line);
+  border-radius:999px;transition:color .18s,background .18s,border-color .18s}
+.seg button:hover{color:var(--ink)}
+.seg button.on{color:var(--paper);background:var(--accent);border-color:var(--accent);font-weight:700}
+
+/* 舞台：--stageMax 由 JS 按实测控件高度写入 */
+.stage{position:relative;aspect-ratio:1/1.06;flex:none;border-radius:4px;
+  width:min(100%,calc(var(--stageMax,100vh)*0.9434));
+  border:2.5px solid var(--line-bold);background:var(--paper2);overflow:hidden;
+  margin:0 auto;box-shadow:0 6px 18px -12px rgba(47,42,36,.5);
+  touch-action:none;cursor:grab}
+.stage::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.55;z-index:0;
+  background:
+    repeating-linear-gradient(94deg,rgba(140,120,88,.045) 0 1px,rgba(0,0,0,0) 1px 6px),
+    radial-gradient(86% 64% at 50% 28%,rgba(255,255,255,.8),rgba(255,255,255,0) 74%)}
+/* 阴影置于魔方之下；用渐变代替 filter:blur，后者会让 3D 子树单独栅格化而闪烁 */
+.stage::after{content:'';position:absolute;left:50%;bottom:5%;width:58%;height:11%;
+  transform:translateX(-50%);pointer-events:none;border-radius:50%;z-index:0;
+  background:radial-gradient(ellipse at 50% 50%,
+    rgba(120,100,66,.22) 0%,rgba(120,100,66,.15) 38%,
+    rgba(120,100,66,.06) 62%,rgba(120,100,66,0) 100%)}
+.stage.drag{cursor:grabbing}
+.stage.onpiece{cursor:grab}
+.vhome{position:absolute;right:7px;top:7px;z-index:4;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  border:1px solid var(--line);border-radius:50%;background:rgba(251,248,241,.86);
+  color:var(--ink-soft);font-size:13px;line-height:1;padding:0;font-family:inherit;
+  transition:color .16s,border-color .16s,background .16s}
+.vhome:hover{color:var(--ink);border-color:#c9bda6;background:var(--paper2)}
+.vhome:active{background:#ece3d2}
+.vhome:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.scene{position:absolute;inset:0;perspective:1300px;perspective-origin:50% 47%;z-index:1}
+.world{position:absolute;left:50%;top:50%;transform-style:preserve-3d;
+  will-change:transform}
+.piece,.pivot{position:absolute;transform-style:preserve-3d}
+.pivot.turning{will-change:transform}   /* 转层动画进合成器线程，主线程零重排 */
+/* 跟手拖拽期间只给真正位移的那一层加提升，松手立即撤（避免高阶常驻显存） */
+.pivot.gliding{will-change:transform}
+/* 转层期间内壁沿各自法向微推 4px：打破「转动贴纸面与内壁的精确共面」
+   （GPU 在共面瞬间排序翻转 = 偶发黑块）。4px 远小于缝隙可见深度，
+   内壁仍封住缝隙，不会看穿 */
+.t3d{--ipush:4px}
+
+/* 方块实体：哑光深色塑料。贴纸是它的 flat 子元素，与面同面绘制，
+   不再作为独立 3D 层参与排序 —— 贴纸与自己的实体面永远不可能互相盖错 */
+.bodyf{position:absolute;backface-visibility:hidden;
+  background:#3b332b;border-radius:9%}
+
+/* 内壁：把所有「朝内」的实体面按层合并成整体面。深色与实体面一致，
+   即使与转层中方块的内部面共面相争也看不出变化 */
+.inr{position:absolute;backface-visibility:hidden;background:#3b332b}
+
+/* 哑光贴纸：无镜面高光，仅极弱顶部漫反射 + 边缘切割暗线，接近物理贴纸 */
+/* --ring 做悬停/转层指示：不用 filter，避免新建合成层 */
+.st{--ring:0px;position:absolute;border-radius:12%;
+  background-image:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,0) 55%,rgba(0,0,0,.05));
+  box-shadow:
+    inset 0 0 0 var(--ring) rgba(255,255,255,.4),
+    inset 0 0 0 1px rgba(0,0,0,.16),
+    0 1px 1px rgba(0,0,0,.28)}
+
+.st.hv{--ring:2.5px}
+.turning .st{--ring:2px}
+/* C1 整层高亮：锁定转轴后，整层贴纸描边提亮，明确「这一拖会带动哪一层」 */
+.pivot.gliding .st{--ring:2.6px}
+.pivot.gliding .st{box-shadow:
+  inset 0 0 0 var(--ring) rgba(255,255,255,.62),
+  inset 0 0 0 1px rgba(0,0,0,.16),
+  0 1px 1px rgba(0,0,0,.28)}
+/* C2 触摸按下态：手指落在贴纸上立刻给反馈，不必等到触发转层 */
+.st.press{--ring:3px;filter:brightness(1.13)}
+/* B2 视角回正/预设的缓动（仅回正时挂上，平时不影响跟手） */
+.world.vtween{transition:transform .26s cubic-bezier(.22,.61,.36,1)}
+/* C3 完成庆祝：整体轻微呼吸 + 各面依次泛光 */
+@keyframes winBreath{
+  0%{transform:scale(1)}28%{transform:scale(1.055)}
+  58%{transform:scale(.988)}100%{transform:scale(1)}}
+.world.win{animation:winBreath .72s cubic-bezier(.3,.7,.3,1)}
+@keyframes winGlow{
+  0%{box-shadow:inset 0 0 0 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(0,0,0,.16),0 1px 1px rgba(0,0,0,.28)}
+  40%{box-shadow:inset 0 0 0 3px rgba(255,255,255,.95),inset 0 0 0 1px rgba(0,0,0,.1),0 0 12px rgba(255,255,255,.55)}
+  100%{box-shadow:inset 0 0 0 0 rgba(255,255,255,.4),inset 0 0 0 1px rgba(0,0,0,.16),0 1px 1px rgba(0,0,0,.28)}}
+.st.glow{animation:winGlow .52s ease-out}
+
+/* 操作行：三钮同排等高（对齐象棋 29px） */
+.tools{display:flex;gap:6px;align-items:stretch}
+.tools button{flex:1;border:1px solid var(--line);background:var(--paper2);color:var(--ink);
+  border-radius:999px;padding:5px 2px;height:29px;font:inherit;font-size:12.5px;
+  cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap}
+.tools button:hover:not(:disabled){background:#f2ebdc;border-color:#c9bda6}
+.tools button:active:not(:disabled){background:#ece3d2}
+.tools button:disabled{opacity:.42;cursor:default}
+.tools button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#btnScramble{color:var(--paper);background:var(--accent);border-color:var(--accent)}
+#btnScramble:hover:not(:disabled){background:#1a6079;border-color:#1a6079}
+#btnScramble:active:not(:disabled){background:#155068}
+
+button.snd{position:relative;display:flex;align-items:center;justify-content:space-between;gap:6px;
+  width:88px;height:29px;padding:0 4px 0 11px;flex:none;cursor:pointer;
+  border:1px solid var(--line);border-radius:999px;background:var(--paper2)}
+button.snd:active{background:#ece3d2}
+button.snd:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sndTx{font-size:12px;letter-spacing:1px;color:var(--ink-soft);transition:color .18s}
+.sndTr{position:relative;flex:none;width:30px;height:16px;border-radius:999px;
+  background:#d8cfbe;transition:background .18s}
+.sndTr i{position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 2px rgba(47,42,36,.35);transition:transform .18s;display:block}
+.snd.on .sndTx{color:var(--ink)}
+.snd.on .sndTr{background:var(--good)}
+.snd.on .sndTr i{transform:translateX(14px)}
+
+.mask{position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(47,42,36,.4);z-index:40;padding:22px}
+.mask.show{display:flex;animation:fade .2s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;
+  padding:24px 22px;max-width:320px;width:100%;text-align:center;
+  box-shadow:0 18px 40px -20px rgba(47,42,36,.65)}
+.card h2{margin:0 0 10px;font-size:20px;letter-spacing:3px;color:var(--ink)}
+.card p{margin:0 0 16px;font-size:14px;color:var(--ink-soft);line-height:1.7}
+.card .big{font-size:28px;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+.card button{height:36px;padding:0 22px;font:inherit;font-size:14px;cursor:pointer;
+  color:var(--paper);background:var(--accent);border:1px solid var(--accent);border-radius:999px}
+.card button:active{background:#155068}
+
+.toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%) translateY(10px);
+  background:rgba(47,42,36,.9);color:var(--paper);padding:9px 17px;border-radius:999px;
+  font-size:13px;opacity:0;pointer-events:none;transition:.24s;z-index:50;letter-spacing:.5px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-height:700px){
+  .stage{aspect-ratio:1/0.96}
+}
+@media (orientation:landscape) and (max-height:560px){
+  .wrap{display:grid;grid-template-columns:minmax(0,1fr) var(--stageMax,60vh);
+    gap:7px 12px;align-content:center;align-items:center;max-width:none}
+  .wrap>*{grid-column:1;min-width:0;width:100%;max-width:330px;
+    margin-left:auto;margin-right:auto}
+  /* 与基础规则同一系数，否则 1.06 的宽高比会把高度撑出可用区 */
+  .stage{grid-column:2;grid-row:1/span 2;aspect-ratio:1/1.06;
+    width:min(100%,calc(var(--stageMax,60vh)*0.9434));max-width:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="seg" id="kindSeg" role="tablist" aria-label="魔方类型"></div>
+  <div class="tools">
+    <button id="btnScramble" aria-label="打乱魔方">打乱</button>
+    <button id="btnSolve" aria-label="回放复原">复原</button>
+    <button class="snd on" id="sndBtn" role="switch" aria-checked="true" aria-label="音效开关">
+      <span class="sndTx">音效</span><span class="sndTr"><i></i></span>
+    </button>
+  
+    <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
+    <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+    </button>
+  </div>
+  <div class="stage" id="stage" role="application" aria-label="魔方，拖动色块转层，拖动空白转视角，方向键转视角"><div class="scene"><div class="world" id="world"></div></div>
+    <button class="vhome" id="vHome" title="回正视角（双击空白处亦可）" aria-label="回正视角">⌂</button>
+  </div>
+</div>
+<div class="mask" id="mask" role="dialog" aria-live="polite" aria-modal="true"><div class="card">
+  <h2 id="mkTitle">完成</h2><p id="mkBody"></p>
+  <div><button id="mkOk">好</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+const KEY_SAVE='cube_save_v1',KEY_SND='mg_sound';
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
+let AC=null,SND=lsGet(KEY_SND)!=='0';
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+  if(AC&&AC.state==='suspended'){try{AC.resume();}catch(e){}}return AC}
+/* F4 音频解锁：移动端要求用户手势内创建并启动，否则首次转动的咔啦声会哑掉或延迟。
+   首个 pointerdown 时建好 AudioContext 并推一帧静音缓冲走通输出链路 */
+let AUNLOCK=false;
+function unlockAudio(){
+  if(AUNLOCK)return;AUNLOCK=true;
+  try{
+    const a=ac();if(!a)return;
+    const b=a.createBuffer(1,1,a.sampleRate);
+    const src=a.createBufferSource();src.buffer=b;
+    src.connect(a.destination);src.start(0);
+  }catch(e){}
+}
+let NBU=null;
+function noiseBuf(a){
+  if(NBU&&NBU.sampleRate===a.sampleRate)return NBU;
+  const n=Math.floor(a.sampleRate*0.25);
+  const b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+  NBU=b;return b;
+}
+function knock(freq,dur,g0,dly,q){
+  if(!SND)return;const a=ac();if(!a)return;
+  try{
+    const t0=a.currentTime+(dly||0);
+    const src=a.createBufferSource();src.buffer=noiseBuf(a);
+    const bp=a.createBiquadFilter();
+    bp.type='bandpass';bp.frequency.setValueAtTime(freq,t0);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(120,freq*0.42),t0+dur);
+    bp.Q.value=q||3.2;
+    const hp=a.createBiquadFilter();hp.type='highpass';hp.frequency.value=140;
+    const g=a.createGain();
+    g.gain.setValueAtTime(0,t0);
+    g.gain.linearRampToValueAtTime(g0||.2,t0+.003);
+    g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+    const o=a.createOscillator(),og=a.createGain();
+    o.type='triangle';o.frequency.setValueAtTime(freq*0.62,t0);
+    o.frequency.exponentialRampToValueAtTime(freq*0.34,t0+dur);
+    og.gain.setValueAtTime(0,t0);
+    og.gain.linearRampToValueAtTime((g0||.2)*0.5,t0+.004);
+    og.gain.exponentialRampToValueAtTime(.0001,t0+dur*0.8);
+    src.connect(bp);bp.connect(hp);hp.connect(g);g.connect(a.destination);
+    o.connect(og);og.connect(a.destination);
+    src.start(t0);src.stop(t0+dur+.05);
+    o.start(t0);o.stop(t0+dur+.05);
+  }catch(e){}
+}
+/* 滑动声：噪声过带通，频带由低扫高再落回，模拟片层摩擦 */
+function slide(freq,dur,g0,dly,q){
+  if(!SND)return;const a=ac();if(!a)return;
+  try{
+    const t0=a.currentTime+(dly||0);
+    const src=a.createBufferSource();src.buffer=noiseBuf(a);
+    const bp=a.createBiquadFilter();bp.type='bandpass';
+    bp.frequency.setValueAtTime(Math.max(160,freq*0.55),t0);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(240,freq*1.6),t0+dur*0.5);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(150,freq*0.6),t0+dur);
+    bp.Q.value=q||1.5;
+    const g=a.createGain();
+    g.gain.setValueAtTime(0,t0);
+    g.gain.linearRampToValueAtTime(g0||.12,t0+dur*0.35);
+    g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+    src.connect(bp);bp.connect(g);g.connect(a.destination);
+    src.start(t0);src.stop(t0+dur+.05);
+  }catch(e){}
+}
+/* 一次转动的「分量」：三阶格子小、听感略轻 */
+function moveWeight(){
+  return curKind().N===3?0.9:1;
+}
+const PENTA=[1,1.122,1.26,1.498,1.682];
+const BASE=196;
+const SFX={
+  /* 一次转层 = 咔啦（棱角依次刮过的快速连击）+ 摩擦底噪 + 咔哒（落位） */
+  turn(i,w,soft){
+    const r=PENTA[i%PENTA.length], k=w===undefined?1:w, v=soft===undefined?1:soft;
+    slide(BASE*3.0*r,0.16,0.22*k*v,0,1.3);
+    for(let j=0;j<4;j++)
+      knock(BASE*2.0*r*(1+j*0.13),0.03,0.34*k*v,0.005+j*0.024,4.5);
+    knock(BASE*2.5*r,0.055,0.44*k*v,0.22,3.0);
+    knock(BASE*5.6*r,0.018,0.14*k*v,0.228,5.5);
+  },
+  grab(){knock(360,0.055,0.16,0,2.4);slide(900,0.06,0.05,0,1.4);},
+  scramble(){
+    for(let i=0;i<6;i++){
+      slide(BASE*3.2*(1+i*0.08),0.11,0.17,i*0.055,1.3);
+      for(let j=0;j<3;j++)
+        knock(BASE*2.1*(1+i*0.09)*(1+j*0.14),0.028,0.26,i*0.055+0.005+j*0.022,4.5);
+      knock(BASE*2.7*(1+i*0.09),0.05,0.36,i*0.055+0.075,3.0);
+    }
+  },
+  solved(){
+    [1,1.26,1.5,2].forEach((r,i)=>knock(BASE*2.6*r,0.42,0.22,i*0.105,2.4));
+    knock(BASE*5.2,0.7,0.13,0.44,2);
+  },
+  click(){knock(BASE*3.1,0.05,0.22,0,3);}
+};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1500);}
+
+const U=0,D=1,F=2,B=3,L=4,R=5;
+function solvedN(N){const s=[];for(let f=0;f<6;f++)s.push(new Int8Array(N*N).fill(f));return s;}
+const cloneN=s=>s.map(a=>a.slice());
+const eqN=(a,b)=>a.every((f,i)=>f.every((v,j)=>v===b[i][j]));
+function rotFace(a,N,dir){
+  const r=new a.constructor(N*N);
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    if(dir===1)r[x*N+(N-1-y)]=a[y*N+x];else r[(N-1-x)*N+y]=a[y*N+x];
+  }
+  return r;
+}
+function turnN(s,N,axis,layer,dir){
+  const t=cloneN(s),idx=(x,y)=>y*N+x;
+  if(axis==='y'){
+    const row=layer;
+    const get=f=>{const o=[];for(let x=0;x<N;x++)o.push(s[f][idx(x,row)]);return o;};
+    const set=(f,v)=>{for(let x=0;x<N;x++)t[f][idx(x,row)]=v[x];};
+    const fF=get(F),fL=get(L),fB=get(B),fR=get(R);
+    if(dir===1){set(F,fR);set(R,fB);set(B,fL);set(L,fF);}
+    else{set(F,fL);set(L,fB);set(B,fR);set(R,fF);}
+    if(layer===0)t[U]=rotFace(s[U],N,dir);
+    if(layer===N-1)t[D]=rotFace(s[D],N,-dir);
+  }else if(axis==='x'){
+    const col=layer,gU=[],gD=[],gF=[],gB=[];
+    for(let y=0;y<N;y++){gU.push(s[U][idx(col,y)]);gD.push(s[D][idx(col,y)]);
+      gF.push(s[F][idx(col,y)]);gB.push(s[B][idx(N-1-col,N-1-y)]);}
+    if(dir===1){for(let y=0;y<N;y++){t[U][idx(col,y)]=gF[y];t[B][idx(N-1-col,N-1-y)]=gU[y];
+      t[D][idx(col,y)]=gB[y];t[F][idx(col,y)]=gD[y];}}
+    else{for(let y=0;y<N;y++){t[F][idx(col,y)]=gU[y];t[U][idx(col,y)]=gB[y];
+      t[B][idx(N-1-col,N-1-y)]=gD[y];t[D][idx(col,y)]=gF[y];}}
+    if(col===N-1)t[R]=rotFace(s[R],N,dir);
+    if(col===0)t[L]=rotFace(s[L],N,-dir);
+  }else{
+    if(dir!==1){let r=s;for(let k=0;k<3;k++)r=turnN(r,N,'z',layer,1);return r;}
+    const d=layer,gU=[],gD=[],gL=[],gR=[];
+    // 取 z=d 层在四个侧面上的条带（F 位于 z=N-1，B 位于 z=0）
+    for(let i=0;i<N;i++){gU.push(s[U][idx(i,d)]);gD.push(s[D][idx(i,N-1-d)]);
+      gL.push(s[L][idx(d,i)]);gR.push(s[R][idx(N-1-d,i)]);}
+    // 循环方向 U -> L -> D -> R -> U，与 rotateZ 正向一致
+    for(let i=0;i<N;i++){t[L][idx(d,N-1-i)]=gU[i];t[D][idx(i,N-1-d)]=gL[i];
+      t[R][idx(N-1-d,N-1-i)]=gD[i];t[U][idx(i,d)]=gR[i];}
+    if(d===N-1)t[F]=rotFace(s[F],N,-1);
+    if(d===0)t[B]=rotFace(s[B],N,1);
+  }
+  return t;
+}
+const KINDS=[
+  {id:'c3',name:'三阶',N:3,rx:-30,ry:26},
+  {id:'c4',name:'四阶',N:4,rx:-30,ry:24},
+  {id:'c5',name:'五阶',N:5,rx:-38,ry:24}
+];
+const S={kind:'c3',state:null,undo:[],moves:0,busy:false,done:false,
+  rx:-30,ry:26,gen:0,fit:null,solving:false,pendingFit:false,scr:[]};
+function curKind(){return KINDS.find(k=>k.id===S.kind)||KINDS[0];}
+function freshState(){return solvedN(curKind().N);}
+function isSolvedState(){return eqN(S.state,solvedN(curKind().N));}
+function applyMove(st,m){const k=curKind();return turnN(st,k.N,m.ax,m.L,m.d);}
+function invMove(m){return Object.assign({},m,{d:-m.d});}
+
+const stage=document.getElementById('stage'),world=document.getElementById('world');
+const COLV=['--cU','--cD','--cF','--cB','--cL','--cR'];
+let PIECES=[],CELL=0,SIZE=0;
+function cubeFit(){
+  const w=stage.clientWidth||340,h=stage.clientHeight||340;
+  return Math.min(w,h)*0.62;
+}
+/* 方块外壳：只建朝外的面（与贴纸一一对应，按 U D F B L R 索引）。
+   朝内的面统一由 buildCore 的整体内壁承担 —— 参与 3D 排序的元素
+   从 6×方块数 降到 方块外表面数 + 内壁数 */
+function addFace(el,f){
+  const h=CELL/2-Math.max(1.2,CELL*0.022), S=CELL*0.97, m=(CELL-S)/2, T=[
+    'rotateX(90deg) translateZ('+h+'px)','rotateX(-90deg) translateZ('+h+'px)',
+    'translateZ('+h+'px)','rotateY(180deg) translateZ('+h+'px)',
+    'rotateY(-90deg) translateZ('+h+'px)','rotateY(90deg) translateZ('+h+'px)'];
+  const d=document.createElement('div');
+  d.className='bodyf';
+  d.style.width=S+'px';d.style.height=S+'px';
+  d.style.marginLeft=m+'px';d.style.marginTop=m+'px';
+  d.style.transform=T[f];
+  el.appendChild(d);
+  return d;
+}
+function addBody(el,outer){
+  const faces=[];
+  for(const f of [U,D,F,B,L,R]){
+    if(outer[f])faces[f]=addFace(el,f);
+  }
+  return faces;
+}
+/* 落位补偿：转层后台块的朝外面组合会变（如顶角转到底角要 D 不要 U），
+   按新槽位增删实体面。补面/缺口露出的都是同色内壁，视觉无感 */
+function syncFaces(p){
+  const N=curKind().N, outer=[];
+  outer[U]=p.y===0;outer[D]=p.y===N-1;outer[F]=p.z===N-1;
+  outer[B]=p.z===0;outer[L]=p.x===0;outer[R]=p.x===N-1;
+  for(const f of [U,D,F,B,L,R]){
+    if(outer[f]&&!p.bf[f])p.bf[f]=addFace(p.el,f);
+    else if(!outer[f]&&p.bf[f]){p.bf[f].remove();p.bf[f]=null;}
+  }
+}
+const FACE_S=0.93,BODY_S=0.97;
+function stickerGeo(C){
+  const S=C*FACE_S;
+  return {S,m:(C*BODY_S-S)/2};
+}
+/* 内壁：把所有「朝内」的实体面按层合并成整体面（每朝向 N-2 张）。
+   最靠内的两张里，朝外那张是外表面（方块自身已建）、朝内那张永远被更近的
+   内壁挡住，都可以省略。内盒半边长 = CELL/2-gap，比转层方块的内缘小一个
+   gap，转层时永远碰不到 */
+function buildCore(N,off){
+  const h=CELL/2-Math.max(1.2,CELL*0.022), g=CELL/2-h;
+  const W=SIZE-2*g-2;   // 比外表面再缩 1px，杜绝内壁从棱边伸出
+  const ORI=[[-1,'rotateX(90deg)'],[1,'rotateX(-90deg)'],[1,''],
+    [-1,'rotateY(180deg)'],[-1,'rotateY(-90deg)'],[1,'rotateY(90deg)']];
+  const frag=document.createDocumentFragment();
+  for(const [s,rot] of ORI){
+    // 每个朝向铺满除自身最外层外的所有层：s=-1 的最外层是 0，s=+1 是 N-1。
+    // 这样最外侧缝隙通道的顶/底也被封死，近水平视线不会从缝里看穿
+    for(let L2=(s<0?1:0);L2<=(s<0?N-1:N-2);L2++){
+      const d=document.createElement('div');
+      d.className='inr';
+      d.style.width=W+'px';d.style.height=W+'px';
+      d.style.marginLeft=(-W/2)+'px';d.style.marginTop=(-W/2)+'px';
+      d.style.transform=(rot?rot+' ':'')
+        +'translateZ(calc('+(s*(L2-off)*CELL+h)+'px + '+s+'*var(--ipush,0px)))';
+      frag.appendChild(d);
+    }
+  }
+  world.appendChild(frag);
+}
+function buildCube(){
+  const k=curKind(),N=k.N;
+  world.innerHTML='';PIECES=[];
+  SIZE=cubeFit();
+  CELL=SIZE/N;
+  const off=(N-1)/2;
+  buildCore(N,off);
+  const frag=document.createDocumentFragment();
+  /* F1：只建表层方块。内部块被外层完全包住，任何视角都看不见，
+     五阶可省去 27 个方块及其实体面，直接降低 3D 排序与合成压力 */
+  for(let x=0;x<N;x++)for(let y=0;y<N;y++)for(let z=0;z<N;z++){
+    const onEdge=(x===0||x===N-1||y===0||y===N-1||z===0||z===N-1);
+    if(!onEdge)continue;   // 内核块不建 DOM
+    const el=document.createElement('div');
+    el.className='piece';
+    el.style.width=CELL+'px';el.style.height=CELL+'px';
+    el.style.marginLeft=(-CELL/2)+'px';el.style.marginTop=(-CELL/2)+'px';
+    const outer=[];outer[U]=y===0;outer[D]=y===N-1;outer[F]=z===N-1;
+    outer[B]=z===0;outer[L]=x===0;outer[R]=x===N-1;
+    const bf=addBody(el,outer);   // 只建朝外的面；朝内的由内壁承担
+    el.style.transform='translate3d('+((x-off)*CELL)+'px,'+((y-off)*CELL)+'px,'+((z-off)*CELL)+'px)';
+    const stks=[];
+    const sg=stickerGeo(CELL);
+    const mk=(face,cellIdx)=>{
+      const d=document.createElement('div');
+      d.className='st';
+      d.style.width=sg.S+'px';d.style.height=sg.S+'px';
+      d.style.marginLeft=sg.m+'px';d.style.marginTop=sg.m+'px';
+      d.dataset.f=face;d.dataset.i=cellIdx;
+      bf[face].appendChild(d);stks.push({el:d,face,idx:cellIdx});
+    };
+    if(outer[U]) mk(U,x+z*N);
+    if(outer[D]) mk(D,x+(N-1-z)*N);
+    if(outer[F]) mk(F,x+y*N);
+    if(outer[B]) mk(B,(N-1-x)+y*N);
+    if(outer[L]) mk(L,z+y*N);
+    if(outer[R]) mk(R,(N-1-z)+y*N);
+    frag.appendChild(el);
+    PIECES.push({el,x,y,z,stks,bf});
+  }
+  world.appendChild(frag);
+  paint();
+}
+/* 视角无关定标：按最坏视角的投影包围盒定标，故缩放不随视角变化，也不会滑出画布 */
+const PERSP=1300;                 // 必须与 .scene 的 perspective 一致
+/* 定标用的最坏视角搜索范围。比实际可拖到的 TUNE.rxLimit（89°）略窄：
+   实测 rx 85→89 的投影包围盒完全一致（w≈1.4148 / h≈1.7320），
+   多搜这 4° 不改变结果，保持原值以免无谓增大搜索量 */
+const RX_LIMIT=85;
+const FIT=0.88;                   // 最坏视角下占用舞台的比例
+function projExtent(rx,ry){
+  const rad=d=>d*Math.PI/180;
+  const cx=Math.cos(rad(rx)),sx=Math.sin(rad(rx));
+  const cy=Math.cos(rad(ry)),sy=Math.sin(rad(ry));
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  for(let i=0;i<8;i++){
+    const px=(i&1)?0.5:-0.5, py=(i&2)?0.5:-0.5, pz=(i&4)?0.5:-0.5;
+    const ax=px*cy+pz*sy, az=-px*sy+pz*cy;      // rotateY
+    const by=py*cx-az*sx, bz=py*sx+az*cx;       // rotateX
+    const k=PERSP/(PERSP-bz);                   // 透视
+    const X=ax*k, Y=by*k;
+    if(X<x0)x0=X; if(X>x1)x1=X;
+    if(Y<y0)y0=Y; if(Y>y1)y1=Y;
+  }
+  return {w:x1-x0,h:y1-y0};
+}
+let WORST=null;
+function worstExtent(){
+  if(WORST)return WORST;
+  let w=0,h=0;
+  for(let rx=-RX_LIMIT;rx<=RX_LIMIT;rx+=5){
+    for(let ry=0;ry<360;ry+=5){
+      const e=projExtent(rx,ry);
+      if(e.w>w)w=e.w;
+      if(e.h>h)h=e.h;
+    }
+  }
+  WORST={w:w,h:h};
+  return WORST;
+}
+function fitToStage(){
+  const st=stage.getBoundingClientRect();
+  if(!st.width||!st.height)return {sc:1,ax:0,ay:0};
+  const we=worstExtent();
+  const sc=Math.max(0.05,Math.min(3,Math.min(
+    st.width*FIT/(we.w*SIZE), st.height*FIT/(we.h*SIZE))));
+  return {sc,ax:0,ay:0};   // 立方体几何上以原点为中心，无需平移补偿
+}
+function paint(){
+  for(const p of PIECES)for(const s2 of p.stks)
+    s2.el.style.backgroundColor='var('+COLV[S.state[s2.face][s2.idx]]+')';
+}
+function applyView(){
+  const sc=(S.fit&&S.fit.sc)||1;
+  const ax=(S.fit&&S.fit.ax)||0, ay=(S.fit&&S.fit.ay)||0;
+  world.style.transform='translate(-50%,-50%) translate('+ax.toFixed(2)+'px,'+ay.toFixed(2)+'px) '
+    +'rotateX('+S.rx+'deg) rotateY('+S.ry+'deg) scale3d('+sc+','+sc+','+sc+')';
+}
+function rebuild(){
+  layoutStage();
+  buildCube();
+  S.fit=fitToStage();
+  applyView();
+}
+/* F2 轻量重排：窗口尺寸变化时只更新格子尺寸与各块 transform，
+   不 remove/重建 DOM —— 手机转屏不再整盘闪烁。
+   方块数量只与阶数有关，阶数没变就无需重建 */
+function resizeOnly(){
+  layoutStage();
+  const k=curKind(),N=k.N;
+  const newSize=cubeFit();
+  if(!newSize)return;
+  if(PIECES.length===0){rebuild();return;}
+  SIZE=newSize;CELL=SIZE/N;
+  const off=(N-1)/2;
+  const sg=stickerGeo(CELL);
+  const h=CELL/2-Math.max(1.2,CELL*0.022), bs=CELL*0.97, bm=(CELL-bs)/2;
+  const T=[
+    'rotateX(90deg) translateZ('+h+'px)','rotateX(-90deg) translateZ('+h+'px)',
+    'translateZ('+h+'px)','rotateY(180deg) translateZ('+h+'px)',
+    'rotateY(-90deg) translateZ('+h+'px)','rotateY(90deg) translateZ('+h+'px)'];
+  for(const p of PIECES){
+    p.el.style.width=CELL+'px';p.el.style.height=CELL+'px';
+    p.el.style.marginLeft=(-CELL/2)+'px';p.el.style.marginTop=(-CELL/2)+'px';
+    p.el.style.transform='translate3d('+((p.x-off)*CELL)+'px,'+((p.y-off)*CELL)+'px,'+((p.z-off)*CELL)+'px)';
+    for(let f=0;f<6;f++){
+      const bf=p.bf[f];if(!bf)continue;
+      bf.style.width=bs+'px';bf.style.height=bs+'px';
+      bf.style.marginLeft=bm+'px';bf.style.marginTop=bm+'px';
+      bf.style.transform=T[f];
+    }
+    for(const s2 of p.stks){
+      s2.el.style.width=sg.S+'px';s2.el.style.height=sg.S+'px';
+      s2.el.style.marginLeft=sg.m+'px';s2.el.style.marginTop=sg.m+'px';
+    }
+  }
+  // 内壁与格子尺寸强相关，单独重算（数量少，开销可忽略）
+  for(const el of world.querySelectorAll('.inr'))el.remove();
+  buildCore(N,off);
+  S.fit=fitToStage();
+  applyView();
+}
+/* 舞台可用高度 = wrap 高 - 控件高 - 行距（实测，不写死像素） */
+function layoutStage(){
+  const wrap=document.querySelector('.wrap');
+  const seg=document.getElementById('kindSeg'), tl=document.querySelector('.tools');
+  const wrapH=wrap.clientHeight;
+  if(!wrapH)return;
+  const land=matchMedia('(orientation:landscape) and (max-height:560px)').matches;
+  const gaps=14;   // .wrap 的 2 个 gap（7px）
+  const avail=Math.max(150,wrapH-(land?0:(seg?seg.offsetHeight:0)+(tl?tl.offsetHeight:0)+gaps)-4);
+  document.documentElement.style.setProperty('--stageMax',avail+'px');
+}
+const AXV={x:[1,0,0],y:[0,1,0],z:[0,0,1]};
+/* A1 跟手拖拽 / A2 连续转动 / A3 自适应阈值 / A4 候选分离度 的调参集中在此 */
+const TUNE={
+  lockRatioTouch:0.18,   // A3 锁定转轴所需位移 = CELL * 该比例（触摸）
+  lockRatioMouse:0.09,   // A3 鼠标更灵敏
+  lockMinTouch:16, lockMinMouse:8,   // A3 像素下限
+  sep:1.3,               // A4 前两名候选分离度不足则判为意图不明，继续等
+  commit:45,             // A1 松手吸附阈值（度）
+  snapMs:150,            // A1 吸附/回弹基准时长
+  turnMs:190,            // A2 非跟手转动时长（原 320ms 偏慢）
+  viewSens:0.42,
+  inertiaDecay:0.93,     // B3 惯性衰减
+  inertiaMin:0.08,
+  rxLimit:89             // B4 原 85 放宽，便于看全底面
+};
+function abortAnim(){
+  S.gen++;
+  S.busy=false;S.solving=false;
+  if(GL){GL.pivot&&GL.pivot.classList.remove('gliding');GL=null;}
+  for(const pv of world.querySelectorAll('.pivot')){
+    while(pv.firstChild)world.appendChild(pv.firstChild);  // 先归还，否则整层方块随容器消失
+    pv.remove();
+  }
+  world.classList.remove('t3d');
+}
+function isStale(g){return g!==S.gen;}
+/* A1：把「层选取 + 挂载到 pivot」抽出来，跟手拖拽与补间动画共用 */
+function layerPieces(m){
+  return PIECES.filter(p=>{
+    if(m.ax==='x')return p.x===m.L;
+    if(m.ax==='y')return p.y===m.L;
+    return p.z===m.L;
+  });
+}
+function axisOf(m){return m.ax==='x'?'rotateX':m.ax==='y'?'rotateY':'rotateZ';}
+/* 旋向必须与 remapPieces 的落点变换同号 */
+function signOf(m){return (m.ax==='x')?1:-1;}
+/* 落位：状态推进 + 方块归还 + 重排，跟手提交与补间收尾共用 */
+function settleTurn(m,pivot,sel){
+  S.state=applyMove(S.state,m);
+  pivot.classList.remove('turning');pivot.classList.remove('gliding');
+  for(const p of sel)world.appendChild(p.el);
+  pivot.remove();
+  world.classList.remove('t3d');   // 内壁归位
+  remapPieces(m);
+}
+function animTurn(m,ms,cb,token,from,keepPivot,keepSel){
+  const pivot=keepPivot||document.createElement('div');
+  const sel=keepSel||layerPieces(m);
+  if(!keepPivot){
+    pivot.className='pivot';
+    world.appendChild(pivot);
+    for(const p of sel)pivot.appendChild(p.el);
+  }
+  setHover(null);
+  pivot.classList.add('turning');
+  pivot.classList.remove('gliding');
+  world.classList.add('t3d');
+  const axis=axisOf(m);
+  const sign=signOf(m);
+  const target=90*m.d*sign;
+  const start=(typeof from==='number')?from:0;
+  const reclaim=()=>{while(pivot.firstChild)world.appendChild(pivot.firstChild);
+    pivot.remove();world.classList.remove('t3d');};
+  const t0=performance.now();
+  if(token===undefined){token=S.gen;}
+  S.busy=true;
+  function fr(now){
+    if(isStale(token)){reclaim();return;}
+    const t=Math.min(1,(now-t0)/ms);
+    /* C4：先快后慢 + 约 2.2% 过冲再回落，贴近真实魔方的「甩到位」手感 */
+    const e=t>=1?1:1-Math.pow(2,-9.2*t)*Math.cos(t*10.6);
+    pivot.style.transform=axis+'('+(start+(target-start)*e)+'deg)';
+    if(t<1)requestAnimationFrame(fr);
+    else{
+      if(isStale(token)){reclaim();return;}
+      settleTurn(m,pivot,sel);
+      S.busy=false;
+      if(S.pendingFit){S.pendingFit=false;resizeOnly();}
+      if(cb)cb();
+    }
+  }
+  requestAnimationFrame(fr);
+}
+function remapPieces(m){
+  const k=curKind();
+  const N=k.N,off=(N-1)/2;
+  const moved=[];
+  for(const p of PIECES){
+    const inLayer=(m.ax==='x'&&p.x===m.L)||(m.ax==='y'&&p.y===m.L)||(m.ax==='z'&&p.z===m.L);
+    if(!inLayer)continue;
+    const a=p.x-off,b=p.y-off,c=p.z-off;
+    let na=a,nb=b,nc=c;
+    if(m.ax==='x'){ if(m.d===1){nb=-c;nc=b;} else {nb=c;nc=-b;} }
+    else if(m.ax==='y'){ if(m.d===1){na=-c;nc=a;} else {na=c;nc=-a;} }
+    else { if(m.d===1){na=b;nb=-a;} else {na=-b;nb=a;} }
+    p.x=Math.round(na+off);p.y=Math.round(nb+off);p.z=Math.round(nc+off);
+    p.el.style.transform='translate3d('+((p.x-off)*CELL)+'px,'+((p.y-off)*CELL)+'px,'+((p.z-off)*CELL)+'px)';
+    moved.push(p);
+  }
+  for(const p of moved)syncFaces(p);   // 落位补偿：补齐/裁掉朝外面
+  // 只重排动过的方块；否则每次转层都要 remove+重建全部贴纸，整盘会闪
+  rebuildStickers(moved);
+}
+function rebuildStickers(list){
+  const k=curKind();
+  const N=k.N;
+  for(const p of (list||PIECES)){
+    for(const s2 of p.stks)s2.el.remove();
+    p.stks.length=0;
+    const sg=stickerGeo(CELL);
+    const mk=(face,cellIdx)=>{
+      const d=document.createElement('div');
+      d.className='st';
+      d.style.width=sg.S+'px';d.style.height=sg.S+'px';
+      d.style.marginLeft=sg.m+'px';d.style.marginTop=sg.m+'px';
+      d.dataset.f=face;d.dataset.i=cellIdx;
+      p.bf[face].appendChild(d);p.stks.push({el:d,face,idx:cellIdx});
+    };
+    const {x,y,z}=p;
+    if(y===0)   mk(U,x+z*N);
+    if(y===N-1) mk(D,x+(N-1-z)*N);
+    if(z===N-1) mk(F,x+y*N);
+    if(z===0)   mk(B,(N-1-x)+y*N);
+    if(x===0)   mk(L,z+y*N);
+    if(x===N-1) mk(R,(N-1-z)+y*N);
+  }
+  paint();
+}
+function winCheck(){
+  if(S.done)return;
+  S.done=true;
+  SFX.solved();
+  celebrate();
+  // 让庆祝动画先走完再弹遮罩，否则弹窗会盖住整个效果
+  setTimeout(()=>{
+    showMask('完成','共用 <span class="big">'+S.moves+'</span> 步');
+  },760);
+}
+/* C3：整体呼吸一次，同时六个面按 U D F B L R 依次泛光（纯 CSS 动画，零依赖） */
+function celebrate(){
+  world.classList.remove('win');
+  void world.offsetWidth;            // 强制回流以重启动画
+  world.classList.add('win');
+  setTimeout(()=>world.classList.remove('win'),780);
+  const byFace=[[],[],[],[],[],[]];
+  for(const p of PIECES)for(const s2 of p.stks)byFace[s2.face].push(s2.el);
+  byFace.forEach((els,f)=>{
+    setTimeout(()=>{
+      for(const el of els){
+        el.classList.remove('glow');
+        void el.offsetWidth;
+        el.classList.add('glow');
+        setTimeout(()=>el.classList.remove('glow'),540);
+      }
+    },f*68);
+  });
+}
+function showMask(t,b){
+  document.getElementById('mkTitle').innerHTML=t;
+  document.getElementById('mkBody').innerHTML=b;
+  document.getElementById('mask').classList.add('show');
+}
+function hideMask(){document.getElementById('mask').classList.remove('show');}
+function randMove(){
+  const k=curKind();
+  const axs=['x','y','z'];
+  return {ax:axs[(Math.random()*3)|0],L:(Math.random()*k.N)|0,d:Math.random()<.5?1:-1};
+}
+/* 与其余游戏一致的「会丢失当前进度」确认：
+   没动过或已复原则直接放行，不打扰 */
+function hasProgress(){
+  if(S.done)return false;
+  return S.moves>0;
+}
+function confirmDiscard(msg){
+  if(!hasProgress())return true;
+  return confirm(msg||'当前进度将丢失，确定继续？');
+}
+function scramble(){
+  if(S.busy&&!S.solving)return;
+  if(!confirmDiscard('重新打乱将丢失当前进度，确定继续？'))return;
+  abortAnim();
+  const k=curKind();
+  const n=k.N===3?25:k.N===4?35:45;
+  const seq=[];let st=S.state,last=null;
+  for(let i=0;i<n;i++){
+    let m,guard=0;
+    do{m=randMove();guard++;}
+    while(guard<20&&last&&m.ax===last.ax&&m.L===last.L);
+    last=m;seq.push(m);st=applyMove(st,m);
+  }
+  S.state=st;S.undo=[];S.scr=seq.slice();S.moves=0;S.done=false;hideMask();
+  rebuildStickers();paint();setBtns();
+  SFX.scramble();toast('已打乱 '+n+' 步');save();
+}
+function solveBack(){
+  const base=S.undo.length?S.undo:S.scr;
+  if(S.busy||S.solving||!base.length)return;
+  const token=++S.gen;
+  S.solving=true;S.busy=true;setBtns();
+  const seq=base.slice().reverse().map(invMove);
+  const SPEED=Math.max(85,Math.min(240,Math.round(3200/seq.length)));
+  let i=0;
+  const step=()=>{
+    if(isStale(token))return;
+    if(i>=seq.length){
+      S.solving=false;S.busy=false;S.undo=[];S.scr=[];S.done=false;
+      rebuildStickers();paint();setBtns();
+      SFX.solved();
+      showMask('已复原',S.moves>0?'本局你走了 <span class="big">'+S.moves+'</span> 步'
+        :'已回放打乱过程 <span class="big">'+seq.length+'</span> 步');
+      save();return;
+    }
+    const m=seq[i++];
+    SFX.turn(i,moveWeight(),0.65);   // 连打回放调轻，避免连续咔啦叠成噪音
+    /* F3：用 rAF 对齐帧时序，后台标签页自动节流，不会跑飞 */
+    animTurn(m,SPEED,()=>{if(isStale(token))return;S.busy=true;requestAnimationFrame(step);},token);
+  };
+  step();
+}
+function setBtns(){
+  document.getElementById('btnSolve').disabled=S.busy||(!S.undo.length&&!S.scr.length);
+  document.getElementById('btnScramble').disabled=S.busy&&!S.solving;
+}
+function save(){
+  lsSet(KEY_SAVE,JSON.stringify({
+    kind:S.kind,moves:S.moves,rx:S.rx,ry:S.ry,
+    state:S.state.map(a=>Array.from(a)),
+    undo:S.undo,scr:S.scr
+  }));
+}
+function validState(st,k){
+  if(!Array.isArray(st))return false;
+  const faces=6,cells=k.N*k.N;
+  if(st.length!==faces)return false;
+  for(const f of st){
+    if(!Array.isArray(f)||f.length!==cells)return false;
+    for(const v of f)if(typeof v!=='number'||!isFinite(v)||v<0||v>=faces)return false;
+  }
+  return true;
+}
+function validUndo(u,k){
+  if(!Array.isArray(u))return [];
+  return u.filter(m=>{
+    if(!m||typeof m!=='object')return false;
+    if(typeof m.d!=='number'||(m.d!==1&&m.d!==-1))return false;
+    return ['x','y','z'].indexOf(m.ax)>=0&&typeof m.L==='number'&&m.L>=0&&m.L<k.N;
+  });
+}
+function load(){
+  try{
+    const raw=lsGet(KEY_SAVE);
+    if(!raw)return false;
+    const d=JSON.parse(raw);
+    if(!d||typeof d!=='object')return false;
+    const k=KINDS.find(x=>x.id===d.kind);
+    if(!k)return false;
+    if(!validState(d.state,k))return false;
+    S.kind=d.kind;
+    S.moves=(typeof d.moves==='number'&&isFinite(d.moves)&&d.moves>=0)?Math.floor(d.moves):0;
+    S.rx=(typeof d.rx==='number'&&isFinite(d.rx))?Math.max(-TUNE.rxLimit,Math.min(TUNE.rxLimit,d.rx)):k.rx;
+    S.ry=(typeof d.ry==='number'&&isFinite(d.ry))?d.ry:k.ry;
+    S.state=d.state.map(a=>Int8Array.from(a));
+    S.undo=validUndo(d.undo,k);S.scr=validUndo(d.scr,k);
+    return true;
+  }catch(e){return false;}
+}
+let drag=null;
+function pt(e){const t=e.touches?e.touches[0]:e;return {x:t.clientX,y:t.clientY};}
+function hitAt(x,y){
+  const cls='st';
+  // 用原生命中测试：遵循 3D 遮挡与 clip-path，不会选到背面或被挡住的贴纸
+  const hits=document.elementsFromPoint(x,y);
+  for(const el of hits){
+    if(el.classList&&el.classList.contains(cls)&&world.contains(el))return el;
+  }
+  return null;
+}
+const FACE_N={0:[0,-1,0],1:[0,1,0],2:[0,0,1],3:[0,0,-1],4:[-1,0,0],5:[1,0,0]};
+function rotV(v,rx,ry){
+  const rad=d=>d*Math.PI/180;
+  const [x,y,z]=v;
+  const cy=Math.cos(rad(ry)),sy=Math.sin(rad(ry));
+  const x1=x*cy+z*sy, z1=-x*sy+z*cy;
+  const cx=Math.cos(rad(rx)),sx=Math.sin(rad(rx));
+  const y2=y*cx-z1*sx;
+  return [x1,y2,y*sx+z1*cx];
+}
+function pickTurn(stk,dx,dy){
+  const face=+stk.dataset.f;
+  const piece=PIECES.find(p=>p.stks&&p.stks.some(s2=>s2.el===stk));
+  if(!piece)return null;
+  const cands=[];
+  for(const ax of ['x','y','z']){
+    const n=FACE_N[face],axv=AXV[ax];
+    if(Math.abs(n[0]*axv[0]+n[1]*axv[1]+n[2]*axv[2])>0.5)continue;
+    const Lv=ax==='x'?piece.x:ax==='y'?piece.y:piece.z;
+    const tangent=[
+      axv[1]*n[2]-axv[2]*n[1],
+      axv[2]*n[0]-axv[0]*n[2],
+      axv[0]*n[1]-axv[1]*n[0]
+    ];
+    const sv=rotV(tangent,S.rx,S.ry);
+    const len=Math.hypot(sv[0],sv[1])||1e-6;
+    let score=(dx*sv[0]+dy*sv[1])/len;
+    if(ax!=='x')score=-score;
+    /* A1：len 是该切向在屏幕上的投影长度（单位向量→像素比例），
+       用它把「手指位移」换算成「转层角度」，跟手才会线性贴合 */
+    const unit=len*(S.fit&&S.fit.sc?S.fit.sc:1)*CELL;
+    cands.push({ax,L:Lv,score,abs:Math.abs(score),unit});
+  }
+  if(!cands.length)return null;
+  cands.sort((a,b)=>b.abs-a.abs);
+  const best=cands[0];
+  /* A4：不再用固定像素阈值否决，改判前两名的分离度。
+     两个候选打分接近 = 拖动方向介于两轴之间、意图不明确，
+     此时返回 null 让调用方继续等几个像素，避免「赌错转轴」 */
+  if(cands.length>1&&cands[1].abs>0&&best.abs<cands[1].abs*TUNE.sep)return null;
+  if(best.abs<1e-3)return null;
+  return {ax:best.ax,L:best.L,d:best.score>0?1:-1,
+    unit:best.unit,raw:best.score};
+}
+let HOV=null;
+function setHover(el){
+  if(HOV===el)return;
+  if(HOV)HOV.classList.remove('hv');
+  HOV=el;
+  if(HOV)HOV.classList.add('hv');
+  stage.classList.toggle('onpiece',!!el);
+}
+function onHover(e){
+  if(drag||S.busy){return;}
+  if(e.pointerType==='touch'){setHover(null);return;}
+  setHover(hitAt(e.clientX,e.clientY));
+}
+
+/* ===== A1 跟手拖拽转层 =====
+   GL 为一次「跟手会话」：锁定转轴后，层已挂在 pivot 上，
+   角度由手指位移实时驱动；松手按角度决定吸附到 90° 或回弹到 0° */
+let GL=null;
+function beginGlide(m,stk){
+  const sel=layerPieces(m);
+  const pivot=document.createElement('div');
+  pivot.className='pivot';
+  world.appendChild(pivot);
+  for(const p of sel)pivot.appendChild(p.el);
+  /* t3d 内壁外推必须保留：跟手期间转层面与内壁长时间共面，
+     不推开会触发 GPU 排序翻转的黑块。will-change 只给这一层，松手即撤 */
+  world.classList.add('t3d');
+  pivot.classList.add('gliding');   // C1 整层高亮 + 按需 will-change
+  setHover(null);
+  GL={m,pivot,sel,ang:0,unit:m.unit||40,axis:axisOf(m),sign:signOf(m),last:0};
+  S.busy=true;
+  return GL;
+}
+function glideTo(deg){
+  if(!GL)return;
+  const lim=90;
+  GL.ang=Math.max(-lim,Math.min(lim,deg));
+  GL.pivot.style.transform=GL.axis+'('+(GL.ang*GL.sign)+'deg)';
+  /* 每跨过一格给一次轻咔哒，强化「正在拧」的触感 */
+  const step=Math.round(GL.ang/30);
+  if(step!==GL.last){GL.last=step;SFX.grab();}
+}
+function endGlide(){
+  if(!GL)return;
+  const g=GL;GL=null;
+  const cur=g.ang*g.sign;                 // 当前实际视觉角度
+  const commit=Math.abs(g.ang)>=TUNE.commit;
+  g.pivot.classList.remove('gliding');    // 先撤提升，避免常驻显存
+  if(commit){
+    const d=g.ang>0?1:-1;
+    const m={ax:g.m.ax,L:g.m.L,d:d};
+    const rest=Math.abs(90-Math.abs(g.ang))/90;
+    const ms=Math.max(70,Math.round(TUNE.snapMs*rest));
+    SFX.turn(S.moves,moveWeight());
+    S.busy=true;
+    animTurn(m,ms,()=>{
+      S.undo.push(m);S.scr=[];S.moves++;setBtns();
+      if(isSolvedState()&&S.moves>0)winCheck();
+      save();
+    },undefined,cur,g.pivot,g.sel);
+  }else{
+    /* 回弹到 0°：不改状态，把方块原样还回 world */
+    const token=S.gen;
+    const t0=performance.now();
+    const ms=Math.max(60,Math.round(TUNE.snapMs*Math.abs(g.ang)/90));
+    S.busy=true;
+    const back=now=>{
+      if(isStale(token)){
+        while(g.pivot.firstChild)world.appendChild(g.pivot.firstChild);
+        g.pivot.remove();world.classList.remove('t3d');S.busy=false;return;
+      }
+      const t=Math.min(1,(now-t0)/ms);
+      const e=1-Math.pow(1-t,2.4);
+      g.pivot.style.transform=g.axis+'('+(cur*(1-e))+'deg)';
+      if(t<1)requestAnimationFrame(back);
+      else{
+        while(g.pivot.firstChild)world.appendChild(g.pivot.firstChild);
+        g.pivot.remove();world.classList.remove('t3d');
+        S.busy=false;
+        if(S.pendingFit){S.pendingFit=false;resizeOnly();}
+      }
+    };
+    requestAnimationFrame(back);
+  }
+}
+
+/* B2 视角回正 / 预设（带缓动，不参与跟手） */
+function viewTo(rx,ry){
+  VEL.vx=0;VEL.vy=0;
+  world.classList.add('vtween');
+  S.rx=Math.max(-TUNE.rxLimit,Math.min(TUNE.rxLimit,rx));S.ry=ry;
+  applyView();
+  clearTimeout(viewTo._t);
+  viewTo._t=setTimeout(()=>{world.classList.remove('vtween');save();},300);
+}
+function viewHome(){const k=curKind();viewTo(k.rx,k.ry);SFX.click();}
+
+/* B3 视角惯性 */
+const VEL={vx:0,vy:0,raf:0,t:0};
+function stopInertia(){if(VEL.raf){cancelAnimationFrame(VEL.raf);VEL.raf=0;}VEL.vx=0;VEL.vy=0;}
+function startInertia(){
+  if(Math.abs(VEL.vx)<TUNE.inertiaMin&&Math.abs(VEL.vy)<TUNE.inertiaMin)return;
+  const stepFn=()=>{
+    VEL.vx*=TUNE.inertiaDecay;VEL.vy*=TUNE.inertiaDecay;
+    S.ry+=VEL.vx;
+    S.rx=Math.max(-TUNE.rxLimit,Math.min(TUNE.rxLimit,S.rx+VEL.vy));
+    applyView();
+    if(Math.abs(VEL.vx)<TUNE.inertiaMin&&Math.abs(VEL.vy)<TUNE.inertiaMin){
+      VEL.raf=0;save();return;
+    }
+    VEL.raf=requestAnimationFrame(stepFn);
+  };
+  VEL.raf=requestAnimationFrame(stepFn);
+}
+
+function lockThreshold(touch){
+  return Math.max(touch?TUNE.lockMinTouch:TUNE.lockMinMouse,
+    CELL*(S.fit&&S.fit.sc?S.fit.sc:1)*(touch?TUNE.lockRatioTouch:TUNE.lockRatioMouse));
+}
+function onDown(e){
+  unlockAudio();              // F4
+  stopInertia();
+  /* A2：动画进行中按下，先把在途的那一步立即落位，不吞输入 */
+  if(S.busy&&!S.solving){abortAnim();}
+  if(S.solving)return;
+  const p=pt(e);
+  const stk=hitAt(p.x,p.y);
+  drag={x0:p.x,y0:p.y,stk:stk,rx0:S.rx,ry0:S.ry,turned:false,moved:false,
+    touch:e.pointerType==='touch',px:p.x,py:p.y,pt0:performance.now()};
+  if(stk)stk.classList.add('press');   // C2 触摸/鼠标按下态
+  setHover(null);
+  stage.classList.add('drag');
+  if(e.cancelable)e.preventDefault();
+}
+function onMove(e){
+  if(!drag)return;
+  const p=pt(e);
+  const dx=p.x-drag.x0, dy=p.y-drag.y0;
+  if(Math.abs(dx)>3||Math.abs(dy)>3)drag.moved=true;
+
+  if(GL){
+    /* 已锁定转轴：位移投影 / 格子像素 × 90°，线性跟手 */
+    const m=GL.m;
+    const n=FACE_N[+drag.stk.dataset.f],axv=AXV[m.ax];
+    const tangent=[axv[1]*n[2]-axv[2]*n[1],axv[2]*n[0]-axv[0]*n[2],axv[0]*n[1]-axv[1]*n[0]];
+    const sv=rotV(tangent,S.rx,S.ry);
+    const len=Math.hypot(sv[0],sv[1])||1e-6;
+    let proj=(dx*sv[0]+dy*sv[1])/len;
+    if(m.ax!=='x')proj=-proj;
+    glideTo(proj/(GL.unit||40)*90);
+  }else if(drag.stk&&!drag.turned){
+    if(Math.hypot(dx,dy)>lockThreshold(drag.touch)){
+      const m=pickTurn(drag.stk,dx,dy);
+      if(m){   // A4 不明确时 pickTurn 返回 null，这里会继续等下一帧
+        drag.turned=true;
+        drag.stk.classList.remove('press');
+        beginGlide(m,drag.stk);
+        const g=GL;
+        if(g)glideTo(Math.abs(m.raw||0)/(g.unit||40)*90*((m.raw||0)>0?1:-1));
+      }
+    }
+  }else if(!drag.stk){
+    const now=performance.now(), dt=Math.max(1,now-drag.pt0);
+    VEL.vx=(p.x-drag.px)*TUNE.viewSens*(16/dt);   // B3 记录松手前速度
+    VEL.vy=-(p.y-drag.py)*TUNE.viewSens*(16/dt);
+    drag.px=p.x;drag.py=p.y;drag.pt0=now;
+    S.ry=drag.ry0+dx*TUNE.viewSens;
+    S.rx=Math.max(-TUNE.rxLimit,Math.min(TUNE.rxLimit,drag.rx0-dy*TUNE.viewSens));  // B4
+    applyView();
+  }
+  if(e.cancelable)e.preventDefault();
+}
+function onUp(){
+  if(!drag)return;
+  if(drag.stk)drag.stk.classList.remove('press');
+  if(GL){endGlide();}
+  else{
+    if(!drag.moved&&drag.stk)SFX.grab();
+    if(!drag.stk){startInertia();save();}
+  }
+  drag=null;stage.classList.remove('drag');stage.classList.remove('onpiece');
+}
+function buildSeg(){
+  const seg=document.getElementById('kindSeg');
+  seg.innerHTML='';
+  for(const k of KINDS){
+    const b=document.createElement('button');
+    b.textContent=k.name;b.dataset.id=k.id;
+    b.setAttribute('role','tab');
+    const on=(k.id===S.kind);
+    // 与其余游戏一致：选中/未选中都显式写出，读屏器才能正确播报
+    b.setAttribute('aria-selected',on?'true':'false');
+    if(on)b.classList.add('on');
+    b.onclick=()=>{
+      if(S.kind===k.id&&!S.solving)return;
+      if(!confirmDiscard('切换阶数将丢失当前进度，确定继续？')){buildSeg();return;}
+      abortAnim();
+      S.kind=k.id;S.state=freshState();S.undo=[];S.scr=[];S.moves=0;S.done=false;
+      S.rx=k.rx;S.ry=k.ry;
+      hideMask();buildSeg();rebuild();setBtns();SFX.click();save();
+    };
+    seg.appendChild(b);
+  }
+}
+function setSnd(on){
+  SND=on;lsSet(KEY_SND,on?'1':'0');
+  const b=document.getElementById('sndBtn');
+  b.classList.toggle('on',on);b.setAttribute('aria-checked',on?'true':'false');
+}
+function boot(){
+  const restored=load();
+  if(!restored){
+    S.state=freshState();
+    const k0=curKind();S.rx=k0.rx;S.ry=k0.ry;
+    S.moves=0;S.undo=[];S.scr=[];
+    lsDel(KEY_SAVE);
+  }
+  buildSeg();
+  try{rebuild();}catch(e){}
+  setBtns();
+  setSnd(SND);
+  stage.addEventListener('pointerdown',onDown);
+  stage.addEventListener('pointermove',onHover,{passive:true});
+  stage.addEventListener('pointerleave',()=>setHover(null));
+  window.addEventListener('pointermove',onMove,{passive:false});
+  window.addEventListener('pointerup',onUp);
+  window.addEventListener('pointercancel',onUp);
+  /* B2：双击空白处回正视角（双击贴纸不触发，避免误伤转层） */
+  stage.addEventListener('dblclick',e=>{
+    if(!hitAt(e.clientX,e.clientY))viewHome();
+  });
+  document.getElementById('vHome').addEventListener('pointerdown',e=>{
+    e.stopPropagation();e.preventDefault();
+  });
+  document.getElementById('vHome').onclick=e=>{e.stopPropagation();viewHome();};
+  /* B1：方向键转视角，桌面端零成本 */
+  window.addEventListener('keydown',e=>{
+    const tag=(document.activeElement&&document.activeElement.tagName)||'';
+    if(tag==='INPUT'||tag==='TEXTAREA')return;
+    const STEP=e.shiftKey?18:7;
+    let hit=true;
+    switch(e.key){
+      case 'ArrowLeft':  stopInertia();S.ry-=STEP;break;
+      case 'ArrowRight': stopInertia();S.ry+=STEP;break;
+      case 'ArrowUp':    stopInertia();S.rx=Math.max(-TUNE.rxLimit,S.rx-STEP);break;
+      case 'ArrowDown':  stopInertia();S.rx=Math.min(TUNE.rxLimit,S.rx+STEP);break;
+      case 'Home': case 'h': case 'H': viewHome();hit=true;break;
+      default: hit=false;
+    }
+    if(hit){if(e.key!=='Home'&&e.key!=='h'&&e.key!=='H'){applyView();save();}e.preventDefault();}
+  });
+  document.getElementById('btnScramble').onclick=scramble;
+  document.getElementById('btnSolve').onclick=solveBack;
+  document.getElementById('sndBtn').onclick=()=>{setSnd(!SND);if(SND)SFX.click();};
+  document.getElementById('mkOk').onclick=hideMask;
+  let raf=0;
+  // 定标与视角无关，resize 直接重建即可
+  window.addEventListener('resize',()=>{
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      if(!S.busy)resizeOnly();   // F2：只重排，不重建 DOM
+      else S.pendingFit=true;    // 转动中先挂起，结束后补偿
+    });
+  });
+  window.addEventListener('orientationchange',()=>{
+    setTimeout(()=>{if(!S.busy)resizeOnly();else S.pendingFit=true;},120);
+  });
+  if(restored&&isSolvedState()&&S.moves>0)S.done=true;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+else boot();
+</script>
+<script>
+/* 主题切换：仅在点击开关时切换，并记住选择 */
+(function(){
+  var k='hd-theme',root=document.documentElement,btn=document.getElementById('thmBtn');
+  var meta=document.querySelector('meta[name="theme-color"]');
+  var C={light:'#f4efe4',dark:'#15171c'};
+  function paint(v){
+    if(v==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');
+    if(meta)meta.setAttribute('content',C[v]);
+    if(btn){
+      btn.setAttribute('aria-label',v==='dark'?'切换浅色模式':'切换深色模式');
+      btn.setAttribute('title',btn.getAttribute('aria-label'));
+    }
+  }
+  paint(root.getAttribute('data-theme')==='dark'?'dark':'light');
+  if(btn)btn.addEventListener('click',function(){
+    var v=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    try{localStorage.setItem(k,v)}catch(e){}
+    paint(v);
+    try{document.dispatchEvent(new Event('hd-theme'))}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="开源小游戏合集 · 纯静态、零依赖、开箱即玩">
+<meta name="theme-color" content="#faf8f3">
+<meta name="color-scheme" content="light">
+<title>小游戏合集</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23faf8f3'/><g fill='%231b6b85'><rect x='5.5' y='5.5' width='9.5' height='9.5' rx='2.5'/><rect x='17' y='5.5' width='9.5' height='9.5' rx='2.5'/><rect x='5.5' y='17' width='9.5' height='9.5' rx='2.5'/><rect x='17' y='17' width='9.5' height='9.5' rx='2.5'/></g></svg>">
+<script>
+/* 主题引导：首帧前恢复上次手动选择的深夜模式；默认保持白天 */
+(function(){try{
+  if(localStorage.getItem('hd-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');
+}catch(e){}})();
+</script>
+<style>
+:root{
+  --bg:#faf8f3; --card:#ffffff; --card2:#fffefb;
+  --line:#e7e1d5; --line2:#d2c9b8;
+  --ink:#241f19; --ink2:#6a6257; --ink3:#9b9387;
+  --shadow:0 1px 2px rgba(60,50,35,.05);
+  --shadow-lg:0 16px 34px -20px rgba(60,50,35,.3),0 2px 6px rgba(60,50,35,.05);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro SC","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  padding:max(44px,env(safe-area-inset-top)) 22px max(44px,env(safe-area-inset-bottom));
+  display:flex;justify-content:center;
+  background-image:
+    radial-gradient(880px 460px at 16% -10%,rgba(31,111,139,.07),transparent 64%),
+    radial-gradient(700px 400px at 97% 2%,rgba(176,98,62,.055),transparent 62%);
+  background-attachment:fixed;
+}
+.wrap{width:100%;max-width:1060px}
+header{margin:0 0 28px}
+.kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink2);
+  border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;box-shadow:var(--shadow)}
+.dot{width:5px;height:5px;border-radius:50%;background:#2e9e68;box-shadow:0 0 0 3px rgba(46,158,104,.16)}
+h1{margin:16px 0 0;font-size:clamp(30px,5.6vw,46px);font-weight:650;letter-spacing:-.018em;line-height:1.12}
+h1 em{font-style:normal;color:var(--ink3);font-weight:500}
+header p{margin:11px 0 0;color:var(--ink2);font-size:14.5px;max-width:52ch}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}
+.bento{
+  grid-column:span var(--cs);grid-row:span var(--rs);
+  position:relative;overflow:hidden;isolation:isolate;
+  display:flex;flex-direction:column;justify-content:space-between;gap:16px;
+  min-height:152px;padding:19px 20px;
+  text-decoration:none;color:inherit;
+  background:var(--card);border:1px solid var(--line);border-radius:17px;
+  box-shadow:var(--shadow);
+  transition:transform .26s cubic-bezier(.2,.7,.3,1),border-color .26s,box-shadow .26s,background .26s;
+}
+.bento.hero{min-height:244px;padding:25px 26px}
+.wash{position:absolute;inset:-34% -12% auto -12%;height:176px;z-index:-1;
+  background:radial-gradient(58% 100% at 50% 0%,hsl(var(--h) 62% 52% / .11),transparent 72%);
+  opacity:.9;transition:opacity .26s}
+.bento:hover{transform:translateY(-4px);background:var(--card2);
+  border-color:hsl(var(--h) 38% 72%);box-shadow:var(--shadow-lg)}
+.bento:hover .wash{opacity:1}
+.bento:focus-visible{outline:2px solid hsl(var(--h) 58% 44%);outline-offset:3px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  color:hsl(var(--h) 56% 36%);background:hsl(var(--h) 56% 50% / .1);border:1px solid hsl(var(--h) 44% 58% / .3)}
+.hero .ico{width:46px;height:46px;border-radius:13px}
+.ico svg{width:19px;height:19px}
+.hero .ico svg{width:23px;height:23px}
+.tag{font-size:11px;letter-spacing:.1em;color:var(--ink2);
+  border:1px solid var(--line);background:rgba(250,248,243,.8);border-radius:999px;padding:4px 10px;white-space:nowrap}
+.body{display:block}
+.nm{display:block;font-size:19px;font-weight:620;letter-spacing:.01em}
+.hero .nm{font-size:29px;letter-spacing:-.005em}
+.en{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:3px}
+.ds{display:block;margin-top:9px;font-size:13px;color:var(--ink2);line-height:1.62}
+.hero .ds{font-size:15px;max-width:34ch}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
+.go{display:inline-flex;align-items:center;gap:5px;font-weight:560;color:hsl(var(--h) 58% 38%);
+  opacity:0;transform:translateX(-6px);transition:opacity .26s,transform .26s;white-space:nowrap}
+.go i{font-style:normal}
+.bento:hover .go,.bento:focus-visible .go{opacity:1;transform:none}
+footer{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;
+  padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
+footer a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:1px}
+footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#101216; --card:#191c22; --card2:#1e222a;
+  --line:#272c35; --line2:#363c47;
+  --ink:#eae6de; --ink2:#9aa0ab; --ink3:#6c737f;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+  --shadow-lg:0 18px 38px -20px rgba(0,0,0,.85),0 2px 8px rgba(0,0,0,.4);
+}
+/* 深色下背景氛围压暗，避免光斑在暗底上发灰 */
+[data-theme="dark"] body{background-image:
+    radial-gradient(880px 460px at 16% -10%,rgba(95,179,208,.07),transparent 64%),
+    radial-gradient(700px 400px at 97% 2%,rgba(216,169,74,.045),transparent 62%)}
+[data-theme="dark"] .tag{background:rgba(16,18,22,.7)}
+[data-theme="dark"] .ico{color:hsl(var(--h) 62% 72%);background:hsl(var(--h) 56% 52% / .15);
+  border-color:hsl(var(--h) 44% 56% / .32)}
+[data-theme="dark"] .wash{background:radial-gradient(58% 100% at 50% 0%,hsl(var(--h) 66% 56% / .15),transparent 72%)}
+[data-theme="dark"] .bento:hover{border-color:hsl(var(--h) 40% 50%)}
+[data-theme="dark"] .go{color:hsl(var(--h) 66% 70%)}
+[data-theme="dark"] .dot{background:#4ec98a;box-shadow:0 0 0 3px rgba(78,201,138,.16)}
+[data-theme="dark"] footer a:hover{color:#7cc4dd;border-color:#7cc4dd}
+.hdrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.hdrow .kick{flex:none}
+
+/* ===== 主题切换开关 ===== */
+.thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  flex:none;width:30px;height:30px;padding:0;cursor:pointer;
+  border:1px solid var(--line);border-radius:999px;
+  background:var(--card);color:var(--ink2);
+  -webkit-tap-highlight-color:transparent;
+  transition:background .2s,border-color .2s,color .2s}
+.thm:hover{color:var(--ink);border-color:var(--line2)}
+.thm:focus-visible{outline:2px solid var(--ink2);outline-offset:2px}
+.thm svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.thm .sun{transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
+.thm .moon{position:absolute;transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
+/* 浅色：显示月亮（点击去深色）；深色：显示太阳（点击回浅色） */
+.thm .sun{opacity:0;transform:rotate(-70deg) scale(.6)}
+.thm .moon{opacity:1;transform:none}
+[data-theme="dark"] .thm .sun{opacity:1;transform:none}
+[data-theme="dark"] .thm .moon{opacity:0;transform:rotate(70deg) scale(.6)}
+@media(prefers-reduced-motion:reduce){.thm,.thm svg,.thm .sun,.thm .moon{transition-duration:.01ms!important}}
+.thm{box-shadow:var(--shadow)}
+@media(max-width:860px){
+  .grid{grid-template-columns:repeat(4,1fr)}
+  .bento{grid-column:span 2!important;grid-row:span 1!important;min-height:142px}
+  .bento.hero{grid-column:span 4!important;min-height:204px}
+}
+@media(max-width:560px){
+  .grid{grid-template-columns:repeat(2,1fr);gap:11px}
+  .bento,.bento.hero{grid-column:span 2!important;padding:18px 19px;min-height:0}
+  .hero .nm{font-size:24px}.hero .ds{font-size:14px}
+  .go{opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hdrow">
+      <span class="kick"><span class="dot" aria-hidden="true"></span>web-server · 小游戏 · 持续更新</span>
+      <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+      </button>
+    </div>
+    <h1>小游戏合集 <em>/ 6 游戏</em></h1>
+    <p>每个游戏都是独立的单文件 HTML，不依赖任何框架或构建工具。</p>
+  </header>
+  <main class="grid">
+    <a class="bento hero" href="sudoku.html" style="--cs:4;--rs:2;--h:203">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-width="1.1" opacity=".55"/></svg></span>
+        <span class="tag">逻辑推演</span>
+      </span>
+      <span class="body">
+        <span class="nm">数独</span>
+        <span class="en">Sudoku</span>
+        <span class="ds">按解题技巧分级，每局纯逻辑可解</span>
+      </span>
+      <span class="foot"><span class="mt">四档难度</span><span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+    <a class="bento" href="gomoku.html" style="--cs:2;--rs:1;--h:25">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16M4 12h16M4 20h16M4 4v16M12 4v16M20 4v16" stroke="currentColor" stroke-width="1.1" opacity=".5"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="20" cy="4" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span>
+        <span class="tag">棋类对弈</span>
+      </span>
+      <span class="body">
+        <span class="nm">五子棋</span>
+        <span class="en">Gomoku</span>
+        <span class="ds">三档 AI 对手，可开启禁手规则</span>
+      </span>
+      <span class="foot"><span class="mt">三档 AI</span><span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+    <a class="bento" href="llk.html" style="--cs:2;--rs:1;--h:158">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3.5" width="7.5" height="7.5" rx="2" fill="currentColor" opacity=".85"/><rect x="13.5" y="13" width="7.5" height="7.5" rx="2" fill="currentColor" opacity=".85"/><path d="M10.5 7.2h4.6v9.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.4 2"/></svg></span>
+        <span class="tag">消除休闲</span>
+      </span>
+      <span class="body">
+        <span class="nm">连连看</span>
+        <span class="en">Match</span>
+        <span class="ds">汉字牌面，卡住自动重排不会死局</span>
+      </span>
+      <span class="foot"><span class="mt">三档棋盘</span><span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+    <a class="bento" href="xiangqi.html" style="--cs:2;--rs:1;--h:352">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M8.6 9.4h6.8M12 9.4v5.4M9.6 14.8h4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+        <span class="tag">棋类对弈</span>
+      </span>
+      <span class="body">
+        <span class="nm">中国象棋</span>
+        <span class="en">Xiangqi</span>
+        <span class="ds">双人对战与三档 AI，含残局闯关</span>
+      </span>
+      <span class="foot"><span class="mt">八个残局</span><span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+    <a class="bento" href="slide.html" style="--cs:2;--rs:1;--h:262">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.8" fill="currentColor" opacity=".9"/><rect x="13" y="3" width="8" height="8" rx="1.8" fill="currentColor" opacity=".5"/><rect x="3" y="13" width="8" height="8" rx="1.8" fill="currentColor" opacity=".5"/><rect x="13" y="13" width="8" height="8" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 2"/></svg></span>
+        <span class="tag">空间复原</span>
+      </span>
+      <span class="body">
+        <span class="nm">滑块拼图</span>
+        <span class="en">Slide</span>
+        <span class="ds">三档棋盘与两种牌面，开局保证可解</span>
+      </span>
+      <span class="foot"><span class="mt">三/四/五阶</span><span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+    <a class="bento" href="cube.html" style="--cs:2;--rs:1;--h:38">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l8.4 4.8v9.2L12 21.4 3.6 16.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 2.6v9.4M12 12l8.4-4.6M12 12L3.6 7.4M12 12v9.4" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".55"/></svg></span>
+        <span class="tag">立体复原</span>
+      </span>
+      <span class="body">
+        <span class="nm">魔方</span>
+        <span class="en">Cube</span>
+        <span class="ds">三/四/五阶，拖动色块即转层</span>
+      </span>
+      <span class="foot"><span class="mt">纯 CSS 3D</span><span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+  </main>
+  <footer>
+    <span>纯静态 · 零依赖 · 开箱即玩</span>
+    <a href="https://github.com/HypoDear/web-server">在 GitHub 上查看源码</a>
+  </footer>
+</div>
+<script>
+/* 主题切换：仅在点击开关时切换，并记住选择 */
+(function(){
+  var k='hd-theme',root=document.documentElement,btn=document.getElementById('thmBtn');
+  var meta=document.querySelector('meta[name="theme-color"]');
+  var C={light:'#faf8f3',dark:'#101216'};
+  function paint(v){
+    if(v==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');
+    if(meta)meta.setAttribute('content',C[v]);
+    if(btn){
+      btn.setAttribute('aria-label',v==='dark'?'切换浅色模式':'切换深色模式');
+      btn.setAttribute('title',btn.getAttribute('aria-label'));
+    }
+  }
+  paint(root.getAttribute('data-theme')==='dark'?'dark':'light');
+  if(btn)btn.addEventListener('click',function(){
+    var v=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    try{localStorage.setItem(k,v)}catch(e){}
+    paint(v);
+    try{document.dispatchEvent(new Event('hd-theme'))}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
