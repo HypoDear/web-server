@@ -128,14 +128,9 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
 .thm .moon{opacity:1;transform:none}
 [data-theme="dark"] .thm .sun{opacity:1;transform:none}
 [data-theme="dark"] .thm .moon{opacity:0;transform:rotate(70deg) scale(.6)}
-@media(prefers-reduced-motion:reduce){.thm,.thm svg,.thm .sun,.thm .moon{transition-duration:.01ms!important}}
-.thm{box-shadow:var(--shadow)}
-@media(max-width:860px){
-  .grid{grid-template-columns:repeat(4,1fr)}
-  .bento{grid-column:span 2!important;grid-row:span 1!important;min-height:142px}
-  .bento.hero{grid-column:span 4!important;min-height:204px}
-}
-@media(max-width:560px){
+
+@media(max-width:720px){
+  body{padding:30px 15px}
   .grid{grid-template-columns:repeat(2,1fr);gap:11px}
   .bento,.bento.hero{grid-column:span 2!important;padding:18px 19px;min-height:0}
   .hero .nm{font-size:24px}.hero .ds{font-size:14px}
@@ -154,10 +149,23 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
       <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
       </button>
     </div>
-    <h1>应用合集 <em>/ 4 应用</em></h1>
+    <h1>应用合集 <em>/ 5 应用</em></h1>
     <p>每个应用都是独立的单文件 HTML，不依赖任何框架或构建工具。</p>
   </header>
   <main class="grid">
+    <a class="bento" href="day/" style="--cs:3;--rs:1;--h:212">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.6" width="17.6" height="16.2" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.2 9.4h17.6M8 2.8v3.6M16 2.8v3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7.6 13.4h3.2v3.2H7.6z" fill="currentColor" opacity=".7"/></svg></span>
+        <span class="tag">时间工具</span>
+      </span>
+      <span class="body">
+        <span class="nm">倒数日</span>
+        <span class="en">Countdown</span>
+        <span class="ds">把重要日子钉在首屏，自动算还剩多少天</span>
+      </span>
+      <span class="foot"><span class="mt">纯静态</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
     <a class="bento" href="flac/" style="--cs:3;--rs:1;--h:203">
       <span class="wash" aria-hidden="true"></span>
       <span class="top">
@@ -170,6 +178,19 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
         <span class="ds">无损歌单播放器，点击即播，歌单数据存于仓库</span>
       </span>
       <span class="foot"><span class="mt">即点即播</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
+    </a>
+    <a class="bento" href="games/" style="--cs:3;--rs:1;--h:38">
+      <span class="wash" aria-hidden="true"></span>
+      <span class="top">
+        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.8" y="7.2" width="18.4" height="9.6" rx="4.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8.2 12h3.2M9.8 10.4v3.2M15.4 11.2h.01M17.6 13h.01" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+        <span class="tag">小游戏</span>
+      </span>
+      <span class="body">
+        <span class="nm">小游戏合集</span>
+        <span class="en">Mini Games</span>
+        <span class="ds">数独、象棋、连连看、2048、羊了个羊等单文件小游戏</span>
+      </span>
+      <span class="foot"><span class="mt">自动索引</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
     </a>
     <a class="bento" href="userscripts/" style="--cs:3;--rs:1;--h:262">
       <span class="wash" aria-hidden="true"></span>
@@ -184,31 +205,18 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
       </span>
       <span class="foot"><span class="mt">自动索引</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
     </a>
-    <a class="bento" href="games/" style="--cs:3;--rs:1;--h:38">
-      <span class="wash" aria-hidden="true"></span>
-      <span class="top">
-        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.8" y="7.2" width="18.4" height="9.6" rx="4.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8.2 12h3.2M9.8 10.4v3.2M15.4 11.2h.01M17.6 13h.01" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-        <span class="tag">小游戏</span>
-      </span>
-      <span class="body">
-        <span class="nm">小游戏合集</span>
-        <span class="en">Mini Games</span>
-        <span class="ds">数独、五子棋、连连看、象棋、拼图、魔方，六款单文件小游戏</span>
-      </span>
-      <span class="foot"><span class="mt">6 款游戏</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
-    </a>
-    <a class="bento" href="html/" style="--cs:3;--rs:1;--h:190">
+    <a class="bento" href="practice/" style="--cs:3;--rs:1;--h:190">
       <span class="wash" aria-hidden="true"></span>
       <span class="top">
         <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="3.8" width="17.2" height="16.4" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.4 8.6h17.2" stroke="currentColor" stroke-width="1.4" opacity=".6"/><path d="M10 11.4 7.4 14l2.6 2.6M14 11.4 16.6 14 14 16.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="tag">单页 HTML</span>
       </span>
       <span class="body">
-        <span class="nm">HTML 小项目</span>
-        <span class="en">HTML Gallery</span>
-        <span class="ds">单文件 HTML 作品集，离线可用，持续更新</span>
+        <span class="nm">练习合集</span>
+        <span class="en">Practice</span>
+        <span class="ds">单文件 HTML 练习作品，离线可用，持续更新</span>
       </span>
-      <span class="foot"><span class="mt">当前 1 个</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
+      <span class="foot"><span class="mt">持续更新</span><span class="go">打开应用 <i aria-hidden="true">&rarr;</i></span></span>
     </a>
   </main>
   <footer>
