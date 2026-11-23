@@ -1,32 +1,24 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-23T05:04:30.363Z",
+  "updatedAt": "2026-11-23T07:38:45.886Z",
   "bridge": {
     "reachable": true,
-    "uptimeMs": 42307,
+    "uptimeMs": 9297176,
     "ttfbMs": 5000
   },
   "buddy": {
-    "ok": true,
-    "today": 232.66,
-    "week": 232.66,
-    "total": 232.66,
-    "sessionsToday": 2,
-    "sessionsWeek": 2,
-    "requests": 20,
-    "sessions": 2,
     "credits": {
       "ok": true,
-      "remaining": 455.6,
+      "remaining": 384.79,
       "accounts": [
         {
           "id": "a6fdae69",
           "note": "",
           "nickname": "元昍",
           "daysLeft": 28,
-          "total": 1035,
-          "used": 579.4,
-          "remaining": 455.6
+          "total": 935,
+          "used": 550.21,
+          "remaining": 384.79
         }
       ]
     }
@@ -41,8 +33,8 @@
       "detail": "正常",
       "quota": {
         "total": 2600,
-        "used": 2245.79,
-        "remaining": 354.21000000000004
+        "used": 2247.73,
+        "remaining": 352.27
       },
       "noCredits": false,
       "account": {

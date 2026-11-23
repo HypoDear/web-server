@@ -111,7 +111,7 @@ function card(p){
   </div>`;
 }
 
-// WorkBuddy：积分按账号铺开，多账号就多一张内嵌小卡
+// Buddy 积分：按账号铺开，多账号就多一张内嵌小卡
 function buddyCard(b){
   const cr = b.credits || {};
   const list = cr.ok === true ? (cr.accounts || []) : [];
@@ -131,21 +131,16 @@ function buddyCard(b){
       </div>`).join('')}</div>`;
   }
 
-  const consume = b.ok === true
-    ? `<div class="kv" style="margin-top:10px"><span>今日 ${fmt(b.today)} · 近 7 日 ${fmt(b.week)}</span><span>${b.requests} 次</span></div>`
-    : '';
-
   return `<div class="card wide" data-state="${cr.ok === true ? 'ok' : 'login'}">
     <div class="row">
       <div>
-        <div class="nm">WorkBuddy</div>
+        <div class="nm">Buddy</div>
         <div class="sub">账号积分</div>
       </div>
       <span class="badge"><i></i>${cr.ok === true ? '已登录' : '未登录'}</span>
     </div>
     <div class="kv"><span>剩余 <b>${fmt(remain)}</b></span></div>
     ${body}
-    ${consume}
   </div>`;
 }
 
