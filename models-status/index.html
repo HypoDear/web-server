@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="四家上游模型桥的实时状态与积分余额">
+<meta name="theme-color" content="#faf8f3">
+<meta name="color-scheme" content="light">
+<title>模型桥状态</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23faf8f3'/><circle cx='16' cy='16' r='7' fill='none' stroke='%231b6b85' stroke-width='2.4'/><circle cx='16' cy='16' r='2.6' fill='%231b6b85'/></svg>">
+<style>
+:root{
+  --bg:#faf8f3; --card:#fff; --line:#e7e1d5; --line2:#d2c9b8;
+  --ink:#241f19; --ink2:#6a6257; --ink3:#9b9387;
+  --ok:#2e9e68; --warn:#b0623e; --bad:#b2402f; --idle:#9b9387;
+  --shadow:0 1px 2px rgba(60,50,35,.05);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro SC","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;
+  -webkit-font-smoothing:antialiased;padding:max(40px,env(safe-area-inset-top)) 22px max(44px,env(safe-area-inset-bottom));
+  display:flex;justify-content:center;
+  background-image:radial-gradient(880px 460px at 16% -10%,rgba(31,111,139,.07),transparent 64%),
+    radial-gradient(700px 400px at 97% 2%,rgba(176,98,62,.055),transparent 62%);
+  background-attachment:fixed;
+}
+.wrap{width:100%;max-width:1060px}
+a{color:inherit;text-decoration:none}
+header{margin:0 0 24px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
+.kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink2);border:1px solid var(--line);background:var(--card);
+  border-radius:999px;padding:6px 13px;box-shadow:var(--shadow)}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,158,104,.16)}
+h1{margin:14px 0 0;font-size:clamp(26px,5vw,40px);font-weight:650;letter-spacing:-.018em;line-height:1.14}
+h1 em{font-style:normal;color:var(--ink3);font-weight:500}
+.meta{color:var(--ink3);font-size:12.5px;text-align:right}
+.meta b{color:var(--ink2);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--idle);opacity:.85}
+.card[data-state=ok]::after{background:var(--ok)}
+.card[data-state=degraded]::after{background:var(--warn)}
+.card[data-state=cooling]::after{background:var(--warn)}
+.card[data-state=down]::after{background:var(--bad)}
+.card[data-state=login]::after{background:var(--ink3)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nm{font-size:17px;font-weight:650;letter-spacing:-.01em}
+.sub{font-size:11.5px;color:var(--ink3);margin-top:1px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;
+  border:1px solid var(--line2);border-radius:999px;padding:3px 10px;color:var(--ink2);white-space:nowrap}
+.badge i{width:6px;height:6px;border-radius:50%;background:var(--idle)}
+.card[data-state=ok] .badge i{background:var(--ok)}
+.card[data-state=degraded] .badge i,.card[data-state=cooling] .badge i{background:var(--warn)}
+.card[data-state=down] .badge i{background:var(--bad)}
+.bar{height:7px;border-radius:99px;background:#efe9dc;margin:14px 0 8px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#1b6b85,#2e9e68);transition:width .5s ease}
+.bar.low>i{background:linear-gradient(90deg,#b0623e,#c9803f)}
+.bar.out>i{background:var(--bad)}
+.kv{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)}
+.kv b{font-weight:650;color:var(--ink)}
+.detail{margin-top:9px;font-size:12px;color:var(--ink3);min-height:1.6em}
+.chain{grid-column:span 2;background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:16px 18px;box-shadow:var(--shadow)}
+.chain h2{margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.line{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:7px 0;font-size:12.5px}
+.line span.tag{font-size:11px;color:var(--ink3);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.hop{background:#f6f2e9;border:1px solid var(--line);border-radius:8px;padding:4px 10px;color:var(--ink2)}
+.arrow{color:var(--ink3);font-size:12px}
+.line.fam{margin-top:14px}
+.cnt{color:var(--ink3);font-size:11.5px}
+.ttl{color:var(--ink2);font-size:12px}
+.buddy{background:#f6f2e9;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0 0 8px;font-size:12.5px;color:var(--ink2)}
+.buddy b{color:var(--ink);font-weight:650}
+.hint{margin-left:8px;color:var(--ink3);font-size:11px}
+.line.fam:first-child{margin-top:4px}
+.mid{min-width:190px;font-weight:600;color:var(--ink)}
+.ctx{min-width:52px;text-align:right;color:var(--ink3);font-size:11.5px;margin-right:8px}
+.note{grid-column:span 2;font-size:12px;color:var(--ink3);line-height:1.85}
+code{background:#f3eee3;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:11.5px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.chain,.note{grid-column:span 1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <span class="kick"><span class="dot"></span>Models Bridge</span>
+      <h1>模型桥<em>状态</em></h1>
+    </div>
+    <div class="meta">
+      <div>更新于 <b id="at">—</b></div>
+      <div id="up" style="margin-top:2px">—</div>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="chain" id="chain" hidden>
+    <h2>型号 × 来源</h2>
+    <div id="tiers"></div>
+  </div>
+
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+const LABEL = { ok:'可用', degraded:'降级', cooling:'冷却中', down:'不可用', login:'未登录', unknown:'数据缺失' };
+const fmt = (n) => (typeof n === 'number' ? n.toLocaleString('zh-CN') : '—');
+
+function card(p){
+  const q = p.quota;
+  const pct = q && q.total > 0 ? Math.max(0, Math.min(100, Math.round(q.remaining / q.total * 100))) : null;
+  const lowCls = pct === null ? '' : pct <= 20 ? (pct <= 0 ? ' out' : ' low') : '';
+  const bar = q ? `
+      <div class="bar${lowCls}"><i style="width:${pct}%"></i></div>
+      <div class="kv"><span>剩余 <b>${fmt(q.remaining)}</b> / ${fmt(q.total)}</span><span>${pct}%</span></div>`
+    : `<div class="bar"><i style="width:0"></i></div>
+       <div class="kv"><span>${p.noCredits ? '无额度接口' : '余额不可读'}</span><span>—</span></div>`;
+  return `<div class="card" data-state="${p.state}">
+    <div class="row">
+      <div>
+        <div class="nm">${p.label}</div>
+        <div class="sub">${p.note || ''}</div>
+      </div>
+      <span class="badge"><i></i>${LABEL[p.state] || p.state}</span>
+    </div>
+    ${bar}
+    <div class="detail">${p.detail || ''}${p.latencyMs !== undefined ? ` · 首字节 ${p.latencyMs}ms` : ''}</div>
+  </div>`;
+}
+
+function catalogBlock(doc){
+  const models = doc.models || [];
+  if (!models.length) return '';
+  const groups = {};
+  for (const m of models) (groups[m.provider] ??= []).push(m);
+  return Object.entries(groups).map(([p, list]) => `
+    <div class="line fam"><span class="tag">${list[0].label || p}</span><span class="cnt">${list.length} 个型号</span></div>
+    ${list.map((m) => `<div class="line">
+      <span class="mid">${m.id}</span>
+      <span class="ctx">${Math.round(m.contextWindow / 1000)}K</span>
+      <span class="ttl">${m.title || ''}</span>
+    </div>`).join('')}
+  `).join('');
+}
+
+function bodyLine(doc){
+  const b = doc.buddy;
+  if (!b || b.ok !== true) return '';
+  const cr = b.credits;
+  let bal = '';
+  if (cr && cr.ok === true) {
+    const n = (cr.accounts || []).length;
+    bal = ` ｜ 账号余额 <b>${cr.remaining}</b>${n > 1 ? `（${n} 个账号）` : ''}`;
+  } else if (cr && cr.error === 'not-logged-in') {
+    bal = ' ｜ 账号余额：未登录';
+  }
+  return `<div class="line buddy">本机消耗：今日 <b>${b.today}</b> · 近 7 日 <b>${b.week}</b> · ${b.requests} 次请求${bal}<span class="hint">积分单位</span></div>`;
+}
+
+async function load(){
+  try {
+    const res = await fetch(`status.json?v=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const doc = await res.json();
+    document.getElementById('grid').innerHTML = (doc.providers || []).map(card).join('');
+    document.getElementById('at').textContent = new Date(doc.updatedAt).toLocaleString('zh-CN', { hour12: false });
+    const b = doc.bridge || {};
+    document.getElementById('up').textContent = b.reachable && b.uptimeMs
+      ? `桥已运行 ${Math.floor(b.uptimeMs / 3600000)} 小时 ${Math.floor(b.uptimeMs % 3600000 / 60000)} 分`
+      : (b.reachable ? '桥在线' : '桥离线');
+    const block = catalogBlock(doc);
+    if (block !== '') {
+      document.getElementById('chain').hidden = false;
+      document.getElementById('tiers').innerHTML = bodyLine(doc) + block;
+    }
+    document.getElementById('note').innerHTML =
+      `状态由本机桥 ${doc.probed ? '（含逐家探活）' : '（仅健康与余额）'} 定时导出；` +
+      `余额为上游积分单位，不是货币。${(doc.models || []).length} 条平铺模型，一条对应一个厂商，切换完全手动。`;
+  } catch (e) {
+    document.getElementById('grid').innerHTML =
+      `<div class="card" data-state="unknown"><div class="row"><div class="nm">读不到状态</div></div>
+       <div class="detail">${String(e.message || e)} · status.json 还没生成或本机桥没跑</div></div>`;
+    document.getElementById('at').textContent = '—';
+  }
+}
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>

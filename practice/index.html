@@ -162,8 +162,8 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
 var TITLE = '练习合集';
 /* ── 项目清单 ────────────────────────────────────────────────────────
    新增一个单文件项目：
-     1. 把 HTML 放进本目录，文件名用 <slug>.html
-     2. 在下面 PROJECTS 里加一条，slug 与文件名保持一致
+     1. 把 HTML 放进本目录，文件名用 <slug>.html  —— 列表会自动发现它
+     2. 想让它有中文名/介绍/配色，再在下面 PROJECTS 里补一条（可选）
    卡片链接会指向 /practice/<slug>.html。
    hue 决定这张卡片的配色（0–360），参考：青 200、紫 262、琥珀 38、绿 148、红 8。
    size: 'hero' 是大卡（首屏主推），默认 'card'。 */
@@ -190,27 +190,62 @@ const PROJECTS = [
     size: 'hero',
     icon: '<path d="M2.8 13.6c1.6 0 1.6-1.6 3.2-1.6s1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6 1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M2.8 18.2c1.6 0 1.6-1.6 3.2-1.6s1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6 1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".6"/><path d="M12 2.8c2.6 2.4 4.2 4.6 4.2 6.8a4.2 4.2 0 0 1-8.4 0c0-2.2 1.6-4.4 4.2-6.8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
   },
-  {
-    slug: 'craftmine',
-    name: 'CraftMine',
-    en: 'Vibe-Coded Minecraft',
-    tag: '体素沙盒',
-    desc: '单文件 Minecraft 克隆，46 种方块、36 种生物、19 种武器，支持 P2P 联机。',
-    meta: 'Three.js · P2P 联机',
-    hue: 148,
-    size: 'hero',
-    icon: '<path d="M12 2.8 21 7.4v9.2L12 21.2 3 16.6V7.4L12 2.8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 7.4 12 12l9-4.6M12 12v9.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
-  },
 ];
 /* ── 渲染（不需要改） ─────────────────────────────────────────────── */
-(function(){
+/* ── 目录发现 ──────────────────────────────────────────────────────
+   practice/ 下有哪些 HTML，页面就把哪些列出来：新增文件自动出现，删掉自动消失。
+   PROJECTS 只负责介绍文案；没登记的 slug 用默认卡片顶上去。
+   拉不到 GitHub API 时依次退：localStorage 缓存 → PROJECTS 清单。 */
+var REPO = 'HypoDear/web-server';
+var DIR = 'practice';
+var BRANCH = 'main';
+var CACHE_KEY = 'hd-practice-slugs-v1';
+var CACHE_TTL = 10 * 60 * 1000;
+
+function readCache(){
+  try {
+    var o = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+    if (!o || !Array.isArray(o.slugs)) return null;
+    return o;
+  } catch (e) { return null; }
+}
+function writeCache(slugs){
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), slugs: slugs })); } catch (e) {}
+}
+function scan(){
+  var cached = readCache();
+  if (cached && Date.now() - cached.at < CACHE_TTL) return Promise.resolve({ slugs: cached.slugs });
+  var api = 'https://api.github.com/repos/' + REPO + '/contents/' + DIR + '?ref=' + BRANCH;
+  return fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(list){
+      if (!Array.isArray(list)) throw new Error('bad payload');
+      var slugs = list
+        .filter(function(f){ return f.type === 'file' && /\.html$/i.test(f.name) && f.name !== 'index.html'; })
+        .map(function(f){ return f.name.replace(/\.html$/i, ''); });
+      writeCache(slugs);
+      return { slugs: slugs };
+    })
+    .catch(function(){
+      if (cached) return { slugs: cached.slugs };
+      return { slugs: PROJECTS.map(function(p){ return p.slug; }) };
+    });
+}
+
+function entryOf(slug){
+  for (var i = 0; i < PROJECTS.length; i++) if (PROJECTS[i].slug === slug) return PROJECTS[i];
+  return { slug: slug, name: slug, en: '', tag: '未登记', desc: '新加入的单文件项目，还没有写介绍。', meta: '', hue: 200, size: 'card', icon: '' };
+}
+
+function paint(list){
   var grid = document.getElementById('grid');
+  grid.innerHTML = '';
   var cnt = document.getElementById('cnt');
   var COLS = 6;
-  var cards = PROJECTS.filter(function(p){ return p.size !== 'hero'; }).length;
+  var cards = list.filter(function(p){ return p.size !== 'hero'; }).length;
   var seen = 0;
 
-  PROJECTS.forEach(function(p){
+  list.forEach(function(p){
     var hero = p.size === 'hero';
     seen += hero ? 0 : 1;
     var cs = hero ? COLS : (cards % 2 === 1 && seen === cards ? COLS : COLS / 2);
@@ -234,9 +269,12 @@ const PROJECTS = [
     grid.appendChild(a);
   });
 
-  cnt.textContent = '/ ' + PROJECTS.length + ' 个项目';
-  document.title = TITLE + ' · ' + PROJECTS.length + ' 个项目';
-})();
+  cnt.textContent = '/ ' + list.length + ' 个项目';
+  document.title = TITLE + ' · ' + list.length + ' 个项目';
+}
+
+scan().then(function(r){ paint(r.slugs.map(entryOf)); });
+
 
 /* ── 主题切换：仅在点击开关时切换，并记住选择 ───────────────────── */
 (function(){
