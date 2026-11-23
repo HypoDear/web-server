@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="四家上游模型桥的实时状态与积分余额">
+<meta name="description" content="模型桥与账号状态">
 <meta name="theme-color" content="#faf8f3">
 <meta name="color-scheme" content="light">
 <title>模型桥状态</title>
@@ -25,29 +25,25 @@ body{
     radial-gradient(700px 400px at 97% 2%,rgba(176,98,62,.055),transparent 62%);
   background-attachment:fixed;
 }
-.wrap{width:100%;max-width:1060px}
+.wrap{width:100%;max-width:900px}
 a{color:inherit;text-decoration:none}
-header{margin:0 0 24px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
-.kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink2);border:1px solid var(--line);background:var(--card);
-  border-radius:999px;padding:6px 13px;box-shadow:var(--shadow)}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,158,104,.16)}
-h1{margin:14px 0 0;font-size:clamp(26px,5vw,40px);font-weight:650;letter-spacing:-.018em;line-height:1.14}
+header{margin:0 0 22px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
+h1{margin:0;font-size:clamp(24px,5vw,34px);font-weight:650;letter-spacing:-.018em;line-height:1.14}
 h1 em{font-style:normal;color:var(--ink3);font-weight:500}
-.meta{color:var(--ink3);font-size:12.5px;text-align:right}
+.meta{color:var(--ink3);font-size:12px;text-align:right;line-height:1.7}
 .meta b{color:var(--ink2);font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:17px 17px 15px;
   box-shadow:var(--shadow);position:relative;overflow:hidden}
 .card::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--idle);opacity:.85}
 .card[data-state=ok]::after{background:var(--ok)}
-.card[data-state=degraded]::after{background:var(--warn)}
-.card[data-state=cooling]::after{background:var(--warn)}
+.card[data-state=degraded]::after,.card[data-state=cooling]::after{background:var(--warn)}
 .card[data-state=down]::after{background:var(--bad)}
 .card[data-state=login]::after{background:var(--ink3)}
+.card.wide{grid-column:span 2}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.nm{font-size:17px;font-weight:650;letter-spacing:-.01em}
-.sub{font-size:11.5px;color:var(--ink3);margin-top:1px}
+.nm{font-size:16.5px;font-weight:650;letter-spacing:-.01em}
+.sub{font-size:11.5px;color:var(--ink3);margin-top:2px}
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;
   border:1px solid var(--line2);border-radius:999px;padding:3px 10px;color:var(--ink2);white-space:nowrap}
 .badge i{width:6px;height:6px;border-radius:50%;background:var(--idle)}
@@ -60,104 +56,108 @@ h1 em{font-style:normal;color:var(--ink3);font-weight:500}
 .bar.out>i{background:var(--bad)}
 .kv{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)}
 .kv b{font-weight:650;color:var(--ink)}
-.detail{margin-top:9px;font-size:12px;color:var(--ink3);min-height:1.6em}
-.chain{grid-column:span 2;background:var(--card);border:1px solid var(--line);border-radius:16px;
-  padding:16px 18px;box-shadow:var(--shadow)}
-.chain h2{margin:0 0 10px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);font-weight:600}
-.line{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:7px 0;font-size:12.5px}
-.line span.tag{font-size:11px;color:var(--ink3);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
-.hop{background:#f6f2e9;border:1px solid var(--line);border-radius:8px;padding:4px 10px;color:var(--ink2)}
-.arrow{color:var(--ink3);font-size:12px}
-.line.fam{margin-top:14px}
-.cnt{color:var(--ink3);font-size:11.5px}
-.ttl{color:var(--ink2);font-size:12px}
-.buddy{background:#f6f2e9;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:0 0 8px;font-size:12.5px;color:var(--ink2)}
-.buddy b{color:var(--ink);font-weight:650}
-.hint{margin-left:8px;color:var(--ink3);font-size:11px}
-.line.fam:first-child{margin-top:4px}
-.mid{min-width:190px;font-weight:600;color:var(--ink)}
-.ctx{min-width:52px;text-align:right;color:var(--ink3);font-size:11.5px;margin-right:8px}
-.note{grid-column:span 2;font-size:12px;color:var(--ink3);line-height:1.85}
-code{background:#f3eee3;border:1px solid var(--line);border-radius:5px;padding:1px 5px;font-size:11.5px}
-@media(max-width:720px){.grid{grid-template-columns:1fr}.chain,.note{grid-column:span 1}}
+.foot{margin-top:9px;font-size:11.5px;color:var(--ink3);display:flex;justify-content:space-between;gap:10px}
+.acct{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.acct .a{flex:1 1 180px;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:#fbf9f4}
+.acct .a .an{font-size:13px;font-weight:600}
+.acct .a .ad{font-size:11px;color:var(--ink3)}
+.acct .a .av{font-size:12px;color:var(--ink2);margin-top:3px}
+.empty{font-size:12px;color:var(--ink3);margin-top:10px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.card.wide{grid-column:span 1}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div>
-      <span class="kick"><span class="dot"></span>Models Bridge</span>
-      <h1>模型桥<em>状态</em></h1>
-    </div>
+    <h1>模型桥<em>状态</em></h1>
     <div class="meta">
       <div>更新于 <b id="at">—</b></div>
-      <div id="up" style="margin-top:2px">—</div>
+      <div id="up">—</div>
     </div>
   </header>
 
   <div class="grid" id="grid"></div>
-
-  <div class="chain" id="chain" hidden>
-    <h2>型号 × 来源</h2>
-    <div id="tiers"></div>
-  </div>
-
-  <div class="note" id="note"></div>
 </div>
 
 <script>
-const LABEL = { ok:'可用', degraded:'降级', cooling:'冷却中', down:'不可用', login:'未登录', unknown:'数据缺失' };
-const fmt = (n) => (typeof n === 'number' ? n.toLocaleString('zh-CN') : '—');
+const LABEL = { ok:'可用', degraded:'降级', cooling:'冷却中', down:'不可用', login:'未登录', unknown:'未知' };
+const fmt = (n) => (typeof n === 'number' ? Math.round(n).toLocaleString('zh-CN') : '—');
+
+// 昵称优先；没有昵称的厂商退到尾号，都没有就不显示这一段
+function accountLine(a){
+  if (!a || a.loggedIn === false) return '未登录';
+  const who = a.nickname || (a.tag ? `尾号 ${a.tag}` : '');
+  const left = typeof a.daysLeft === 'number' ? `${a.daysLeft} 天后到期` : '';
+  return [who, left].filter(Boolean).join(' · ') || '已登录';
+}
+
+function bar(pct, cls){
+  return `<div class="bar${cls}"><i style="width:${pct === null ? 0 : pct}%"></i></div>`;
+}
 
 function card(p){
   const q = p.quota;
   const pct = q && q.total > 0 ? Math.max(0, Math.min(100, Math.round(q.remaining / q.total * 100))) : null;
-  const lowCls = pct === null ? '' : pct <= 20 ? (pct <= 0 ? ' out' : ' low') : '';
-  const bar = q ? `
-      <div class="bar${lowCls}"><i style="width:${pct}%"></i></div>
-      <div class="kv"><span>剩余 <b>${fmt(q.remaining)}</b> / ${fmt(q.total)}</span><span>${pct}%</span></div>`
-    : `<div class="bar"><i style="width:0"></i></div>
-       <div class="kv"><span>${p.noCredits ? '无额度接口' : '余额不可读'}</span><span>—</span></div>`;
+  const cls = pct === null ? '' : pct <= 20 ? (pct <= 0 ? ' out' : ' low') : '';
+  const quota = q
+    ? `<div class="kv"><span>剩余 <b>${fmt(q.remaining)}</b> / ${fmt(q.total)}</span><span>${pct}%</span></div>`
+    : `<div class="kv"><span>${p.noCredits ? '无额度接口' : '余额不可读'}</span><span>—</span></div>`;
+  const foot = [p.detail, p.latencyMs !== undefined ? `${p.latencyMs}ms` : ''].filter(Boolean).join(' · ');
   return `<div class="card" data-state="${p.state}">
     <div class="row">
       <div>
         <div class="nm">${p.label}</div>
-        <div class="sub">${p.note || ''}</div>
+        <div class="sub">${accountLine(p.account)}</div>
       </div>
       <span class="badge"><i></i>${LABEL[p.state] || p.state}</span>
     </div>
-    ${bar}
-    <div class="detail">${p.detail || ''}${p.latencyMs !== undefined ? ` · 首字节 ${p.latencyMs}ms` : ''}</div>
+    ${bar(pct, cls)}
+    ${quota}
+    <div class="foot"><span>${foot}</span></div>
   </div>`;
 }
 
-function catalogBlock(doc){
-  const models = doc.models || [];
-  if (!models.length) return '';
-  const groups = {};
-  for (const m of models) (groups[m.provider] ??= []).push(m);
-  return Object.entries(groups).map(([p, list]) => `
-    <div class="line fam"><span class="tag">${list[0].label || p}</span><span class="cnt">${list.length} 个型号</span></div>
-    ${list.map((m) => `<div class="line">
-      <span class="mid">${m.id}</span>
-      <span class="ctx">${Math.round(m.contextWindow / 1000)}K</span>
-      <span class="ttl">${m.title || ''}</span>
-    </div>`).join('')}
-  `).join('');
-}
+// WorkBuddy：积分按账号铺开，多账号就多一张内嵌小卡
+function buddyCard(b){
+  const cr = b.credits || {};
+  const list = cr.ok === true ? (cr.accounts || []) : [];
+  const remain = typeof cr.remaining === 'number' ? cr.remaining : null;
+  // 总额度从各账号 total 汇总；拿不到就不画进度条
+  const total = list.reduce((n, a) => n + (Number(a.total) || 0), 0);
+  const pct = total > 0 && remain !== null ? Math.max(0, Math.min(100, Math.round(remain / total * 100))) : null;
+  const cls = pct === null ? '' : pct <= 20 ? (pct <= 0 ? ' out' : ' low') : '';
 
-function bodyLine(doc){
-  const b = doc.buddy;
-  if (!b || b.ok !== true) return '';
-  const cr = b.credits;
-  let bal = '';
-  if (cr && cr.ok === true) {
-    const n = (cr.accounts || []).length;
-    bal = ` ｜ 账号余额 <b>${cr.remaining}</b>${n > 1 ? `（${n} 个账号）` : ''}`;
-  } else if (cr && cr.error === 'not-logged-in') {
-    bal = ' ｜ 账号余额：未登录';
+  let body;
+  if (cr.ok !== true) {
+    body = `<div class="empty">${cr.error === 'not-logged-in' ? '未登录' : '读取失败'}</div>`;
+  } else if (list.length === 0) {
+    body = `<div class="empty">无账号</div>`;
+  } else {
+    body = `<div class="acct">${list.map((a) => `
+      <div class="a">
+        <div class="an">${a.nickname || (a.id ? `账号 ${a.id}` : '账号')}</div>
+        <div class="ad">${a.daysLeft !== undefined ? `${a.daysLeft} 天后到期` : '到期未知'}</div>
+        <div class="av">${a.error ? '读取失败' : `剩余 <b>${fmt(a.remaining)}</b> / ${fmt(a.total)}`}</div>
+      </div>`).join('')}</div>`;
   }
-  return `<div class="line buddy">本机消耗：今日 <b>${b.today}</b> · 近 7 日 <b>${b.week}</b> · ${b.requests} 次请求${bal}<span class="hint">积分单位</span></div>`;
+
+  const consume = b.ok === true
+    ? `<div class="kv" style="margin-top:10px"><span>今日 ${fmt(b.today)} · 近 7 日 ${fmt(b.week)}</span><span>${b.requests} 次</span></div>`
+    : '';
+
+  return `<div class="card wide" data-state="${cr.ok === true ? 'ok' : 'login'}">
+    <div class="row">
+      <div>
+        <div class="nm">WorkBuddy</div>
+        <div class="sub">账号积分</div>
+      </div>
+      <span class="badge"><i></i>${cr.ok === true ? '已登录' : '未登录'}</span>
+    </div>
+    ${bar(pct, cls)}
+    <div class="kv"><span>剩余 <b>${fmt(remain)}</b>${total > 0 ? ` / ${fmt(total)}` : ''}</span><span>${pct === null ? '—' : `${pct}%`}</span></div>
+    ${body}
+    ${consume}
+  </div>`;
 }
 
 async function load(){
@@ -165,24 +165,17 @@ async function load(){
     const res = await fetch(`status.json?v=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const doc = await res.json();
-    document.getElementById('grid').innerHTML = (doc.providers || []).map(card).join('');
+    const cards = (doc.providers || []).map(card).join('');
+    document.getElementById('grid').innerHTML = cards + (doc.buddy ? buddyCard(doc.buddy) : '');
     document.getElementById('at').textContent = new Date(doc.updatedAt).toLocaleString('zh-CN', { hour12: false });
     const b = doc.bridge || {};
     document.getElementById('up').textContent = b.reachable && b.uptimeMs
-      ? `桥已运行 ${Math.floor(b.uptimeMs / 3600000)} 小时 ${Math.floor(b.uptimeMs % 3600000 / 60000)} 分`
-      : (b.reachable ? '桥在线' : '桥离线');
-    const block = catalogBlock(doc);
-    if (block !== '') {
-      document.getElementById('chain').hidden = false;
-      document.getElementById('tiers').innerHTML = bodyLine(doc) + block;
-    }
-    document.getElementById('note').innerHTML =
-      `状态由本机桥 ${doc.probed ? '（含逐家探活）' : '（仅健康与余额）'} 定时导出；` +
-      `余额为上游积分单位，不是货币。${(doc.models || []).length} 条平铺模型，一条对应一个厂商，切换完全手动。`;
+      ? `运行 ${Math.floor(b.uptimeMs / 3600000)} 小时 ${Math.floor(b.uptimeMs % 3600000 / 60000)} 分`
+      : (b.reachable ? '在线' : '离线');
   } catch (e) {
     document.getElementById('grid').innerHTML =
-      `<div class="card" data-state="unknown"><div class="row"><div class="nm">读不到状态</div></div>
-       <div class="detail">${String(e.message || e)} · status.json 还没生成或本机桥没跑</div></div>`;
+      `<div class="card wide" data-state="unknown"><div class="row"><div class="nm">读不到状态</div></div>
+       <div class="foot"><span>status.json 未生成或桥没跑</span></div></div>`;
     document.getElementById('at').textContent = '—';
   }
 }

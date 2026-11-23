@@ -143,18 +143,17 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
 <div class="wrap">
   <header>
     <div class="hdrow">
-      <span class="kick"><span class="dot" aria-hidden="true"></span>web-server · practice · 持续更新</span>
+      <span class="kick"><span class="dot" aria-hidden="true"></span>practice</span>
       <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
       <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
       <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
       </button>
     </div>
-    <h1>练习合集 <em id="cnt"></em></h1>
-    <p>每个项目都是 practice/ 目录下的单个 HTML 文件，不依赖任何框架、构建工具或网络资源。</p>
+    <h1>练习合集</h1>
   </header>
   <main class="grid" id="grid"></main>
   <footer>
-    <span>纯静态 · 零依赖 · 开箱即玩</span>
+    <span>纯静态</span>
     <a href="https://github.com/HypoDear/web-server">在 GitHub 上查看源码</a>
   </footer>
 </div>
@@ -173,7 +172,7 @@ const PROJECTS = [
     name: '海珠雨后 · 体素小世界',
     en: 'Voxel Diorama',
     tag: '3D 体素',
-    desc: '雨停后的广州海珠。拖动环顾、滚轮缩放，看榕树、栈桥与撑伞的人。',
+    desc: '雨后的海珠街景',
     meta: 'WebGL · 拖动环顾',
     hue: 190,
     size: 'hero',
@@ -184,7 +183,7 @@ const PROJECTS = [
     name: '深渊花园',
     en: 'Abyssal Garden',
     tag: 'WebGPU 3D',
-    desc: '潜入由代码生成的海藻林与沉船，看光柱、蝠鲐与程序化声景。',
+    desc: '程序化海藻林',
     meta: 'WebGPU · 离线可用',
     hue: 200,
     size: 'hero',
@@ -234,13 +233,12 @@ function scan(){
 
 function entryOf(slug){
   for (var i = 0; i < PROJECTS.length; i++) if (PROJECTS[i].slug === slug) return PROJECTS[i];
-  return { slug: slug, name: slug, en: '', tag: '未登记', desc: '新加入的单文件项目，还没有写介绍。', meta: '', hue: 200, size: 'card', icon: '' };
+  return { slug: slug, name: slug, en: '', tag: '未登记', desc: '新项目', meta: '', hue: 200, size: 'card', icon: '' };
 }
 
 function paint(list){
   var grid = document.getElementById('grid');
   grid.innerHTML = '';
-  var cnt = document.getElementById('cnt');
   var COLS = 6;
   var cards = list.filter(function(p){ return p.size !== 'hero'; }).length;
   var seen = 0;
@@ -264,12 +262,11 @@ function paint(list){
         '<span class="en">' + p.en + '</span>' +
         '<span class="ds">' + p.desc + '</span>' +
       '</span>' +
-      '<span class="foot"><span class="mt">' + (p.meta || '') + '</span>' +
+      '<span class="foot">' +
         '<span class="go">打开项目 <i aria-hidden="true">&rarr;</i></span></span>';
     grid.appendChild(a);
   });
 
-  cnt.textContent = '/ ' + list.length + ' 个项目';
   document.title = TITLE + ' · ' + list.length + ' 个项目';
 }
 

@@ -1,252 +1,32 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-23T03:52:30.004Z",
+  "updatedAt": "2026-11-23T04:26:57.945Z",
   "bridge": {
     "reachable": true,
-    "uptimeMs": 1415773,
+    "uptimeMs": 711773,
     "ttfbMs": 5000
   },
-  "models": [
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "glm",
-      "wire": "glm-5.3-flash",
-      "id": "Trae:glm-5.3-flash",
-      "name": "Trae:glm-5.3-flash",
-      "title": "GLM-5.3-Flash",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "glm",
-      "wire": "glm-5.3-flashx",
-      "id": "Trae:glm-5.3-flashx",
-      "name": "Trae:glm-5.3-flashx",
-      "title": "GLM-5.3-FlashX",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "glm",
-      "wire": "glm-5.3",
-      "id": "Trae:glm-5.3",
-      "name": "Trae:glm-5.3",
-      "title": "GLM-5.3",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "glm",
-      "wire": "glm-5.2",
-      "id": "Trae:glm-5.2",
-      "name": "Trae:glm-5.2",
-      "title": "GLM-5.2",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "deepseek",
-      "wire": "deepseek-v4.1-flash",
-      "id": "Trae:deepseek-v4.1-flash",
-      "name": "Trae:deepseek-v4.1-flash",
-      "title": "DeepSeek-V4.1-Flash",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "deepseek",
-      "wire": "DeepSeek-V4-Flash-Official",
-      "id": "Trae:DeepSeek-V4-Flash-Official",
-      "name": "Trae:DeepSeek-V4-Flash-Official",
-      "title": "DeepSeek-V4-Flash",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "deepseek",
-      "wire": "DeepSeek-V4-Pro-Official",
-      "id": "Trae:DeepSeek-V4-Pro-Official",
-      "name": "Trae:DeepSeek-V4-Pro-Official",
-      "title": "DeepSeek-V4-Pro",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "kimi",
-      "wire": "kimi-k3.1-pro-highspeed",
-      "id": "Trae:kimi-k3.1-pro-highspeed",
-      "name": "Trae:kimi-k3.1-pro-highspeed",
-      "title": "Kimi-K3.1-Pro-Highspeed",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "kimi",
-      "wire": "kimi-k3.1-pro",
-      "id": "Trae:kimi-k3.1-pro",
-      "name": "Trae:kimi-k3.1-pro",
-      "title": "Kimi-K3.1-Pro",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "kimi",
-      "wire": "kimi-k3",
-      "id": "Trae:kimi-k3",
-      "name": "Trae:kimi-k3",
-      "title": "Kimi-K3",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "kimi",
-      "wire": "kimi-k2.8-preview",
-      "id": "Trae:kimi-k2.8-preview",
-      "name": "Trae:kimi-k2.8-preview",
-      "title": "Kimi-K2.8-Preview",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "trae",
-      "label": "Trae",
-      "family": "deepseek",
-      "wire": "custom_model_deepseek_v4",
-      "id": "Trae:custom_model_deepseek_v4",
-      "name": "Trae:custom_model_deepseek_v4",
-      "title": "custom_model_deepseek_v4",
-      "contextWindow": 1000000
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "glm",
-      "wire": "GLM-5.2",
-      "id": "CodeArts:GLM-5.2",
-      "name": "CodeArts:GLM-5.2",
-      "title": "GLM-5.2",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "glm",
-      "wire": "glm-5.3",
-      "id": "CodeArts:glm-5.3",
-      "name": "CodeArts:glm-5.3",
-      "title": "GLM-5.3",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "glm",
-      "wire": "glm-5.3-flash",
-      "id": "CodeArts:glm-5.3-flash",
-      "name": "CodeArts:glm-5.3-flash",
-      "title": "GLM-5.3-Flash",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "glm",
-      "wire": "glm-5.2-sft-harmony",
-      "id": "CodeArts:glm-5.2-sft-harmony",
-      "name": "CodeArts:glm-5.2-sft-harmony",
-      "title": "GLM-5.2-ArkTS-SPARK",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "deepseek",
-      "wire": "deepseek-v4.1-flash",
-      "id": "CodeArts:deepseek-v4.1-flash",
-      "name": "CodeArts:deepseek-v4.1-flash",
-      "title": "DeepSeek-V4.1-Flash",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "deepseek",
-      "wire": "deepseek-v4.1-flash-1017",
-      "id": "CodeArts:deepseek-v4.1-flash-1017",
-      "name": "CodeArts:deepseek-v4.1-flash-1017",
-      "title": "DeepSeek-V4.1-Flash-1017",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "kimi",
-      "wire": "kimi-k3",
-      "id": "CodeArts:kimi-k3",
-      "name": "CodeArts:kimi-k3",
-      "title": "Kimi-K3",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "codearts",
-      "label": "CodeArts",
-      "family": "kimi",
-      "wire": "kimi-k3.1-pro",
-      "id": "CodeArts:kimi-k3.1-pro",
-      "name": "CodeArts:kimi-k3.1-pro",
-      "title": "Kimi-K3.1-Pro",
-      "contextWindow": 1048576
-    },
-    {
-      "provider": "deveco",
-      "label": "DevEco",
-      "family": "glm",
-      "wire": "GLM-5.3",
-      "id": "DevEco:GLM-5.3",
-      "name": "DevEco:GLM-5.3",
-      "title": "GLM-5.3",
-      "contextWindow": 170000
-    },
-    {
-      "provider": "deveco",
-      "label": "DevEco",
-      "family": "glm",
-      "wire": "GLM-5.1",
-      "id": "DevEco:GLM-5.1",
-      "name": "DevEco:GLM-5.1",
-      "title": "GLM-5.1",
-      "contextWindow": 170000
-    }
-  ],
   "buddy": {
     "ok": true,
-    "today": 144.83,
-    "week": 144.83,
-    "total": 144.83,
+    "today": 204.54,
+    "week": 204.54,
+    "total": 204.54,
     "sessionsToday": 2,
     "sessionsWeek": 2,
-    "requests": 18,
+    "requests": 19,
     "sessions": 2,
     "credits": {
       "ok": true,
-      "remaining": 556.38,
+      "remaining": 494.3,
       "accounts": [
         {
           "id": "a6fdae69",
           "note": "",
-          "total": 1144,
-          "used": 587.62,
-          "remaining": 556.38
+          "nickname": "元昍",
+          "daysLeft": 28,
+          "total": 1035,
+          "used": 540.7,
+          "remaining": 494.3
         }
       ]
     }
@@ -261,10 +41,15 @@
       "detail": "正常",
       "quota": {
         "total": 2600,
-        "used": 2241.52,
-        "remaining": 358.48
+        "used": 2245.79,
+        "remaining": 354.21000000000004
       },
-      "noCredits": false
+      "noCredits": false,
+      "account": {
+        "loggedIn": true,
+        "tag": "989098",
+        "daysLeft": 13
+      }
     },
     {
       "name": "codearts",
@@ -278,7 +63,11 @@
         "remaining": 4466.7,
         "expiring7d": 1966.7
       },
-      "noCredits": false
+      "noCredits": false,
+      "account": {
+        "loggedIn": true,
+        "daysLeft": 29
+      }
     },
     {
       "name": "deveco",
@@ -286,7 +75,12 @@
       "note": "仅 GLM-5.3 / 5.1，170K 上下文",
       "state": "ok",
       "detail": "正常",
-      "noCredits": true
+      "noCredits": true,
+      "account": {
+        "loggedIn": true,
+        "nickname": "芋圆****",
+        "daysLeft": 29
+      }
     }
   ]
 }
