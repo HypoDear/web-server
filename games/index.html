@@ -109,6 +109,17 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
 [data-theme="dark"] footer a:hover{color:#7cc4dd;border-color:#7cc4dd}
 .hdrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .hdrow .kick{flex:none}
+/* ===== 返回合集页 ===== */
+.hact{display:flex;align-items:center;gap:8px;flex:none}
+.back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;
+  border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink2);
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:background .2s,border-color .2s,color .2s}
+.back:hover{color:var(--ink);border-color:var(--line2)}
+.back:focus-visible{outline:2px solid var(--ink2);outline-offset:2px}
+.back svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
 
 /* ===== 主题切换开关 ===== */
 .thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
@@ -147,10 +158,13 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
   <header>
     <div class="hdrow">
       <span class="kick"><span class="dot" aria-hidden="true"></span>games</span>
-      <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
-      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
-      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
-      </button>
+      <div class="hact">
+        <a class="back" href="../" title="返回应用合集" aria-label="返回应用合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+        <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+        </button>
+      </div>
     </div>
     <h1>小游戏合集</h1>
   </header>

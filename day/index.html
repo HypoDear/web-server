@@ -16,6 +16,13 @@
     color:var(--text); padding:34px 20px 46px; -webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1180px;margin:0 auto}
+  .hright{display:flex;align-items:flex-end;gap:12px}
+  .back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:34px;height:34px;
+    border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--sub);
+    text-decoration:none;transition:color .2s,border-color .2s,background .2s}
+  .back:hover{color:var(--text);border-color:#cfd8e4}
+  .back svg{width:17px;height:17px;display:block;fill:none;stroke:currentColor;
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
   header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
   h1{font-size:24px;font-weight:700;letter-spacing:1px}
   h1 small{display:block;font-size:12px;font-weight:400;color:var(--sub);margin-top:8px;letter-spacing:1.5px}
@@ -80,7 +87,10 @@
 <div class="wrap">
   <header>
     <h1>倒数日</h1>
-    <div class="today"><b id="tDate">--</b><span id="tWeek"></span></div>
+    <div class="hright">
+      <a class="back" href="../" title="返回应用合集" aria-label="返回应用合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <div class="today"><b id="tDate">--</b><span id="tWeek"></span></div>
+    </div>
   </header>
 
   <div class="grid">
