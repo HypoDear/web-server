@@ -34,6 +34,15 @@
 [data-theme="dark"] .mask{background:rgba(21,23,28,.95)}
 
 /* ===== 主题切换开关 ===== */
+/* ===== 返回合集页 ===== */
+.back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;
+  border:1px solid var(--line);border-radius:999px;background:var(--paper2);color:var(--ink-soft);
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:background .2s,border-color .2s,color .2s}
+.back:hover{color:var(--accent);border-color:var(--accent)}
+.back:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.back svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
   flex:none;width:30px;height:30px;padding:0;cursor:pointer;
   border:1px solid var(--thm-line,var(--line));border-radius:999px;
@@ -225,7 +234,8 @@ button.snd:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
       <span class="sndTx">音效</span><span class="sndTr"><i></i></span>
     </button>
   
-    <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
+    <a class="back" href="./" title="返回小游戏合集" aria-label="返回小游戏合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+      <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
     <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
     <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
     </button>
