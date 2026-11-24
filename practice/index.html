@@ -109,6 +109,17 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
 [data-theme="dark"] footer a:hover{color:#7cc4dd;border-color:#7cc4dd}
 .hdrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
 .hdrow .kick{flex:none}
+/* ===== 返回合集页 ===== */
+.hact{display:flex;align-items:center;gap:8px;flex:none}
+.back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;
+  border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink2);
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+  transition:background .2s,border-color .2s,color .2s}
+.back:hover{color:var(--ink);border-color:var(--line2)}
+.back:focus-visible{outline:2px solid var(--ink2);outline-offset:2px}
+.back svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
 
 /* ===== 主题切换开关 ===== */
 .thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
@@ -144,10 +155,13 @@ footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
   <header>
     <div class="hdrow">
       <span class="kick"><span class="dot" aria-hidden="true"></span>practice</span>
-      <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
-      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
-      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
-      </button>
+      <div class="hact">
+        <a class="back" href="../" title="返回应用合集" aria-label="返回应用合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+        <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
+        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
+        </button>
+      </div>
     </div>
     <h1>练习合集</h1>
   </header>
@@ -189,7 +203,7 @@ const PROJECTS = [
     size: 'hero',
     icon: '<path d="M2.8 13.6c1.6 0 1.6-1.6 3.2-1.6s1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6 1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M2.8 18.2c1.6 0 1.6-1.6 3.2-1.6s1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6 1.6 1.6 3.2 1.6 1.6-1.6 3.2-1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".6"/><path d="M12 2.8c2.6 2.4 4.2 4.6 4.2 6.8a4.2 4.2 0 0 1-8.4 0c0-2.2 1.6-4.4 4.2-6.8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
   },
-{
+  {
     slug: '双城体素小世界',
     name: '双城体素小世界',
     en: 'Twin City Voxel',
@@ -197,20 +211,19 @@ const PROJECTS = [
     desc: '海风把摩天轮吹得很慢',
     meta: 'WebGL · 拖动环顾',
     hue: 262,
-    size: 'card',
+    size: 'hero',
     icon: '<path d="M3 20.5V9.2l5-2.6 5 2.6v11.3M13 20.5V13l4-2.1 4 2.1v7.5M2 20.5h20M5.5 12.6v1.6M5.5 16.4v1.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
   },
 ];
 /* ── 渲染（不需要改） ─────────────────────────────────────────────── */
 /* ── 目录发现 ──────────────────────────────────────────────────────
    practice/ 下有哪些 HTML，页面就把哪些列出来：新增文件自动出现，删掉自动消失。
-   PROJECTS 只负责介绍文案；没登记的 slug 用默认卡片顶上去。
-   拉不到 GitHub API 时依次退：localStorage 缓存 → PROJECTS 清单。 */
+   PROJECTS 只负责介绍文案与排序；没登记的 slug 用默认卡片顶上去。
+   每次加载都会向 GitHub 拉最新目录，首屏先用内置清单立即渲染；拉不到时退回 localStorage 缓存 / PROJECTS 清单。 */
 var REPO = 'HypoDear/web-server';
 var DIR = 'practice';
 var BRANCH = 'main';
 var CACHE_KEY = 'hd-practice-slugs-v1';
-var CACHE_TTL = 10 * 60 * 1000;
 
 function readCache(){
   try {
@@ -224,7 +237,6 @@ function writeCache(slugs){
 }
 function scan(){
   var cached = readCache();
-  if (cached && Date.now() - cached.at < CACHE_TTL) return Promise.resolve({ slugs: cached.slugs });
   var api = 'https://api.github.com/repos/' + REPO + '/contents/' + DIR + '?ref=' + BRANCH;
   return fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } })
     .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -237,8 +249,9 @@ function scan(){
       return { slugs: slugs };
     })
     .catch(function(){
-      if (cached) return { slugs: cached.slugs };
-      return { slugs: PROJECTS.map(function(p){ return p.slug; }) };
+      var out = PROJECTS.map(function(p){ return p.slug; });
+      if (cached) cached.slugs.forEach(function(s){ if (out.indexOf(s) < 0) out.push(s); });
+      return { slugs: out };
     });
 }
 
@@ -281,6 +294,7 @@ function paint(list){
   document.title = TITLE + ' · ' + list.length + ' 个项目';
 }
 
+paint(PROJECTS.map(entryOf));
 scan().then(function(r){ paint(r.slugs.map(entryOf)); });
 
 
