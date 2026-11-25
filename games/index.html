@@ -3,347 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="开源小游戏合集 · 纯静态、零依赖、开箱即玩">
+<meta name="description" content="小游戏合集 · 单文件、零依赖、开箱即玩">
 <meta name="theme-color" content="#faf8f3">
-<meta name="color-scheme" content="light">
 <title>小游戏合集</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23faf8f3'/><g fill='%231b6b85'><rect x='5.5' y='5.5' width='9.5' height='9.5' rx='2.5'/><rect x='17' y='5.5' width='9.5' height='9.5' rx='2.5'/><rect x='5.5' y='17' width='9.5' height='9.5' rx='2.5'/><rect x='17' y='17' width='9.5' height='9.5' rx='2.5'/></g></svg>">
-<script>
-/* 主题引导：首帧前恢复上次手动选择的深夜模式；默认保持白天 */
-(function(){try{
-  if(localStorage.getItem('hd-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');
-}catch(e){}})();
-</script>
-<style>
-:root{
-  --bg:#faf8f3; --card:#ffffff; --card2:#fffefb;
-  --line:#e7e1d5; --line2:#d2c9b8;
-  --ink:#241f19; --ink2:#6a6257; --ink3:#9b9387;
-  --shadow:0 1px 2px rgba(60,50,35,.05);
-  --shadow-lg:0 16px 34px -20px rgba(60,50,35,.3),0 2px 6px rgba(60,50,35,.05);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro SC","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%}
-body{
-  background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  padding:max(44px,env(safe-area-inset-top)) 22px max(44px,env(safe-area-inset-bottom));
-  display:flex;justify-content:center;
-  background-image:
-    radial-gradient(880px 460px at 16% -10%,rgba(31,111,139,.07),transparent 64%),
-    radial-gradient(700px 400px at 97% 2%,rgba(176,98,62,.055),transparent 62%);
-  background-attachment:fixed;
-}
-.wrap{width:100%;max-width:1060px}
-header{margin:0 0 28px}
-.kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink2);
-  border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;box-shadow:var(--shadow)}
-.dot{width:5px;height:5px;border-radius:50%;background:#2e9e68;box-shadow:0 0 0 3px rgba(46,158,104,.16)}
-h1{margin:16px 0 0;font-size:clamp(30px,5.6vw,46px);font-weight:650;letter-spacing:-.018em;line-height:1.12}
-h1 em{font-style:normal;color:var(--ink3);font-weight:500}
-header p{margin:11px 0 0;color:var(--ink2);font-size:14.5px;max-width:52ch}
-.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}
-.bento{
-  grid-column:span var(--cs);grid-row:span var(--rs);
-  position:relative;overflow:hidden;isolation:isolate;
-  display:flex;flex-direction:column;justify-content:space-between;gap:16px;
-  min-height:152px;padding:19px 20px;
-  text-decoration:none;color:inherit;
-  background:var(--card);border:1px solid var(--line);border-radius:17px;
-  box-shadow:var(--shadow);
-  transition:transform .26s cubic-bezier(.2,.7,.3,1),border-color .26s,box-shadow .26s,background .26s;
-}
-.bento.hero{min-height:244px;padding:25px 26px}
-.wash{position:absolute;inset:-34% -12% auto -12%;height:176px;z-index:-1;
-  background:radial-gradient(58% 100% at 50% 0%,hsl(var(--h) 62% 52% / .11),transparent 72%);
-  opacity:.9;transition:opacity .26s}
-.bento:hover{transform:translateY(-4px);background:var(--card2);
-  border-color:hsl(var(--h) 38% 72%);box-shadow:var(--shadow-lg)}
-.bento:hover .wash{opacity:1}
-.bento:focus-visible{outline:2px solid hsl(var(--h) 58% 44%);outline-offset:3px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-  color:hsl(var(--h) 56% 36%);background:hsl(var(--h) 56% 50% / .1);border:1px solid hsl(var(--h) 44% 58% / .3)}
-.hero .ico{width:46px;height:46px;border-radius:13px}
-.ico svg{width:19px;height:19px}
-.hero .ico svg{width:23px;height:23px}
-.tag{font-size:11px;letter-spacing:.1em;color:var(--ink2);
-  border:1px solid var(--line);background:rgba(250,248,243,.8);border-radius:999px;padding:4px 10px;white-space:nowrap}
-.body{display:block}
-.nm{display:block;font-size:19px;font-weight:620;letter-spacing:.01em}
-.hero .nm{font-size:29px;letter-spacing:-.005em}
-.en{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:3px}
-.ds{display:block;margin-top:9px;font-size:13px;color:var(--ink2);line-height:1.62}
-.hero .ds{font-size:15px;max-width:34ch}
-.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
-.go{display:inline-flex;align-items:center;gap:5px;font-weight:560;color:hsl(var(--h) 58% 38%);
-  opacity:0;transform:translateX(-6px);transition:opacity .26s,transform .26s;white-space:nowrap}
-.go i{font-style:normal}
-.bento:hover .go,.bento:focus-visible .go{opacity:1;transform:none}
-footer{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;
-  padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
-footer a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:1px}
-footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
-[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#101216; --card:#191c22; --card2:#1e222a;
-  --line:#272c35; --line2:#363c47;
-  --ink:#eae6de; --ink2:#9aa0ab; --ink3:#6c737f;
-  --shadow:0 1px 2px rgba(0,0,0,.4);
-  --shadow-lg:0 18px 38px -20px rgba(0,0,0,.85),0 2px 8px rgba(0,0,0,.4);
-}
-/* 深色下背景氛围压暗，避免光斑在暗底上发灰 */
-[data-theme="dark"] body{background-image:
-    radial-gradient(880px 460px at 16% -10%,rgba(95,179,208,.07),transparent 64%),
-    radial-gradient(700px 400px at 97% 2%,rgba(216,169,74,.045),transparent 62%)}
-[data-theme="dark"] .tag{background:rgba(16,18,22,.7)}
-[data-theme="dark"] .ico{color:hsl(var(--h) 62% 72%);background:hsl(var(--h) 56% 52% / .15);
-  border-color:hsl(var(--h) 44% 56% / .32)}
-[data-theme="dark"] .wash{background:radial-gradient(58% 100% at 50% 0%,hsl(var(--h) 66% 56% / .15),transparent 72%)}
-[data-theme="dark"] .bento:hover{border-color:hsl(var(--h) 40% 50%)}
-[data-theme="dark"] .go{color:hsl(var(--h) 66% 70%)}
-[data-theme="dark"] .dot{background:#4ec98a;box-shadow:0 0 0 3px rgba(78,201,138,.16)}
-[data-theme="dark"] footer a:hover{color:#7cc4dd;border-color:#7cc4dd}
-.hdrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
-.hdrow .kick{flex:none}
-/* ===== 返回合集页 ===== */
-.hact{display:flex;align-items:center;gap:8px;flex:none}
-.back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;
-  border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink2);
-  text-decoration:none;-webkit-tap-highlight-color:transparent;
-  transition:background .2s,border-color .2s,color .2s}
-.back:hover{color:var(--ink);border-color:var(--line2)}
-.back:focus-visible{outline:2px solid var(--ink2);outline-offset:2px}
-.back svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
-  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-
-
-/* ===== 主题切换开关 ===== */
-.thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
-  flex:none;width:30px;height:30px;padding:0;cursor:pointer;
-  border:1px solid var(--line);border-radius:999px;
-  background:var(--card);color:var(--ink2);
-  -webkit-tap-highlight-color:transparent;
-  transition:background .2s,border-color .2s,color .2s}
-.thm:hover{color:var(--ink);border-color:var(--line2)}
-.thm:focus-visible{outline:2px solid var(--ink2);outline-offset:2px}
-.thm svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
-  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.thm .sun{transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
-.thm .moon{position:absolute;transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
-/* 浅色：显示月亮（点击去深色）；深色：显示太阳（点击回浅色） */
-.thm .sun{opacity:0;transform:rotate(-70deg) scale(.6)}
-.thm .moon{opacity:1;transform:none}
-[data-theme="dark"] .thm .sun{opacity:1;transform:none}
-[data-theme="dark"] .thm .moon{opacity:0;transform:rotate(70deg) scale(.6)}
-
-@media(max-width:720px){
-  body{padding:30px 15px}
-  .grid{grid-template-columns:repeat(2,1fr);gap:11px}
-  .bento,.bento.hero{grid-column:span 2!important;padding:18px 19px;min-height:0}
-  .hero .nm{font-size:24px}.hero .ds{font-size:14px}
-  .go{opacity:1;transform:none}
-}
-@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
-</style>
-<style>
-.note{margin:9px 0 0;font-size:12.5px;color:var(--ink3);min-height:1.2em}
-</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23faf8f3'/><g fill='%231b6b85'><rect x='6' y='6' width='9' height='9' rx='2.6'/><rect x='17' y='6' width='9' height='9' rx='2.6' opacity='.5'/><rect x='6' y='17' width='9' height='9' rx='2.6' opacity='.5'/><rect x='17' y='17' width='9' height='9' rx='2.6'/></g></svg>">
+<script>(function(){try{if(localStorage.getItem('hd-theme')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.querySelector('meta[name=theme-color]').content='#101216';}}catch(e){}})();</script>
+<link rel="stylesheet" href="../assets/hub.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="hdrow">
-      <span class="kick"><span class="dot" aria-hidden="true"></span>games</span>
-      <div class="hact">
-        <a class="back" href="../" title="返回应用合集" aria-label="返回应用合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
-        <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
-        <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
-        <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
-        </button>
-      </div>
-    </div>
-    <h1>小游戏合集</h1>
-  </header>
-  <main class="grid" id="grid"></main>
-  <footer>
-    <span>纯静态</span>
-    <a href="https://github.com/HypoDear/web-server">在 GitHub 上查看源码</a>
-  </footer>
-</div>
+<div class="hub" id="hub"></div>
+<script src="../assets/hub.js"></script>
 <script>
-/* ── 自动扫描 ─────────────────────────────────────────────────────────
-   本页不再维护硬编码的卡片列表，而是在打开时向 GitHub 仓库询问
-   games/ 目录里有哪些 .html，再据此渲染卡片。
-
-   新增一个游戏：把 <slug>.html 丢进本目录即可，无需改动这个文件。
-   想给某个游戏配上中文名、分类和简介，就在下面 META 里补一条；
-   没有登记的游戏会用文件名兜底，依然能正常显示和打开。
-
-   说明：目录列表来自 GitHub 的公开接口，首次打开需要联网。
-   拿到结果后会在本地缓存 10 分钟，断网时自动回落到上一次的结果，
-   再不行就只用 META 里登记过的条目，保证页面不会开天窗。 */
-var REPO = 'HypoDear/web-server';
-var DIR = 'games';
-var CACHE_KEY = 'games-dir-cache';
-var CACHE_TTL = 10 * 60 * 1000;
-
-var META = {
-  sudoku:  { name:'数独', en:'Sudoku', tag:'逻辑推演', desc:'按技巧分级出题', meta:'四档难度', hue:203, size:'hero',
-             icon:'<rect x="3" y="3" width="18" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-width="1.1" opacity=".55"/>' },
-  gomoku:  { name:'五子棋', en:'Gomoku', tag:'棋类对弈', desc:'三档 AI 与禁手', meta:'三档 AI', hue:25,
-             icon:'<path d="M4 4h16M4 12h16M4 20h16M4 4v16M12 4v16M20 4v16" stroke="currentColor" stroke-width="1.1" opacity=".5"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="20" cy="4" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>' },
-  llk:     { name:'连连看', en:'Match', tag:'消除休闲', desc:'汉字牌面不死局', meta:'三档棋盘', hue:158,
-             icon:'<rect x="3" y="3.5" width="7.5" height="7.5" rx="2" fill="currentColor" opacity=".85"/><rect x="13.5" y="13" width="7.5" height="7.5" rx="2" fill="currentColor" opacity=".85"/><path d="M10.5 7.2h4.6v9.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.4 2"/>' },
-  xiangqi: { name:'中国象棋', en:'Xiangqi', tag:'棋类对弈', desc:'对战与残局闯关', meta:'八个残局', hue:352,
-             icon:'<circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M8.6 9.4h6.8M12 9.4v5.4M9.6 14.8h4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' },
-  slide:   { name:'滑块拼图', en:'Slide', tag:'空间复原', desc:'三档棋盘保证可解', meta:'三/四/五阶', hue:262,
-             icon:'<rect x="3" y="3" width="8" height="8" rx="1.8" fill="currentColor" opacity=".9"/><rect x="13" y="3" width="8" height="8" rx="1.8" fill="currentColor" opacity=".5"/><rect x="3" y="13" width="8" height="8" rx="1.8" fill="currentColor" opacity=".5"/><rect x="13" y="13" width="8" height="8" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 2"/>' },
-  cube:    { name:'魔方', en:'Cube', tag:'立体复原', desc:'三到五阶魔方', meta:'纯 CSS 3D', hue:38,
-             icon:'<path d="M12 2.6l8.4 4.8v9.2L12 21.4 3.6 16.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 2.6v9.4M12 12l8.4-4.6M12 12L3.6 7.4M12 12v9.4" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".55"/>' },
-  '2048':  { name:'2048', en:'2048', tag:'数字合成', desc:'两种棋盘可撤销', meta:'可撤销', hue:196,
-             icon:'<rect x="3" y="3" width="18" height="18" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="5.6" y="5.6" width="5.6" height="5.6" rx="1.4" fill="currentColor" opacity=".9"/><rect x="12.8" y="5.6" width="5.6" height="5.6" rx="1.4" fill="currentColor" opacity=".55"/><rect x="5.6" y="12.8" width="5.6" height="5.6" rx="1.4" fill="currentColor" opacity=".55"/>' },
-  sheep:   { name:'羊了个羊', en:'Sheep', tag:'消除休闲', desc:'农场三消闯关', meta:'五档关卡', hue:128,
-             icon:'<rect x="3.4" y="7.6" width="7.6" height="7.6" rx="2" fill="currentColor" opacity=".85"/><rect x="9" y="4.4" width="7.6" height="7.6" rx="2" fill="currentColor" opacity=".55"/><rect x="13" y="10.6" width="7.6" height="7.6" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>' }
-};
-
-/* 展示顺序：显式写成数组，不依赖对象键顺序（纯数字键会被 JS 重排） */
-var ORDER = ['sudoku','gomoku','llk','xiangqi','slide','cube','2048','sheep'];
-
-/* 没登记过的游戏：用文件名兜底，配色由文件名稳定散列得出 */
-var FALLBACK_ICON = '<rect x="3" y="5.5" width="18" height="13" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.6 12h3M9.1 10.5v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="15.4" cy="11.2" r="1.15" fill="currentColor"/><circle cx="17.6" cy="13.6" r="1.15" fill="currentColor"/>';
-
-function hueOf(slug){
-  var h = 0;
-  for (var i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) % 360;
-  return h;
-}
-function metaOf(slug){
-  var m = META[slug];
-  if (m) return m;
-  return { name: slug, en: slug, tag: '小游戏', desc: '单文件小游戏',
-           meta: '纯静态', hue: hueOf(slug), icon: FALLBACK_ICON };
-}
-
-/* 目录来源：优先网络，其次本地缓存，最后退回 META 清单 */
-function readCache(){
-  try {
-    var raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    var o = JSON.parse(raw);
-    if (!o || !Array.isArray(o.slugs)) return null;
-    return o;
-  } catch (e) { return null; }
-}
-function writeCache(slugs){
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), slugs: slugs })); } catch (e) {}
-}
-function scan(){
-  var cached = readCache();
-  if (cached && Date.now() - cached.at < CACHE_TTL) return Promise.resolve({ slugs: cached.slugs, from: 'cache' });
-
-  var api = 'https://api.github.com/repos/' + REPO + '/contents/' + DIR;
-  return fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } })
-    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(list){
-      if (!Array.isArray(list)) throw new Error('bad payload');
-      var slugs = list
-        .filter(function(f){ return f.type === 'file' && /\.html$/i.test(f.name) && f.name !== 'index.html'; })
-        .map(function(f){ return f.name.replace(/\.html$/i, ''); });
-      writeCache(slugs);
-      return { slugs: slugs, from: 'live' };
-    })
-    .catch(function(){
-      if (cached) return { slugs: cached.slugs, from: 'stale' };
-      return { slugs: ORDER, from: 'builtin' };
-    });
-}
-
-/* ── 渲染 ─────────────────────────────────────────────────────────── */
-(function(){
-  var grid = document.getElementById('grid');
-  var COLS = 6;
-
-  /* 排序：按 ORDER 里的登记顺序在前，新来的未登记项排在后面。
-     注意不能用 Object.keys(META) 当顺序——像 '2048' 这种纯数字键
-     会被 JS 提到对象最前面，把主推的大卡挤下去。 */
-  function rank(slug){
-    var i = ORDER.indexOf(slug);
-    return i < 0 ? ORDER.length : i;
-  }
-
-  function render(slugs){
-    var items = slugs.slice().sort(function(a, b){
-      var d = rank(a) - rank(b);
-      return d !== 0 ? d : a.localeCompare(b);
-    }).map(function(slug){
-      var m = metaOf(slug);
-      return { slug: slug, name: m.name, en: m.en, tag: m.tag, desc: m.desc,
-               meta: m.meta, hue: m.hue, size: m.size, icon: m.icon };
-    });
-
-    grid.innerHTML = '';
-    var cards = items.filter(function(p){ return p.size !== 'hero'; }).length;
-    var seen = 0;
-
-    items.forEach(function(p){
-      var hero = p.size === 'hero';
-      seen += hero ? 0 : 1;
-      var cs = hero ? COLS : (cards % 2 === 1 && seen === cards ? COLS : COLS / 2);
-      var a = document.createElement('a');
-      a.className = 'bento' + (hero ? ' hero' : '');
-      a.href = p.slug + '.html';
-      a.style.cssText = '--cs:' + cs + ';--rs:1;--h:' + (p.hue || 200);
-      a.innerHTML =
-        '<span class="wash" aria-hidden="true"></span>' +
-        '<span class="top">' +
-          '<span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true">' + (p.icon || '') + '</svg></span>' +
-          '<span class="tag">' + p.tag + '</span>' +
-        '</span>' +
-        '<span class="body">' +
-          '<span class="nm">' + p.name + '</span>' +
-          '<span class="en">' + p.en + '</span>' +
-          '<span class="ds">' + p.desc + '</span>' +
-        '</span>' +
-        '<span class="foot">' +
-          '<span class="go">开始游戏 <i aria-hidden="true">&rarr;</i></span></span>';
-      grid.appendChild(a);
-    });
-
-    document.title = '小游戏合集 · ' + items.length + ' 游戏';
-  }
-
-  /* 先用内置清单渲染，拿到目录后再覆盖，避免首屏空白 */
-  render(ORDER);
-  scan().then(function(res){
-    render(res.slugs);
-  });
-})();
-
-/* ── 主题切换：仅在点击开关时切换，并记住选择 ───────────────────── */
-(function(){
-  var k='hd-theme',root=document.documentElement,btn=document.getElementById('thmBtn');
-  var meta=document.querySelector('meta[name="theme-color"]');
-  var C={light:'#faf8f3',dark:'#101216'};
-  function paint(v){
-    if(v==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');
-    if(meta)meta.setAttribute('content',C[v]);
-    if(btn){
-      btn.setAttribute('aria-label',v==='dark'?'切换浅色模式':'切换深色模式');
-      btn.setAttribute('title',btn.getAttribute('aria-label'));
-    }
-  }
-  paint(root.getAttribute('data-theme')==='dark'?'dark':'light');
-  if(btn)btn.addEventListener('click',function(){
-    var v=root.getAttribute('data-theme')==='dark'?'light':'dark';
-    try{localStorage.setItem(k,v)}catch(e){}
-    paint(v);
-    try{document.dispatchEvent(new Event('hd-theme'))}catch(e){}
-  });
-})();
+HDHub({
+  kind: 'html', dir: 'games', back: '../',
+  kicker: 'Mini Games', title: '小游戏合集', go: '开始游戏',
+  lead: '单文件、零依赖、手机电脑都能玩。进度自动保存，随时继续。',
+  searchHint: '搜索游戏名、玩法、分类',
+  help: '<ol>\n<li>文件名用<b>小写英文 + 连字符</b>，例如 <code>tower-defense.html</code>；不要用中文和空格。</li>\n<li>直接上传到 <code>games/</code> 目录，几分钟内本页会自动出现，并标上 <b>NEW</b>。</li>\n<li>名称和简介会自动读取文件里的 <code>&lt;title&gt;</code> 和 <code>&lt;meta name="description"&gt;</code>。</li>\n<li>想指定分类、排序或图标，在文件 <code>&lt;head&gt;</code> 里加（都可选）：<br>\n<code>&lt;meta name="hd:category" content="休闲消除"&gt;</code><br>\n<code>&lt;meta name="hd:order" content="5"&gt;</code>（数字越小越靠前）<br>\n<code>&lt;meta name="hd:icon" content="🎮"&gt;</code>\u3000<code>&lt;meta name="hd:en" content="English Name"&gt;</code></li>\n<li>没写分类时按名称和技术栈自动归类，归不进去的放在「更多游戏」。</li>\n</ol>',
+  /* 分类：顺序即页面展示顺序；rule 用于给未登记的新游戏自动归类 */
+  categories: [
+    { id: 'casual', name: '休闲消除', en: 'Casual',  rule: /消除|三消|合成|连连|休闲|match|merge|sheep|2048|tetris|snake|bubble/i },
+    { id: 'puzzle', name: '益智解谜', en: 'Puzzle',  rule: /数独|拼图|魔方|解谜|迷宫|华容道|puzzle|sudoku|cube|maze|slide|nonogram/i },
+    { id: 'board',  name: '棋类对弈', en: 'Board',   rule: /棋|chess|gomoku|xiangqi|othello|reversi|checkers/i }
+  ],
+  fallback: { id: 'other', name: '更多游戏', en: 'More' },
+  /* 登记表：数组顺序 = 推荐顺序（hero 为大卡）。不登记的新游戏也会自动出现 */
+  items: [
+    { slug: 'sheep', cat: 'casual', hero: true, name: '羊了个羊', en: 'Sheep Stack', hue: 128,
+      desc: '十二关牧场旅程加每日挑战：三张同款即可消除，七格槽位别塞满。', meta: '12 关 · 每日挑战', tags: ['招牌'],
+      icon: '<path d="M7.2 9.4a2.6 2.6 0 0 1 4.4-1.6 2.6 2.6 0 0 1 4.6.6 2.6 2.6 0 0 1 1.6 4.6 2.6 2.6 0 0 1-2.2 3.8H8.6a2.6 2.6 0 0 1-2.3-3.9 2.6 2.6 0 0 1 .9-3.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.4 16.8v2.6M14.6 16.8v2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="11.6" r=".9" fill="currentColor"/><circle cx="14" cy="11.6" r=".9" fill="currentColor"/>' },
+    { slug: 'llk', cat: 'casual', name: '连连看', en: 'Emoji Match', hue: 158,
+      desc: '十八款萌趣表情牌面，两折以内连线消除，保证不死局。', meta: '三档棋盘',
+      icon: '<rect x="3" y="3.5" width="7.5" height="7.5" rx="2" fill="currentColor" opacity=".85"/><rect x="13.5" y="13" width="7.5" height="7.5" rx="2" fill="currentColor" opacity=".85"/><path d="M10.5 7.2h4.6v9.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.4 2"/>' },
+    { slug: '2048', cat: 'casual', name: '2048', en: '2048', hue: 196,
+      desc: '滑动合成数字，四阶与五阶两种棋盘，可撤销一步。', meta: '可撤销',
+      icon: '<rect x="3" y="3" width="18" height="18" rx="2.8" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="5.6" y="5.6" width="5.6" height="5.6" rx="1.4" fill="currentColor" opacity=".9"/><rect x="12.8" y="5.6" width="5.6" height="5.6" rx="1.4" fill="currentColor" opacity=".55"/><rect x="5.6" y="12.8" width="5.6" height="5.6" rx="1.4" fill="currentColor" opacity=".55"/>' },
+    { slug: 'sudoku', cat: 'puzzle', name: '数独', en: 'Sudoku', hue: 203,
+      desc: '按解题技巧分级出题，从入门到专家，支持笔记与提示。', meta: '四档难度',
+      icon: '<rect x="3" y="3" width="18" height="18" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="currentColor" stroke-width="1.1" opacity=".55"/>' },
+    { slug: 'cube', cat: 'puzzle', name: '魔方', en: 'Rubik’s Cube', hue: 38,
+      desc: '二到五阶，手指拖动转层，计时与最佳纪录，一键倒放复原。', meta: '2–5 阶 · 计时',
+      icon: '<path d="M12 2.6l8.4 4.8v9.2L12 21.4 3.6 16.6V7.4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 2.6v9.4M12 12l8.4-4.6M12 12L3.6 7.4M12 12v9.4" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".55"/>' },
+    { slug: 'slide', cat: 'puzzle', name: '滑块拼图', en: 'Sliding Puzzle', hue: 262,
+      desc: '三到五阶数字华容道，打乱保证可解，挑战最少步数。', meta: '三/四/五阶',
+      icon: '<rect x="3" y="3" width="8" height="8" rx="1.8" fill="currentColor" opacity=".9"/><rect x="13" y="3" width="8" height="8" rx="1.8" fill="currentColor" opacity=".5"/><rect x="3" y="13" width="8" height="8" rx="1.8" fill="currentColor" opacity=".5"/><rect x="13" y="13" width="8" height="8" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.5 2"/>' },
+    { slug: 'gomoku', cat: 'board', name: '五子棋', en: 'Gomoku', hue: 25,
+      desc: '三档 AI 对手，可开禁手规则，也能同屏双人对战。', meta: '三档 AI',
+      icon: '<path d="M4 4h16M4 12h16M4 20h16M4 4v16M12 4v16M20 4v16" stroke="currentColor" stroke-width="1.1" opacity=".5"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/><circle cx="20" cy="4" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>' },
+    { slug: 'xiangqi', cat: 'board', name: '中国象棋', en: 'Xiangqi', hue: 352,
+      desc: '人机与双人对战，八个残局闯关，支持让子和悔棋。', meta: '八个残局',
+      icon: '<circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="6.2" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/><path d="M8.6 9.4h6.8M12 9.4v5.4M9.6 14.8h4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' }
+  ]
+});
 </script>
 </body>
 </html>

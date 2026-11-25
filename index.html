@@ -3,313 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="个人网页应用合集 · 纯静态、零依赖、开箱即用">
+<meta name="description" content="HypoDear 的应用合集 · 小游戏、练习作品与日常小工具">
 <meta name="theme-color" content="#faf8f3">
-<meta name="color-scheme" content="light">
 <title>应用合集</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23faf8f3'/><g fill='%231b6b85'><rect x='5.5' y='5.5' width='9.5' height='9.5' rx='2.5'/><rect x='17' y='5.5' width='9.5' height='9.5' rx='2.5'/><rect x='5.5' y='17' width='9.5' height='9.5' rx='2.5'/><rect x='17' y='17' width='9.5' height='9.5' rx='2.5'/></g></svg>">
-<script>
-/* 主题引导：首帧前恢复上次手动选择的深夜模式；默认保持白天 */
-(function(){try{
-  if(localStorage.getItem('hd-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');
-}catch(e){}})();
-</script>
-<style>
-:root{
-  --bg:#faf8f3; --card:#ffffff; --card2:#fffefb;
-  --line:#e7e1d5; --line2:#d2c9b8;
-  --ink:#241f19; --ink2:#6a6257; --ink3:#9b9387;
-  --shadow:0 1px 2px rgba(60,50,35,.05);
-  --shadow-lg:0 16px 34px -20px rgba(60,50,35,.3),0 2px 6px rgba(60,50,35,.05);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro SC","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%}
-body{
-  background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  padding:max(44px,env(safe-area-inset-top)) 22px max(44px,env(safe-area-inset-bottom));
-  display:flex;justify-content:center;
-  background-image:
-    radial-gradient(880px 460px at 16% -10%,rgba(31,111,139,.07),transparent 64%),
-    radial-gradient(700px 400px at 97% 2%,rgba(176,98,62,.055),transparent 62%);
-  background-attachment:fixed;
-}
-.wrap{width:100%;max-width:1060px}
-header{margin:0 0 28px}
-.kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink2);
-  border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;box-shadow:var(--shadow)}
-.dot{width:5px;height:5px;border-radius:50%;background:#2e9e68;box-shadow:0 0 0 3px rgba(46,158,104,.16)}
-h1{margin:16px 0 0;font-size:clamp(30px,5.6vw,46px);font-weight:650;letter-spacing:-.018em;line-height:1.12}
-h1 em{font-style:normal;color:var(--ink3);font-weight:500}
-header p{margin:11px 0 0;color:var(--ink2);font-size:14.5px;max-width:52ch}
-.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}
-.bento{
-  grid-column:span var(--cs);grid-row:span var(--rs);
-  position:relative;overflow:hidden;isolation:isolate;
-  display:flex;flex-direction:column;justify-content:space-between;gap:16px;
-  min-height:152px;padding:19px 20px;
-  text-decoration:none;color:inherit;
-  background:var(--card);border:1px solid var(--line);border-radius:17px;
-  box-shadow:var(--shadow);
-  transition:transform .26s cubic-bezier(.2,.7,.3,1),border-color .26s,box-shadow .26s,background .26s;
-}
-.bento.hero{min-height:244px;padding:25px 26px}
-.wash{position:absolute;inset:-34% -12% auto -12%;height:176px;z-index:-1;
-  background:radial-gradient(58% 100% at 50% 0%,hsl(var(--h) 62% 52% / .11),transparent 72%);
-  opacity:.9;transition:opacity .26s}
-.bento:hover{transform:translateY(-4px);background:var(--card2);
-  border-color:hsl(var(--h) 38% 72%);box-shadow:var(--shadow-lg)}
-.bento:hover .wash{opacity:1}
-.bento:focus-visible{outline:2px solid hsl(var(--h) 58% 44%);outline-offset:3px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-  color:hsl(var(--h) 56% 36%);background:hsl(var(--h) 56% 50% / .1);border:1px solid hsl(var(--h) 44% 58% / .3)}
-.hero .ico{width:46px;height:46px;border-radius:13px}
-.ico svg{width:19px;height:19px}
-.hero .ico svg{width:23px;height:23px}
-.tag{font-size:11px;letter-spacing:.1em;color:var(--ink2);
-  border:1px solid var(--line);background:rgba(250,248,243,.8);border-radius:999px;padding:4px 10px;white-space:nowrap}
-.body{display:block}
-.nm{display:block;font-size:19px;font-weight:620;letter-spacing:.01em}
-.hero .nm{font-size:29px;letter-spacing:-.005em}
-.en{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:3px}
-.ds{display:block;margin-top:9px;font-size:13px;color:var(--ink2);line-height:1.62}
-.hero .ds{font-size:15px;max-width:34ch}
-.foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
-.go{display:inline-flex;align-items:center;gap:5px;font-weight:560;color:hsl(var(--h) 58% 38%);
-  opacity:0;transform:translateX(-6px);transition:opacity .26s,transform .26s;white-space:nowrap}
-.go i{font-style:normal}
-.bento:hover .go,.bento:focus-visible .go{opacity:1;transform:none}
-footer{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;
-  padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3)}
-footer a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:1px}
-footer a:hover{color:hsl(200 56% 34%);border-color:hsl(200 56% 34%)}
-[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#101216; --card:#191c22; --card2:#1e222a;
-  --line:#272c35; --line2:#363c47;
-  --ink:#eae6de; --ink2:#9aa0ab; --ink3:#6c737f;
-  --shadow:0 1px 2px rgba(0,0,0,.4);
-  --shadow-lg:0 18px 38px -20px rgba(0,0,0,.85),0 2px 8px rgba(0,0,0,.4);
-}
-/* 深色下背景氛围压暗，避免光斑在暗底上发灰 */
-[data-theme="dark"] body{background-image:
-    radial-gradient(880px 460px at 16% -10%,rgba(95,179,208,.07),transparent 64%),
-    radial-gradient(700px 400px at 97% 2%,rgba(216,169,74,.045),transparent 62%)}
-[data-theme="dark"] .tag{background:rgba(16,18,22,.7)}
-[data-theme="dark"] .ico{color:hsl(var(--h) 62% 72%);background:hsl(var(--h) 56% 52% / .15);
-  border-color:hsl(var(--h) 44% 56% / .32)}
-[data-theme="dark"] .wash{background:radial-gradient(58% 100% at 50% 0%,hsl(var(--h) 66% 56% / .15),transparent 72%)}
-[data-theme="dark"] .bento:hover{border-color:hsl(var(--h) 40% 50%)}
-[data-theme="dark"] .go{color:hsl(var(--h) 66% 70%)}
-[data-theme="dark"] .dot{background:#4ec98a;box-shadow:0 0 0 3px rgba(78,201,138,.16)}
-[data-theme="dark"] footer a:hover{color:#7cc4dd;border-color:#7cc4dd}
-.hdrow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
-.hdrow .kick{flex:none}
-
-/* ===== 主题切换开关 ===== */
-.thm{position:relative;display:inline-flex;align-items:center;justify-content:center;
-  flex:none;width:30px;height:30px;padding:0;cursor:pointer;
-  border:1px solid var(--line);border-radius:999px;
-  background:var(--card);color:var(--ink2);
-  -webkit-tap-highlight-color:transparent;
-  transition:background .2s,border-color .2s,color .2s}
-.thm:hover{color:var(--ink);border-color:var(--line2)}
-.thm:focus-visible{outline:2px solid var(--ink2);outline-offset:2px}
-.thm svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;
-  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.thm .sun{transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
-.thm .moon{position:absolute;transition:opacity .22s,transform .32s cubic-bezier(.3,.8,.3,1)}
-/* 浅色：显示月亮（点击去深色）；深色：显示太阳（点击回浅色） */
-.thm .sun{opacity:0;transform:rotate(-70deg) scale(.6)}
-.thm .moon{opacity:1;transform:none}
-[data-theme="dark"] .thm .sun{opacity:1;transform:none}
-[data-theme="dark"] .thm .moon{opacity:0;transform:rotate(70deg) scale(.6)}
-
-@media(max-width:720px){
-  body{padding:30px 15px}
-  .grid{grid-template-columns:repeat(2,1fr);gap:11px}
-  .bento,.bento.hero{grid-column:span 2!important;padding:18px 19px;min-height:0}
-  .hero .nm{font-size:24px}.hero .ds{font-size:14px}
-  .go{opacity:1;transform:none}
-}
-@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
-</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23faf8f3'/><g fill='%231b6b85'><rect x='6' y='6' width='9' height='9' rx='2.6'/><rect x='17' y='6' width='9' height='9' rx='2.6' opacity='.5'/><rect x='6' y='17' width='9' height='9' rx='2.6' opacity='.5'/><rect x='17' y='17' width='9' height='9' rx='2.6'/></g></svg>">
+<script>(function(){try{if(localStorage.getItem('hd-theme')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.querySelector('meta[name=theme-color]').content='#101216';}}catch(e){}})();</script>
+<link rel="stylesheet" href="assets/hub.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="hdrow">
-      <span class="kick"><span class="dot" aria-hidden="true"></span>web-server</span>
-      <button class="thm" id="thmBtn" type="button" aria-label="切换深色模式" title="切换深色模式">
-      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
-      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>
-      </button>
-    </div>
-    <h1>应用合集</h1>
-  </header>
-  <main class="grid">
-    <a class="bento" href="day/" style="--cs:3;--rs:1;--h:212">
-      <span class="wash" aria-hidden="true"></span>
-      <span class="top">
-        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.2" y="4.6" width="17.6" height="16.2" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.2 9.4h17.6M8 2.8v3.6M16 2.8v3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M7.6 13.4h3.2v3.2H7.6z" fill="currentColor" opacity=".7"/></svg></span>
-        <span class="tag">时间工具</span>
-      </span>
-      <span class="body">
-        <span class="nm">倒数日</span>
-        <span class="en">Countdown</span>
-        <span class="ds">重要日子倒数</span>
-      </span>
-      <span class="foot"><span class="go">打开 <i aria-hidden="true">&rarr;</i></span></span>
-    </a>
-    <a class="bento" href="flac/" style="--cs:3;--rs:1;--h:203">
-      <span class="wash" aria-hidden="true"></span>
-      <span class="top">
-        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4.4v10.2A3.4 3.4 0 1 0 13.1 18V8.1h4.4V4.4H11z" fill="currentColor"/><path d="M19.6 6.6c1.1 1.2 1.1 3.4 0 4.6M21.6 4.4c2.1 2.3 2.1 6.7 0 9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" opacity=".6"/></svg></span>
-        <span class="tag">音频播放</span>
-      </span>
-      <span class="body">
-        <span class="nm">FLAC 歌单</span>
-        <span class="en">Lossless</span>
-        <span class="ds">无损歌单播放</span>
-      </span>
-      <span class="foot"><span class="go">打开 <i aria-hidden="true">&rarr;</i></span></span>
-    </a>
-    <a class="bento" href="games/" style="--cs:3;--rs:1;--h:38">
-      <span class="wash" aria-hidden="true"></span>
-      <span class="top">
-        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.8" y="7.2" width="18.4" height="9.6" rx="4.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8.2 12h3.2M9.8 10.4v3.2M15.4 11.2h.01M17.6 13h.01" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-        <span class="tag">小游戏</span>
-      </span>
-      <span class="body">
-        <span class="nm">小游戏合集</span>
-        <span class="en">Mini Games</span>
-        <span class="ds">单文件小游戏</span>
-      </span>
-      <span class="foot"><span class="go">打开 <i aria-hidden="true">&rarr;</i></span></span>
-    </a>
-    <a class="bento" href="userscripts/" style="--cs:3;--rs:1;--h:262">
-      <span class="wash" aria-hidden="true"></span>
-      <span class="top">
-        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 7.4 4.6 12l4.6 4.6M14.8 7.4 19.4 12l-4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.4 5.2l-2.8 13.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".6"/></svg></span>
-        <span class="tag">效率工具</span>
-      </span>
-      <span class="body">
-        <span class="nm">脚本合集</span>
-        <span class="en">Userscripts</span>
-        <span class="ds">用户脚本索引</span>
-      </span>
-      <span class="foot"><span class="go">打开 <i aria-hidden="true">&rarr;</i></span></span>
-    </a>
-    <a class="bento" href="practice/" style="--cs:3;--rs:1;--h:190">
-      <span class="wash" aria-hidden="true"></span>
-      <span class="top">
-        <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="3.8" width="17.2" height="16.4" rx="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.4 8.6h17.2" stroke="currentColor" stroke-width="1.4" opacity=".6"/><path d="M10 11.4 7.4 14l2.6 2.6M14 11.4 16.6 14 14 16.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="tag">单页 HTML</span>
-      </span>
-      <span class="body">
-        <span class="nm">练习合集</span>
-        <span class="en">Practice</span>
-        <span class="ds">单文件练习作品</span>
-      </span>
-      <span class="foot"><span class="go">打开 <i aria-hidden="true">&rarr;</i></span></span>
-    </a>
-    
-  </main>
-  <footer>
-    <span>纯静态</span>
-    <a href="https://github.com/HypoDear/web-server">在 GitHub 上查看源码</a>
-  </footer>
-</div>
+<div class="hub" id="hub"></div>
+<script src="assets/hub.js"></script>
 <script>
-/* ── 入口目录发现 ──────────────────────────────────────────────────
-   根目录下每个含 index.html 的子目录都会自动变成一张卡片：
-   标题取该页 <title>，外观（配色/图标/标签）从 COVER 里取，没登记的用默认样式。
-   下面静态写的那几张卡是兜底：API 拉不到时保持原样，不会白屏。 */
-(function(){
-  var REPO = 'HypoDear/web-server';
-  var BRANCH = 'main';
-  var ORDER = ["day", "flac", "games", "userscripts", "practice"];
-  var COVER = {"day": {"hue": 212, "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3.2\" y=\"4.6\" width=\"17.6\" height=\"16.2\" rx=\"2.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><path d=\"M3.2 9.4h17.6M8 2.8v3.6M16 2.8v3.6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M7.6 13.4h3.2v3.2H7.6z\" fill=\"currentColor\" opacity=\".7\"/></svg>", "tag": "时间工具", "en": "Countdown"}, "flac": {"hue": 203, "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M11 4.4v10.2A3.4 3.4 0 1 0 13.1 18V8.1h4.4V4.4H11z\" fill=\"currentColor\"/><path d=\"M19.6 6.6c1.1 1.2 1.1 3.4 0 4.6M21.6 4.4c2.1 2.3 2.1 6.7 0 9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" opacity=\".6\"/></svg>", "tag": "音频播放", "en": "Lossless"}, "games": {"hue": 38, "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"2.8\" y=\"7.2\" width=\"18.4\" height=\"9.6\" rx=\"4.8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><path d=\"M8.2 12h3.2M9.8 10.4v3.2M15.4 11.2h.01M17.6 13h.01\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"/></svg>", "tag": "小游戏", "en": "Mini Games"}, "userscripts": {"hue": 262, "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M9.2 7.4 4.6 12l4.6 4.6M14.8 7.4 19.4 12l-4.6 4.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M13.4 5.2l-2.8 13.6\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" opacity=\".6\"/></svg>", "tag": "效率工具", "en": "Userscripts"}, "practice": {"hue": 190, "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3.4\" y=\"3.8\" width=\"17.2\" height=\"16.4\" rx=\"2.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><path d=\"M3.4 8.6h17.2\" stroke=\"currentColor\" stroke-width=\"1.4\" opacity=\".6\"/><path d=\"M10 11.4 7.4 14l2.6 2.6M14 11.4 16.6 14 14 16.6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", "tag": "单页 HTML", "en": "Practice"}};
-  var DEFAULT_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.4" y="3.6" width="7.4" height="7.4" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="13.2" y="3.6" width="7.4" height="7.4" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/><rect x="3.4" y="13.4" width="7.4" height="7.4" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/><rect x="13.2" y="13.4" width="7.4" height="7.4" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>';
-
-  function hueOf(slug){
-    var h = 0;
-    for (var i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) % 360;
-    return h;
-  }
-  function rank(slug){
-    var i = ORDER.indexOf(slug);
-    return i < 0 ? ORDER.length : i;
-  }
-  function card(item){
-    var c = COVER[item.slug] || {};
-    var hue = c.hue || hueOf(item.slug);
-    var icon = c.icon || DEFAULT_ICON;
-    var tag = c.tag || '入口';
-    var en = c.en || item.slug;
-    return '<a class="bento" href="' + item.slug + '/" style="--cs:3;--rs:1;--h:' + hue + '">' +
-      '<span class="wash" aria-hidden="true"></span>' +
-      '<span class="top"><span class="ico">' + icon + '</span><span class="tag">' + tag + '</span></span>' +
-      '<span class="body"><span class="nm">' + item.title + '</span><span class="en">' + en + '</span>' +
-      '<span class="ds">目录 ' + item.slug + '</span></span>' +
-      '<span class="foot"><span class="go">打开 <i aria-hidden="true">&rarr;</i></span></span>' +
-      '</a>';
-  }
-
-  fetch('https://api.github.com/repos/' + REPO + '/contents/?ref=' + BRANCH, { headers: { 'Accept': 'application/vnd.github+json' } })
-    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(list){
-      var dirs = (list || []).filter(function(f){ return f.type === 'dir' && !/^[._]/.test(f.name); });
-      return Promise.all(dirs.map(function(d){
-        return fetch(d.name + '/index.html', { cache: 'no-store' })
-          .then(function(r){ return r.ok ? r.text() : ''; })
-          .then(function(html){
-            var m = /<title>([^<]*)<\/title>/i.exec(html || '');
-            var title = m && m[1].trim() ? m[1].trim().split(/\s*·\s*/)[0] : d.name;
-            return { slug: d.name, title: title };
-          })
-          .catch(function(){ return { slug: d.name, title: d.name }; });
-      }));
-    })
-    .then(function(items){
-      if (!items.length) return;
-      items.sort(function(a, b){
-        var d = rank(a.slug) - rank(b.slug);
-        return d !== 0 ? d : a.slug.localeCompare(b.slug);
-      });
-      var grid = document.getElementById('grid');
-      if (!grid) return;
-      grid.innerHTML = items.map(card).join('');
-    })
-    .catch(function(){});
-})();
-</script>
-<script>
-/* 主题切换：仅在点击开关时切换，并记住选择 */
-(function(){
-  var k='hd-theme',root=document.documentElement,btn=document.getElementById('thmBtn');
-  var meta=document.querySelector('meta[name="theme-color"]');
-  var C={light:'#faf8f3',dark:'#101216'};
-  function paint(v){
-    if(v==='dark')root.setAttribute('data-theme','dark');else root.removeAttribute('data-theme');
-    if(meta)meta.setAttribute('content',C[v]);
-    if(btn){
-      btn.setAttribute('aria-label',v==='dark'?'切换浅色模式':'切换深色模式');
-      btn.setAttribute('title',btn.getAttribute('aria-label'));
-    }
-  }
-  paint(root.getAttribute('data-theme')==='dark'?'dark':'light');
-  if(btn)btn.addEventListener('click',function(){
-    var v=root.getAttribute('data-theme')==='dark'?'light':'dark';
-    try{localStorage.setItem(k,v)}catch(e){}
-    paint(v);
-    try{document.dispatchEvent(new Event('hd-theme'))}catch(e){}
-  });
-})();
+HDHub({
+  kind: 'dirs', dir: '', bar: false, readAll: false,
+  kicker: 'web-server', title: '应用合集', go: '进入',
+  lead: '自用的小工具和小玩意儿，全部是纯静态页面。',
+  helpTitle: '如何新增一个入口', help: '<ol>\n<li>在仓库根目录新建一个英文小写的文件夹，里面放 <code>index.html</code>，首页会自动多出一张入口卡片。</li>\n<li>卡片名称取该页的 <code>&lt;title&gt;</code>，简介取 <code>&lt;meta name="description"&gt;</code>；也可以用 <code>hd:category</code> / <code>hd:order</code> / <code>hd:icon</code> 指定分组、排序和图标。</li>\n</ol>',
+  exclude: ['assets'],
+  categories: [
+    { id: 'play',  name: '玩一玩',   en: 'Play',  rule: /game|play|practice|游戏|练习/i },
+    { id: 'tools', name: '日常工具', en: 'Tools', rule: /tool|day|flac|script|工具/i }
+  ],
+  fallback: { id: 'more', name: '更多', en: 'More' },
+  items: [
+    { slug: 'games', cat: 'play', hero: true, name: '小游戏合集', en: 'Mini Games', hue: 38, unit: '款游戏', icon: '🎮',
+      desc: '羊了个羊、连连看、数独、魔方、象棋……单文件开箱即玩。' },
+    { slug: 'practice', cat: 'play', name: '练习合集', en: 'Practice', hue: 190, unit: '个作品', icon: '🧊',
+      desc: '体素小世界、WebGPU 与可互动的单页作品。' },
+    { slug: 'day', cat: 'tools', name: '倒数日', en: 'Countdown', hue: 212, icon: '📅',
+      desc: '纪念日、生日与节假日倒数，农历节气自动推算。', meta: '农历 · 节气' },
+    { slug: 'flac', cat: 'tools', name: 'FLAC 歌单', en: 'Lossless', hue: 330, icon: '🎧',
+      desc: '无损歌单在线播放。', meta: '无损音频' },
+    { slug: 'userscripts', cat: 'tools', name: '脚本合集', en: 'Userscripts', hue: 262, unit: '个脚本', icon: '🧩',
+      desc: '浏览器用户脚本，一键安装、自动更新。' }
+  ]
+});
 </script>
 </body>
 </html>
