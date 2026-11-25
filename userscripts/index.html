@@ -387,7 +387,10 @@ footer a:hover{color:var(--accent)}
     // 有缓存先秒出，避免空白/一直“读取中”；随后后台刷新
     var cachedMeta = readMeta();
     if (cachedMeta) {
-      render(cachedMeta.items.filter(Boolean), true, false);
+      var cachedItems = cachedMeta.items.filter(Boolean).sort(function (a, b) {
+        return a.meta.name[0].localeCompare(b.meta.name[0], 'zh');
+      });
+      render(cachedItems, false, false);
     } else {
       setState('正在读取脚本列表…');
     }
@@ -419,7 +422,10 @@ footer a:hover{color:var(--accent)}
         // 刷新失败但本地有缓存：继续显示缓存，不清空页面
         var cached = readMeta();
         if (cached) {
-          render(cached.items.filter(Boolean), true, true);
+          var cachedItems = cached.items.filter(Boolean).sort(function (a, b) {
+            return a.meta.name[0].localeCompare(b.meta.name[0], 'zh');
+          });
+          render(cachedItems, true, true);
           return;
         }
         setState('读取失败：' + (err && err.message ? err.message : '网络错误') +
