@@ -169,6 +169,36 @@ footer a:hover{color:var(--accent)}
   function cdnUrl(path) {
     return 'https://cdn.jsdelivr.net/gh/' + REPO + '@' + BRANCH + '/' + encodeURI(path);
   }
+  function fastlyUrl(path) {
+    return 'https://fastly.jsdelivr.net/gh/' + REPO + '@' + BRANCH + '/' + encodeURI(path);
+  }
+  // 给单次请求加超时：raw.githubusercontent 在国内常被墙，不设超时会把整页拖到浏览器超时
+  function fetchTimeout(url, ms) {
+    var ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 8000);
+    return fetch(url, ctl ? { signal: ctl.signal } : undefined).then(function (r) {
+      clearTimeout(timer);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r;
+    }, function (e) {
+      clearTimeout(timer);
+      throw e;
+    });
+  }
+  // 多个镜像同时请求，谁先成功用谁
+  function firstOk(urls, ms) {
+    return new Promise(function (resolve, reject) {
+      var pending = urls.length;
+      var lastErr = new Error('network');
+      if (!pending) { reject(lastErr); return; }
+      urls.forEach(function (u) {
+        fetchTimeout(u, ms).then(resolve, function (e) {
+          lastErr = e;
+          if (--pending === 0) reject(lastErr);
+        });
+      });
+    });
+  }
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -201,11 +231,28 @@ footer a:hover{color:var(--accent)}
     } catch (e) { /* 隐私模式等场景写入失败，忽略 */ }
   }
 
+  // 连脚本元数据一起缓存：下次打开先秒出上次内容，再去后台刷新
+  var META_KEY = 'userscripts_meta_v1';
+  function readMeta() {
+    try {
+      var raw = localStorage.getItem(META_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      return obj && obj.items && obj.items.length ? obj : null;
+    } catch (e) { return null; }
+  }
+  function writeMeta(items) {
+    try {
+      localStorage.setItem(META_KEY, JSON.stringify({
+        at: Date.now(),
+        items: items.filter(Boolean).map(function (it) { return { path: it.path, meta: it.meta }; })
+      }));
+    } catch (e) {}
+  }
+
   function listFromGitHub() {
-    return fetch('https://api.github.com/repos/' + REPO + '/contents/' + DIR + '?ref=' + BRANCH)
-      .then(function (r) {
-        return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status));
-      })
+    return fetchTimeout('https://api.github.com/repos/' + REPO + '/contents/' + DIR + '?ref=' + BRANCH, 7000)
+      .then(function (r) { return r.json(); })
       .then(function (j) {
         if (!Array.isArray(j)) throw new Error('unexpected response');
         return j.filter(function (f) { return f.type === 'file'; })
@@ -215,8 +262,8 @@ footer a:hover{color:var(--accent)}
 
   function listFromJsdelivr() {
     var url = 'https://data.jsdelivr.com/v1/packages/gh/' + REPO + '@' + BRANCH + '?structure=flat';
-    return fetch(url)
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+    return fetchTimeout(url, 8000)
+      .then(function (r) { return r.json(); })
       .then(function (j) {
         if (!j || !Array.isArray(j.files)) throw new Error('unexpected response');
         return j.files.map(function (f) { return String(f.name).replace(/^\//, ''); });
@@ -265,13 +312,8 @@ footer a:hover{color:var(--accent)}
   }
 
   function fetchText(path) {
-    return fetch(rawUrl(path))
-      .then(function (r) { return r.ok ? r.text() : Promise.reject(0); })
-      .catch(function () {
-        return fetch(cdnUrl(path)).then(function (r) {
-          return r.ok ? r.text() : Promise.reject(new Error('HTTP ' + r.status));
-        });
-      });
+    return firstOk([rawUrl(path), cdnUrl(path), fastlyUrl(path)], 8000)
+      .then(function (r) { return r.text(); });
   }
 
   function buildCard(script) {
@@ -306,6 +348,7 @@ footer a:hover{color:var(--accent)}
       '<a class="btn" href="' + esc(install) + '" target="_blank" rel="noopener">' +
       '<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>安装</a>' +
       '<button class="btn ghost" type="button" data-copy="' + esc(install) + '">复制链接</button>' +
+      '<a class="btn ghost" href="' + esc(cdnUrl(script.path)) + '" target="_blank" rel="noopener" title="raw.githubusercontent 打不开时用这个">镜像</a>' +
       '<a class="btn ghost" href="https://github.com/' + REPO + '/blob/' + BRANCH + '/' + esc(script.path) +
       '" target="_blank" rel="noopener">源码</a>' +
       '</div>';
@@ -341,10 +384,18 @@ footer a:hover{color:var(--accent)}
   }
 
   function load() {
-    setState('正在读取脚本列表…');
+    // 有缓存先秒出，避免空白/一直“读取中”；随后后台刷新
+    var cachedMeta = readMeta();
+    if (cachedMeta) {
+      render(cachedMeta.items.filter(Boolean), true, false);
+    } else {
+      setState('正在读取脚本列表…');
+    }
+
     listScriptPaths()
       .then(function (res) {
         var paths = res.paths.filter(isScript);
+        if (!paths.length) return { items: [], stale: res.stale };
         return Promise.all(paths.map(function (p) {
           return fetchText(p).then(
             function (text) {
@@ -354,6 +405,7 @@ footer a:hover{color:var(--accent)}
             function () { return null; }
           );
         })).then(function (items) {
+          writeMeta(items);
           return { items: items, stale: res.stale };
         });
       })
@@ -364,6 +416,12 @@ footer a:hover{color:var(--accent)}
         render(scripts, res.stale, scripts.length < res.items.length);
       })
       .catch(function (err) {
+        // 刷新失败但本地有缓存：继续显示缓存，不清空页面
+        var cached = readMeta();
+        if (cached) {
+          render(cached.items.filter(Boolean), true, true);
+          return;
+        }
         setState('读取失败：' + (err && err.message ? err.message : '网络错误') +
                  '。可直接去 GitHub 目录查看。', true);
       });
