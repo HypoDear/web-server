@@ -2,99 +2,134 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="纪念日、生日与节假日倒数，农历节气自动推算">
+<meta name="theme-color" content="#faf8f3">
 <title>倒数日</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23faf8f3'/><rect x='5' y='7' width='22' height='20' rx='4' fill='none' stroke='%231f6f8b' stroke-width='2.2'/><path d='M5 13h22M11 4v5M21 4v5' stroke='%231f6f8b' stroke-width='2.2' stroke-linecap='round'/><circle cx='16' cy='20' r='3' fill='%23e0583f'/></svg>">
+<script>(function(){try{if(localStorage.getItem('hd-theme')==='dark'){document.documentElement.setAttribute('data-theme','dark');document.querySelector('meta[name=theme-color]').content='#101216';}}catch(e){}})();</script>
 <style>
-  :root{
-    --bg:#f4f6f9; --card:#fff; --text:#1b2330; --sub:#6b7684; --line:#e6ebf2;
-    --c1:#2f7cf6; --c2:#e8558a; --c3:#1fae72; --c4:#f0932b; --c5:#7c5cff;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    background:radial-gradient(1100px 520px at 50% -12%, #e6efff 0%, var(--bg) 58%);
-    font-family:"PingFang SC","Microsoft YaHei",-apple-system,"Segoe UI",Roboto,sans-serif;
-    color:var(--text); padding:34px 20px 46px; -webkit-font-smoothing:antialiased;
-  }
-  .wrap{max-width:1180px;margin:0 auto}
-  .hright{display:flex;align-items:flex-end;gap:12px}
-  .back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:34px;height:34px;
-    border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--sub);
-    text-decoration:none;transition:color .2s,border-color .2s,background .2s}
-  .back:hover{color:var(--text);border-color:#cfd8e4}
-  .back svg{width:17px;height:17px;display:block;fill:none;stroke:currentColor;
-    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-  header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
-  h1{font-size:24px;font-weight:700;letter-spacing:1px}
-  h1 small{display:block;font-size:12px;font-weight:400;color:var(--sub);margin-top:8px;letter-spacing:1.5px}
-  .today{text-align:right;font-size:12px;color:var(--sub);line-height:1.7}
-  .today b{display:block;font-size:22px;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:.5px}
-  .grid{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    grid-template-areas:"a b d" "c e d";
-    gap:18px;align-items:stretch;
-  }
-  .card{
-    position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:20px 20px 18px;box-shadow:0 10px 26px rgba(27,35,48,.06);overflow:hidden;
-    display:flex;flex-direction:column;min-width:0;
-  }
-  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
-  .card.a{grid-area:a}.card.b{grid-area:b}.card.c{grid-area:c}
-  .card.d{grid-area:d}.card.e{grid-area:e}
-  .tag{font-size:12px;color:var(--sub);letter-spacing:.6px;display:flex;align-items:center;gap:6px}
-  .tag i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block}
-  .big{display:flex;align-items:baseline;gap:6px;margin:14px 0 4px}
-  .big span{font-size:44px;font-weight:700;line-height:1;letter-spacing:-1.5px;color:var(--accent);font-variant-numeric:tabular-nums}
-  .big em{font-style:normal;font-size:13px;color:var(--sub)}
-  .title{font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.5}
-  .meta{font-size:12.5px;color:var(--sub);line-height:1.95}
-  .meta b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
-  .bar{margin-top:auto;padding-top:16px}
-  .track{height:6px;border-radius:99px;background:#eef2f7;overflow:hidden}
-  .fill{height:100%;width:0;border-radius:99px;background:var(--accent);transition:width .7s ease}
-  .cap{display:flex;justify-content:space-between;font-size:11px;color:#9aa4b1;margin-top:7px;font-variant-numeric:tabular-nums}
-  .rows{margin-top:14px;display:flex;flex-direction:column;gap:9px}
-  .row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-bottom:9px;border-bottom:1px dashed var(--line)}
-  .row:last-child{border-bottom:0;padding-bottom:0}
-  .row .k{font-size:12.5px;color:var(--sub);white-space:nowrap}
-  .row .val{display:flex;align-items:baseline;gap:3px}
-  .row .val b{font-size:21px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.5px}
-  .row .val i{font-style:normal;font-size:11px;color:var(--sub)}
-  .list{list-style:none;margin-top:6px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
-  .list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line)}
-  .list li:last-child{border-bottom:0;padding-bottom:0}
-  .list .nm{font-size:13.5px;font-weight:600}
-  .list .kd{font-size:11px;color:#9aa4b1;margin-left:7px;font-weight:400}
-  .list .dt{font-size:12px;color:var(--sub);margin-top:3px;font-variant-numeric:tabular-nums}
-  .list .cd{text-align:right;white-space:nowrap}
-  .list .cd b{font-size:20px;color:var(--c4);font-variant-numeric:tabular-nums}
-  .list .cd i{font-style:normal;font-size:11px;color:var(--sub);margin-left:2px}
-  .list .cd em{font-style:normal;font-size:13px;color:var(--c4);font-weight:600}
-  footer{margin-top:22px;text-align:center;font-size:12px;color:#9aa4b1;letter-spacing:.5px}
-  @media(max-width:900px){
-    .grid{grid-template-columns:repeat(2,1fr);grid-template-areas:"a b" "c e" "d d"}
-  }
-  @media(max-width:700px){
-    body{padding:22px 14px 36px}
-    h1{font-size:20px}
-    .today{text-align:left}
-    .grid{grid-template-columns:1fr;grid-template-areas:"a" "b" "e" "c" "d";gap:14px}
-    .big span{font-size:38px}
-  }
+:root{
+  --bg:#faf8f3;--card:#fff;--sunk:#f3efe6;--line:#e7e1d5;--line2:#d2c9b8;
+  --ink:#241f19;--ink2:#6a6257;--ink3:#9b9387;
+  --shadow:0 1px 2px rgba(60,50,35,.05);--shadow-lg:0 22px 44px -26px rgba(60,50,35,.38),0 2px 6px rgba(60,50,35,.05);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro SC","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --num:"SF Pro Display","DIN Alternate","Helvetica Neue",var(--font);
+}
+[data-theme="dark"]{color-scheme:dark;--bg:#101216;--card:#181b21;--sunk:#14171c;--line:#272c35;--line2:#363c47;
+  --ink:#eae6de;--ink2:#9aa0ab;--ink3:#6c737f;--shadow:0 1px 2px rgba(0,0,0,.4);--shadow-lg:0 22px 44px -24px rgba(0,0,0,.9)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding:max(40px,env(safe-area-inset-top)) 22px max(40px,env(safe-area-inset-bottom));
+  background-image:radial-gradient(900px 480px at 14% -12%,rgba(31,111,139,.075),transparent 64%),radial-gradient(720px 420px at 98% 0%,rgba(224,88,63,.06),transparent 62%);background-attachment:fixed}
+[data-theme="dark"] body{background-image:radial-gradient(900px 480px at 14% -12%,rgba(95,179,208,.07),transparent 64%),radial-gradient(720px 420px at 98% 0%,rgba(224,88,63,.05),transparent 62%)}
+.wrap{max-width:1080px;margin:0 auto}
+/* 顶部 */
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.kick{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);
+  border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;box-shadow:var(--shadow)}
+.kick i{width:6px;height:6px;border-radius:50%;background:#e0583f;box-shadow:0 0 0 3px rgba(224,88,63,.16)}
+.acts{display:flex;gap:8px}
+.ibtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:999px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink2);cursor:pointer;padding:0;box-shadow:var(--shadow);text-decoration:none;transition:color .2s,border-color .2s,transform .15s}
+.ibtn:hover{color:var(--ink);border-color:var(--line2)}.ibtn:active{transform:scale(.94)}
+.ibtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.thm .sun{display:none}[data-theme="dark"] .thm .sun{display:block}[data-theme="dark"] .thm .moon{display:none}
+header{margin-bottom:24px}
+.title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px}
+h1{font-size:clamp(30px,5.4vw,44px);font-weight:680;letter-spacing:-.02em;line-height:1.1}
+.today{text-align:right;color:var(--ink2);font-size:13px;line-height:1.5}
+.today b{display:block;font-family:var(--num);font-size:24px;font-weight:650;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+/* 网格 */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-areas:"a a d" "b e d" "c c d";gap:14px}
+.card{--c:#2f7cf6;position:relative;overflow:hidden;isolation:isolate;background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:22px 22px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .3s,border-color .3s;animation:in .5s cubic-bezier(.2,.8,.2,1) both}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:color-mix(in srgb,var(--c) 30%,var(--line))}
+.card::before{content:"";position:absolute;inset:-45% -15% auto 35%;height:260px;z-index:-1;pointer-events:none;
+  background:radial-gradient(50% 100% at 60% 0%,color-mix(in srgb,var(--c) 16%,transparent),transparent 72%)}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.card.a{grid-area:a;--c:#2f7cf6}.card.b{grid-area:b;--c:#e8558a;animation-delay:.05s}
+.card.e{grid-area:e;--c:#1fae72;animation-delay:.1s}.card.c{grid-area:c;--c:#7c5cff;animation-delay:.15s}
+.card.d{grid-area:d;--c:#f0932b;animation-delay:.2s}
+.card.c .rows{grid-template-columns:repeat(3,1fr)}
+.card.c .row{flex-direction:column;align-items:flex-start;gap:4px}
+.card.d .list{flex:1;grid-auto-rows:1fr}
+.card.d .list li{padding:14px 16px}.card.d .list .cd b{font-size:28px}
+.tag{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.06em;
+  color:color-mix(in srgb,var(--c) 78%,var(--ink));background:color-mix(in srgb,var(--c) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--c) 22%,transparent);border-radius:999px;padding:4px 11px 4px 9px}
+.tag i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.big{display:flex;align-items:baseline;gap:8px;margin:18px 0 4px;font-family:var(--num)}
+.big span{font-size:64px;font-weight:700;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums;
+  background:linear-gradient(160deg,var(--c),color-mix(in srgb,var(--c) 62%,var(--ink)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.card.a .big span{font-size:clamp(76px,10vw,108px)}
+.big em{font-style:normal;font-family:var(--font);font-size:15px;font-weight:600;color:var(--ink2)}
+.title2,.card .title{font-size:16.5px;font-weight:650;margin-top:6px}
+.card.a .title{font-size:20px}
+@media (min-width:901px){.card.a{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto 1fr;column-gap:34px}
+  .card.a .tag{grid-column:1/-1}.card.a .big{grid-row:2/5;align-self:center;margin:12px 0 0}.card.a .title{margin-top:18px}
+  .card.a .bar{grid-column:1/-1}}
+.meta{margin-top:6px;font-size:13px;color:var(--ink2);line-height:1.75}
+.meta b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.bar{margin-top:auto;padding-top:18px}
+.track{position:relative;height:10px;border-radius:999px;background:var(--sunk);border:1px solid var(--line);overflow:hidden}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:inherit;width:0;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,#fff),var(--c));box-shadow:0 0 12px color-mix(in srgb,var(--c) 45%,transparent);
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.fill::after{content:"";position:absolute;right:2px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:#fff;opacity:.9}
+.cap{display:flex;justify-content:space-between;margin-top:8px;font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
+/* 薪酬 */
+.rows{display:grid;gap:10px;margin-top:18px}
+.row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:14px;background:var(--sunk);border:1px solid var(--line)}
+.row .k{font-size:13px;color:var(--ink2)}
+.row .val{display:flex;align-items:baseline;gap:4px;font-family:var(--num)}
+.row b{font-size:24px;font-weight:700;letter-spacing:-.02em;color:color-mix(in srgb,var(--c) 82%,var(--ink));font-variant-numeric:tabular-nums}
+.row i{font-style:normal;font-family:var(--font);font-size:12px;color:var(--ink3)}
+.card.c .bar{padding-top:14px}
+/* 节假日 */
+.list{list-style:none;display:grid;gap:8px;margin-top:16px}
+.list li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-radius:14px;background:var(--sunk);border:1px solid var(--line)}
+.list li:first-child{background:color-mix(in srgb,var(--c) 9%,var(--card));border-color:color-mix(in srgb,var(--c) 28%,var(--line))}
+.list .nm{font-size:15px;font-weight:650;display:flex;align-items:center;gap:7px}
+.list .kd{font-size:10.5px;font-weight:600;letter-spacing:.06em;color:var(--ink3);border:1px solid var(--line2);border-radius:999px;padding:1px 7px}
+.list .dt{font-size:12px;color:var(--ink3);margin-top:2px;font-variant-numeric:tabular-nums}
+.list .cd{display:flex;align-items:baseline;gap:3px;font-family:var(--num);white-space:nowrap}
+.list .cd b{font-size:24px;font-weight:700;letter-spacing:-.02em;color:color-mix(in srgb,var(--c) 85%,var(--ink));font-variant-numeric:tabular-nums}
+.list .cd i{font-style:normal;font-family:var(--font);font-size:12px;color:var(--ink3)}
+.list .cd em{font-style:normal;font-family:var(--font);font-size:13px;font-weight:700;color:#fff;background:var(--c);border-radius:999px;padding:3px 10px}
+footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3);text-align:center}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr);grid-template-areas:"a a" "b e" "d c"}
+  .card.c .rows{grid-template-columns:1fr}.card.c .row{flex-direction:row;align-items:baseline}.card.d .list{grid-auto-rows:auto}}
+@media (max-width:600px){
+  body{padding:28px 14px 32px}
+  .grid{grid-template-columns:1fr;grid-template-areas:"a" "b" "e" "d" "c";gap:12px}
+  .card{padding:19px 18px 17px;border-radius:20px}
+  .big span{font-size:56px}.card.a .big span{font-size:78px}
+  .today b{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>倒数日</h1>
-    <div class="hright">
-      <a class="back" href="../" title="返回应用合集" aria-label="返回应用合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+    <div class="hrow">
+      <span class="kick"><i></i>Countdown</span>
+      <span class="acts">
+        <a class="ibtn" href="../" title="返回应用合集" aria-label="返回应用合集"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></a>
+        <button class="ibtn thm" id="thmBtn" type="button" title="切换深色模式" aria-label="切换深色模式"><svg class="moon" viewBox="0 0 24 24"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.3M12 19.1v2.3M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.6 12h2.3M19.1 12h2.3M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg></button>
+      </span>
+    </div>
+    <div class="title">
+      <h1>倒数日</h1>
       <div class="today"><b id="tDate">--</b><span id="tWeek"></span></div>
     </div>
   </header>
 
   <div class="grid">
-    <section class="card a" style="--accent:#2f7cf6">
+    <section class="card a">
       <div class="tag"><i></i>纪念日</div>
       <div class="big"><span id="aDays">--</span><em>天后</em></div>
       <div class="title" id="aTitle">--</div>
@@ -105,7 +140,7 @@
       </div>
     </section>
 
-    <section class="card b" style="--accent:#e8558a">
+    <section class="card b">
       <div class="tag"><i></i>生日 · 她</div>
       <div class="big"><span id="hDays">--</span><em>天后</em></div>
       <div class="title" id="hTitle">--</div>
@@ -116,17 +151,7 @@
       </div>
     </section>
 
-    <section class="card c" style="--accent:#7c5cff">
-      <div class="tag"><i></i>工作 · 薪酬概览</div>
-      <div class="rows">
-        <div class="row"><span class="k">工龄</span><span class="val"><b id="tenure">--</b><i>年</i></span></div>
-        <div class="row"><span class="k">累计实发</span><span class="val"><b id="total">--</b><i>万元</i></span></div>
-        <div class="row"><span class="k">月均实发</span><span class="val"><b id="avg">--</b><i>万元</i></span></div>
-      </div>
-      <div class="bar"><div class="meta" id="payMeta"></div></div>
-    </section>
-
-    <section class="card e" style="--accent:#1fae72">
+    <section class="card e">
       <div class="tag"><i></i>生日 · 我</div>
       <div class="big"><span id="mDays">--</span><em>天后</em></div>
       <div class="title" id="mTitle">--</div>
@@ -137,9 +162,19 @@
       </div>
     </section>
 
-    <section class="card d" style="--accent:#f0932b">
+    <section class="card d">
       <div class="tag"><i></i>节假日 · 最近四个</div>
       <ul class="list" id="fesList"></ul>
+    </section>
+
+    <section class="card c">
+      <div class="tag"><i></i>工作 · 薪酬概览</div>
+      <div class="rows">
+        <div class="row"><span class="k">工龄</span><span class="val"><b id="tenure">--</b><i>年</i></span></div>
+        <div class="row"><span class="k">累计实发</span><span class="val"><b id="total">--</b><i>万元</i></span></div>
+        <div class="row"><span class="k">月均实发</span><span class="val"><b id="avg">--</b><i>万元</i></span></div>
+      </div>
+      <div class="bar"><div class="meta" id="payMeta"></div></div>
     </section>
   </div>
 
@@ -149,6 +184,7 @@
 <script>
 const DAY = 86400000;
 const LI = [19416,19152,42336,21749,53840,55648,91476,22160,39648,21970,19152,42406,42224,53840,119445,46416,22160,44450,38304,84343,18864,42160,46261,27248,27984,109380,11088,38240,21234,18800,25974,54432,60000,92821,23248,11088,100067,37600,116967,51536,54416,120998,46432,22160,107940,9712,37584,53906,43376,46423,27792,46432,86869,19856,42400,83315,21168,43448,59744,27280,44710,43872,19280,43748,42336,21104,62051,55648,23383,22160,38624,19925,19152,42192,54484,53840,54616,46416,46720,103846,38304,18864,43380,42160,45690,27248,27984,44870,43840,38240,19189,18800,25776,29875,60000,27480,23248,43840,38629,37584,51552,55652,54416,55904,30034,22160,43943,9712,37584,51861,43376,46224,47780,44384,21977,19344,42400,86390,21168,43312,31092,27280,44384,23378,19280,42726,42208,53856,60005,54560,23216,30371,38624,19152,19195,42192,118934,53872,54544,56677,46464,22240,21906,18864,42359,42160,43632,111189,27920,44448,84835,37728,18936,18800,25776,92342,60000,27280,108260,43712,37600,53987,51552,54631,54416,55904,23893,22160,42720,21972,21200,43416,43376,46224,46758,44384,21904,43940,42400,21168,45683,26928,29495,27312,44384,84821,19280,42336,21748,53600,59752,54560,55968,92838,22240,19152,43492,41680,53584,62034,54544];
+
 const ZY = [0,384,738,1093,1476,1830,2185,2569,2923,3278,3662,4016,4400,4754,5108,5492,5847,6201,6585,6940,7324,7678,8032,8416,8770,9124,9509,9863,10218,10602,10956,11339,11693,12048,12432,12787,13141,13525,13879,14263,14617,14971,15355,15710,16064,16449,16803,17157,17541,17895,18279,18633,18988,19372,19726,20081,20465,20819,21202,21557,21911,22295,22650,23004,23388,23743,24096,24480,24835,25219,25573,25928,26312,26666,27020,27404,27758,28142,28496,28851,29235,29590,29944,30328,30682,31066,31420,31774,32158,32513,32868,33252,33606,33960,34343,34698,35082,35436,35791,36175,36529,36883,37267,37621,37976,38360,38714,39099,39453,39807,40191,40545,40899,41283,41638,42022,42376,42731,43115,43469,43823,44207,44561,44916,45300,45654,46038,46392,46746,47130,47485,47839,48223,48578,48962,49316,49670,50054,50408,50762,51146,51501,51856,52240,52594,52978,53332,53686,54070,54424,54779,55163,55518,55902,56256,56610,56993,57348,57702,58086,58441,58795,59179,59533,59917,60271,60626,61010,61364,61719,62103,62457,62841,63195,63549,63933,64288,64642,65026,65381,65735,66119,66473,66857,67211,67566,67950,68304,68659,69042,69396,69780,70134,70489,70873,71228,71582,71966,72320,72674,73058];
 const TD = "38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,199,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,103,118,134,149,167,182,199,214,232,248,265,280,297,312,329,344,360,375,392,407;39,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,103,118,134,149,167,182,199,214,232,248,265,280,297,312,329,344,360,375,392,407;39,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,103,118,134,149,167,182,199,214,232,248,265,280,297,312,329,344,360,375,392,407;39,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,311,329,344,360,375,392,406;38,53,68,83,102,117,133,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,102,118,134,149,166,182,199,214,232,248,264,280,297,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,149,166,181,198,214,232,247,264,280,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,406;38,53,69,84,102,118,134,149,166,182,199,214,232,248,264,280,297,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,232,247,264,280,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,406;38,53,69,84,102,117,134,149,166,182,199,214,232,248,264,280,297,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,232,247,264,280,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,199,214,232,248,264,280,297,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,199,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,102,117,134,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,102,117,133,148,165,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,311,329,344,360,375,392,406;38,53,68,83,102,117,133,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,407;38,53,69,84,101,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,149,166,181,198,214,232,247,264,280,296,311,329,344,360,375,392,406;38,53,68,83,102,117,133,149,166,182,198,214,232,248,264,280,296,312,329,344,360,375,392,406;38,53,69,84,101,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,232,247,264,280,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,84,101,116,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,101,116,133,148,165,181,198,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,101,116,133,148,165,181,198,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,312,329,344,360,375,392,406;38,53,69,83,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,102,117,133,149,166,182,198,214,232,247,264,280,296,311,329,344,360,375,392,406;38,53,69,83,101,116,132,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,375,391,406;38,52,68,83,102,117,133,149,166,181,198,214,232,247,264,280,296,311,329,344,360,375,392,406;38,53,69,83,101,116,132,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,232,247,264,280,296,311,329,344,360,375,392,406;38,53,68,83,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,280,296,311,329,344,360,375,391,406;38,53,68,83,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,83,101,116,133,148,165,181,198,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,198,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,329,344,360,375,391,406;38,53,68,83,101,116,132,148,165,180,197,213,231,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,132,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,375,391,406;38,53,68,83,101,116,132,148,165,180,197,213,231,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,102,117,133,148,166,181,198,214,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,279,295,310,328,343,359,374,391,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,391,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,83,101,116,133,148,165,181,198,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,344,360,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,166,181,198,213,231,247,264,279,296,311,328,343,359,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,180,197,213,231,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,132,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,102,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,101,116,132,147,165,180,197,213,230,246,263,278,295,310,327,343,359,374,390,405;37,52,67,82,101,116,132,147,165,180,197,213,230,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,117,133,148,165,181,198,213,231,247,263,279,296,311,328,343,359,374,391,406;38,52,68,83,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,343,359,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,391,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,117,133,148,165,181,198,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,343,359,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,391,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,343,359,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,83,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,164,180,197,212,230,246,262,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,180,197,213,231,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,164,180,197,212,230,246,262,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,327,343,359,374,390,405;37,52,67,82,101,116,132,148,165,180,197,213,231,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,164,180,197,212,230,246,262,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,327,343,359,374,390,405;37,52,67,82,101,116,132,147,165,180,197,213,230,246,263,279,295,310,328,343,359,374,391,405;37,52,68,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,101,116,132,147,164,180,197,212,230,246,262,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,343,359,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,391,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,100,115,132,147,164,180,196,212,230,246,262,278,294,310,327,342,358,373,390,405;36,51,67,82,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,343,359,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,391,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,406;37,52,68,83,100,115,132,147,164,180,196,212,230,246,262,278,294,310,327,342,358,373,390,405;36,51,67,82,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,343,359,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,83,100,115,132,147,164,180,196,212,230,246,262,278,294,310,327,342,358,373,390,405;36,51,67,82,101,116,132,147,165,180,197,212,230,246,263,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,100,115,132,147,164,180,196,212,230,246,262,278,294,310,327,342,358,373,390,405;36,51,67,82,101,116,132,147,164,180,197,212,230,246,262,278,295,310,327,342,358,373,390,405;37,51,67,82,101,116,132,147,165,180,197,213,230,246,263,278,295,310,328,343,359,374,390,405;37,52,67,82,101,116,132,148,165,181,197,213,231,246,263,279,295,311,328,343,359,374,391,405;37,52,68,82,101,116,133,148,165,181,197,213,231,247,263,279,295,311,328,343,359,374,391,406".split(";");
 
@@ -328,6 +364,16 @@ renderLunar("m", 12, 8, Date.UTC(1998, 0, 6), "农历腊月初八");
       + `<div class="dt">${fmt(o.ts)} ${wk(o.ts)}</div></div><div class="cd">${cd}</div></li>`;
   }).join("");
 })();
+</script>
+
+<script>
+/* 主题切换：与其他合集页共用 hd-theme 设置 */
+document.getElementById('thmBtn').addEventListener('click',function(){
+  var d=document.documentElement,dark=d.getAttribute('data-theme')!=='dark';
+  if(dark)d.setAttribute('data-theme','dark');else d.removeAttribute('data-theme');
+  try{localStorage.setItem('hd-theme',dark?'dark':'light');}catch(e){}
+  var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=dark?'#101216':'#faf8f3';
+});
 </script>
 </body>
 </html>
