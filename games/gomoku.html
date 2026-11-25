@@ -150,6 +150,61 @@ body{
 @media(prefers-reduced-motion:reduce){
   *{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* ===== HD 高级材质层 v2：环境光 / 实体按键 / 毛玻璃结算 ===== */
+:root{--hd-glow1:rgba(31,111,139,.10);--hd-glow2:rgba(176,132,34,.12);--hd-edge:rgba(118,88,46,.38);--hd-lip:#cdbb98;--hd-hi:rgba(255,255,255,.75)}
+[data-theme="dark"]{--hd-glow1:rgba(95,179,208,.10);--hd-glow2:rgba(216,169,74,.07);--hd-edge:rgba(0,0,0,.55);--hd-lip:#0c0e12;--hd-hi:rgba(255,255,255,.08)}
+html{background:var(--paper)}
+body{background:
+  radial-gradient(900px 520px at 12% -8%,var(--hd-glow1),transparent 62%),
+  radial-gradient(760px 480px at 100% 108%,var(--hd-glow2),transparent 60%),
+  var(--paper)!important}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36  0 0 0 0 .28  0 0 0 0 .18  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(130% 100% at 50% 40%,transparent 58%,rgba(70,50,20,.10))}
+[data-theme="dark"] body::after{background:radial-gradient(130% 100% at 50% 40%,transparent 50%,rgba(0,0,0,.45))}
+.wrap{animation:hdIn .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hdIn{from{opacity:0;transform:translateY(10px)}}
+/* 分段选择：漆木槽 + 浮起滑块 */
+.seg,.diffs{background:linear-gradient(180deg,rgba(90,64,28,.10),rgba(255,255,255,.25))!important;border:1px solid var(--hd-edge)!important;
+  box-shadow:inset 0 2px 4px rgba(70,48,18,.18),0 1px 0 var(--hd-hi)!important}
+[data-theme="dark"] .seg,[data-theme="dark"] .diffs{background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(255,255,255,.02))!important}
+.seg button,.diffs button{transition:background .2s,color .2s,box-shadow .2s,transform .12s!important}
+.seg button:active,.diffs button:active{transform:scale(.97)}
+.seg button.on,.diffs button.on{background:linear-gradient(170deg,#3a342d,#24201b)!important;color:#fbf6ea!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 0 #14110d,0 4px 10px rgba(30,22,10,.28)!important}
+[data-theme="dark"] .seg button.on,[data-theme="dark"] .diffs button.on{background:linear-gradient(170deg,#e9e3d6,#cfc6b4)!important;color:#1b1d22!important;
+  box-shadow:inset 0 1px 0 #fff,0 2px 0 #8d8575,0 4px 10px rgba(0,0,0,.5)!important}
+/* 工具按键：实体键帽 */
+.tools button,.back,.thm,button.snd{background:linear-gradient(175deg,var(--paper2),var(--paper))!important;
+  border:1px solid var(--hd-edge)!important;
+  box-shadow:inset 0 1px 0 var(--hd-hi),0 2px 0 var(--hd-lip),0 3px 8px rgba(47,38,24,.14)!important;
+  transition:transform .1s,box-shadow .1s,color .2s!important}
+.tools button:active:not(:disabled),.back:active,.thm:active,button.snd:active{transform:translateY(2px);
+  box-shadow:inset 0 1px 0 var(--hd-hi),0 0 0 var(--hd-lip),0 1px 3px rgba(47,38,24,.14)!important}
+.tools button.on{background:linear-gradient(170deg,#3a342d,#24201b)!important;color:#fbf6ea!important;border-color:#14110d!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 0 #14110d!important}
+[data-theme="dark"] .tools button.on{background:linear-gradient(170deg,#e9e3d6,#cfc6b4)!important;color:#1b1d22!important;border-color:#8d8575!important;box-shadow:inset 0 1px 0 #fff,0 2px 0 #8d8575!important}
+/* 结算层：毛玻璃 + 浮卡 */
+.mask{background:rgba(244,239,228,.62)!important;-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
+[data-theme="dark"] .mask{background:rgba(16,18,22,.66)!important}
+.mask.show>*:first-child{animation:hdCard .42s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes hdCard{from{opacity:0;transform:translateY(18px) scale(.94)}}
+.mask h2{text-shadow:0 2px 0 var(--hd-hi),0 6px 18px rgba(47,38,24,.18)}
+.mask .mbtn{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 #0f0d0a,0 8px 18px rgba(30,22,10,.25)!important;transition:transform .1s}
+.mask .mbtn:active{transform:translateY(2px)}
+.toast{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(20,14,4,.3)!important}
+#hdfx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+@media (prefers-reduced-motion:reduce){.wrap,.mask.show>*:first-child{animation:none}}
+
+/* 五子棋：榧木棋墩 + 云子 */
+.board-box{border-radius:10px!important;
+  background:repeating-linear-gradient(91deg,rgba(130,90,40,.07) 0 1px,transparent 1px 9px),repeating-linear-gradient(1deg,rgba(130,90,40,.05) 0 2px,transparent 2px 13px),radial-gradient(140% 100% at 24% 8%,rgba(255,246,218,.75),transparent 56%),linear-gradient(160deg,var(--wood),var(--wood2))!important;
+  box-shadow:inset 0 2px 0 rgba(255,248,226,.8),inset 0 -3px 0 rgba(108,78,38,.35),0 6px 0 #9b7440,0 10px 0 #7c5a2e,0 18px 34px rgba(47,38,24,.32)!important}
+[data-theme="dark"] .board-box{background:repeating-linear-gradient(91deg,rgba(0,0,0,.14) 0 1px,transparent 1px 9px),radial-gradient(140% 100% at 24% 8%,rgba(126,102,72,.3),transparent 56%),linear-gradient(160deg,#4a3b2d,#33281f)!important;
+  box-shadow:inset 0 2px 0 rgba(255,232,196,.12),inset 0 -3px 0 rgba(0,0,0,.5),0 6px 0 #1d160f,0 10px 0 #120d09,0 18px 34px rgba(0,0,0,.55)!important}
+.dot.b{background:radial-gradient(circle at 35% 30%,#77716c,#1d1a17 70%)!important}
+.dot.w{background:radial-gradient(circle at 35% 30%,#fff,#d6d1c6 75%)!important}
 </style>
 </head>
 <body>
@@ -682,10 +737,15 @@ function draw(){
     const rr=R*sc;
     ctx.beginPath();ctx.arc(x+1,y+2,rr,0,7);
     ctx.fillStyle=DK?'rgba(0,0,0,.3)':'rgba(60,48,30,.2)';ctx.fill();
-    const g=ctx.createRadialGradient(x-rr*0.34,y-rr*0.4,rr*0.12,x,y,rr);
-    if(v===B){g.addColorStop(0,'#6d6763');g.addColorStop(1,'#2b2724');}
-    else{g.addColorStop(0,'#ffffff');g.addColorStop(1,'#d9d5cc');}
+    /* 云子：柔和接触阴影 + 双层径向釉面 + 镜面高光 */
+    ctx.beginPath();ctx.arc(x+rr*.12,y+rr*.22,rr*1.02,0,7);ctx.fillStyle=DK?'rgba(0,0,0,.28)':'rgba(60,40,15,.16)';ctx.fill();
+    const g=ctx.createRadialGradient(x-rr*0.34,y-rr*0.4,rr*0.08,x,y,rr*1.02);
+    if(v===B){g.addColorStop(0,'#7c7672');g.addColorStop(.35,'#3a3531');g.addColorStop(1,'#141210');}
+    else{g.addColorStop(0,'#ffffff');g.addColorStop(.55,'#f1eee6');g.addColorStop(1,'#cdc7b9');}
     ctx.beginPath();ctx.arc(x,y,rr,0,7);ctx.fillStyle=g;ctx.fill();
+    const hl=ctx.createRadialGradient(x-rr*.36,y-rr*.42,0,x-rr*.36,y-rr*.42,rr*.5);
+    hl.addColorStop(0,v===B?'rgba(255,255,255,.42)':'rgba(255,255,255,.95)');hl.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.beginPath();ctx.arc(x,y,rr,0,7);ctx.fillStyle=hl;ctx.fill();
     ctx.strokeStyle=v===B?'rgba(0,0,0,.5)':'rgba(120,110,95,.5)';
     ctx.lineWidth=.8;ctx.stroke();
   }
@@ -913,5 +973,41 @@ fitBoardSoon();
 /* 主题切换后重绘棋盘：棋盘线由脚本绘制，样式表管不到 */
 document.addEventListener('hd-theme',function(){requestAnimationFrame(function(){draw()});});
 </script>
+<script>
+/* ===== HD 特效层：粒子 / 烟花 / 结算庆祝（与游戏逻辑解耦） ===== */
+(function(){'use strict';
+var cv=document.createElement('canvas');cv.id='hdfx';cv.setAttribute('aria-hidden','true');document.body.appendChild(cv);
+var cx=cv.getContext('2d'),ps=[],raf=0,dpr=1;
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+function fit(){dpr=Math.min(2,window.devicePixelRatio||1);cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0);}
+fit();addEventListener('resize',fit);
+var PAL=['#b08422','#f5c344','#2e7d5b','#1f6f8b','#c0463c','#efe3c4'];
+function burst(x,y,n,cols,pow){if(RM)return;cols=cols||PAL;pow=pow||1;
+  for(var i=0;i<n;i++){var a=Math.random()*6.283,v=(1.2+Math.random()*3.6)*pow;
+   ps.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1.4*pow,l:1,d:.016+Math.random()*.012,r:1.6+Math.random()*2.8,c:cols[i%cols.length],s:Math.random()<.35});}
+  if(!raf)raf=requestAnimationFrame(tick);}
+function tick(){cx.clearRect(0,0,innerWidth,innerHeight);ps=ps.filter(function(p){return p.l>0;});
+  for(var i=0;i<ps.length;i++){var p=ps[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.985;p.vy=p.vy*.985+.11;p.l-=p.d;
+   cx.globalAlpha=Math.max(0,p.l);cx.fillStyle=p.c;
+   if(p.s){cx.save();cx.translate(p.x,p.y);cx.rotate(p.l*9);cx.fillRect(-p.r,-p.r*.45,p.r*2,p.r*.9);cx.restore();}
+   else{cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill();}}
+  cx.globalAlpha=1;raf=ps.length?requestAnimationFrame(tick):0;}
+function fireworks(){if(RM)return;for(var i=0;i<8;i++)(function(i){setTimeout(function(){burst(innerWidth*(.15+Math.random()*.7),innerHeight*(.18+Math.random()*.35),34,null,1.25);},i*170);})(i);}
+function at(el,n,cols){if(!el||!el.getBoundingClientRect)return;var r=el.getBoundingClientRect();if(!r.width)return;burst(r.left+r.width/2,r.top+r.height/2,n||12,cols);}
+window.HDFX={burst:burst,fireworks:fireworks,at:at};
+/* 结算层出现且是胜利时放烟花 */
+var mask=document.querySelector('.mask');
+if(mask){var was=false;new MutationObserver(function(){var on=mask.classList.contains('show');
+  if(on&&!was){setTimeout(function(){if(!mask.classList.contains('show'))return;var h=mask.querySelector('h2');
+    if(!h||mask.querySelector('.spin'))return;
+    if(h.classList.contains('over')||h.classList.contains('lose'))return;
+    if(/认输|和棋|平局|失败|满了|结束|告负/.test(h.textContent))return;fireworks();},120);}
+  was=on;}).observe(mask,{attributes:true,attributeFilter:['class']});}
+/* 键帽按下的轻微触感（支持时） */
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.tools button,.seg button,.diffs button,.mbtn');
+  if(b&&navigator.vibrate&&e.pointerType==='touch'){try{navigator.vibrate(6);}catch(_){}}},{passive:true});
+})();
+</script>
+
 </body>
 </html>
