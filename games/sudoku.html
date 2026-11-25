@@ -224,6 +224,61 @@ body{
 @media(prefers-reduced-motion:reduce){
   *{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+/* ===== HD 高级材质层 v2：环境光 / 实体按键 / 毛玻璃结算 ===== */
+:root{--hd-glow1:rgba(31,111,139,.10);--hd-glow2:rgba(176,132,34,.12);--hd-edge:rgba(118,88,46,.38);--hd-lip:#cdbb98;--hd-hi:rgba(255,255,255,.75)}
+[data-theme="dark"]{--hd-glow1:rgba(95,179,208,.10);--hd-glow2:rgba(216,169,74,.07);--hd-edge:rgba(0,0,0,.55);--hd-lip:#0c0e12;--hd-hi:rgba(255,255,255,.08)}
+html{background:var(--paper)}
+body{background:
+  radial-gradient(900px 520px at 12% -8%,var(--hd-glow1),transparent 62%),
+  radial-gradient(760px 480px at 100% 108%,var(--hd-glow2),transparent 60%),
+  var(--paper)!important}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36  0 0 0 0 .28  0 0 0 0 .18  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(130% 100% at 50% 40%,transparent 58%,rgba(70,50,20,.10))}
+[data-theme="dark"] body::after{background:radial-gradient(130% 100% at 50% 40%,transparent 50%,rgba(0,0,0,.45))}
+.wrap{animation:hdIn .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes hdIn{from{opacity:0;transform:translateY(10px)}}
+/* 分段选择：漆木槽 + 浮起滑块 */
+.seg,.diffs{background:linear-gradient(180deg,rgba(90,64,28,.10),rgba(255,255,255,.25))!important;border:1px solid var(--hd-edge)!important;
+  box-shadow:inset 0 2px 4px rgba(70,48,18,.18),0 1px 0 var(--hd-hi)!important}
+[data-theme="dark"] .seg,[data-theme="dark"] .diffs{background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(255,255,255,.02))!important}
+.seg button,.diffs button{transition:background .2s,color .2s,box-shadow .2s,transform .12s!important}
+.seg button:active,.diffs button:active{transform:scale(.97)}
+.seg button.on,.diffs button.on{background:linear-gradient(170deg,#3a342d,#24201b)!important;color:#fbf6ea!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 0 #14110d,0 4px 10px rgba(30,22,10,.28)!important}
+[data-theme="dark"] .seg button.on,[data-theme="dark"] .diffs button.on{background:linear-gradient(170deg,#e9e3d6,#cfc6b4)!important;color:#1b1d22!important;
+  box-shadow:inset 0 1px 0 #fff,0 2px 0 #8d8575,0 4px 10px rgba(0,0,0,.5)!important}
+/* 工具按键：实体键帽 */
+.tools button,.back,.thm,button.snd{background:linear-gradient(175deg,var(--paper2),var(--paper))!important;
+  border:1px solid var(--hd-edge)!important;
+  box-shadow:inset 0 1px 0 var(--hd-hi),0 2px 0 var(--hd-lip),0 3px 8px rgba(47,38,24,.14)!important;
+  transition:transform .1s,box-shadow .1s,color .2s!important}
+.tools button:active:not(:disabled),.back:active,.thm:active,button.snd:active{transform:translateY(2px);
+  box-shadow:inset 0 1px 0 var(--hd-hi),0 0 0 var(--hd-lip),0 1px 3px rgba(47,38,24,.14)!important}
+.tools button.on{background:linear-gradient(170deg,#3a342d,#24201b)!important;color:#fbf6ea!important;border-color:#14110d!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 2px 0 #14110d!important}
+[data-theme="dark"] .tools button.on{background:linear-gradient(170deg,#e9e3d6,#cfc6b4)!important;color:#1b1d22!important;border-color:#8d8575!important;box-shadow:inset 0 1px 0 #fff,0 2px 0 #8d8575!important}
+/* 结算层：毛玻璃 + 浮卡 */
+.mask{background:rgba(244,239,228,.62)!important;-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
+[data-theme="dark"] .mask{background:rgba(16,18,22,.66)!important}
+.mask.show>*:first-child{animation:hdCard .42s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes hdCard{from{opacity:0;transform:translateY(18px) scale(.94)}}
+.mask h2{text-shadow:0 2px 0 var(--hd-hi),0 6px 18px rgba(47,38,24,.18)}
+.mask .mbtn{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 #0f0d0a,0 8px 18px rgba(30,22,10,.25)!important;transition:transform .1s}
+.mask .mbtn:active{transform:translateY(2px)}
+.toast{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(20,14,4,.3)!important}
+#hdfx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+@media (prefers-reduced-motion:reduce){.wrap,.mask.show>*:first-child{animation:none}}
+
+/* 数独：宣纸棋格 + 檀木边框 + 实体数字键 */
+.board-box{border:3px solid #3d3630!important;border-radius:10px!important;
+  box-shadow:0 0 0 4px #e3c88f,0 0 0 5px rgba(118,88,46,.55),0 6px 0 5px #8f6a36,0 14px 30px rgba(47,38,24,.28)!important}
+[data-theme="dark"] .board-box{border-color:#0d0f13!important;box-shadow:0 0 0 4px #3b3027,0 0 0 5px #000,0 6px 0 5px #120d09,0 14px 30px rgba(0,0,0,.55)!important}
+.pad button{border:1px solid var(--hd-edge)!important;box-shadow:inset 0 1px 0 var(--hd-hi),0 3px 0 var(--hd-lip),0 5px 10px rgba(47,38,24,.12)!important;transition:transform .08s,box-shadow .08s,opacity .15s!important}
+.pad button:active{transform:translateY(3px)!important;box-shadow:inset 0 1px 0 var(--hd-hi),0 0 0 var(--hd-lip)!important}
+.cell.user{animation:hdInk .3s ease-out}
+@keyframes hdInk{from{transform:scale(1.35);opacity:.2;filter:blur(1px)}}
 </style>
 </head>
 <body>
@@ -789,5 +844,41 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)save();});
   });
 })();
 </script>
+<script>
+/* ===== HD 特效层：粒子 / 烟花 / 结算庆祝（与游戏逻辑解耦） ===== */
+(function(){'use strict';
+var cv=document.createElement('canvas');cv.id='hdfx';cv.setAttribute('aria-hidden','true');document.body.appendChild(cv);
+var cx=cv.getContext('2d'),ps=[],raf=0,dpr=1;
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+function fit(){dpr=Math.min(2,window.devicePixelRatio||1);cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0);}
+fit();addEventListener('resize',fit);
+var PAL=['#b08422','#f5c344','#2e7d5b','#1f6f8b','#c0463c','#efe3c4'];
+function burst(x,y,n,cols,pow){if(RM)return;cols=cols||PAL;pow=pow||1;
+  for(var i=0;i<n;i++){var a=Math.random()*6.283,v=(1.2+Math.random()*3.6)*pow;
+   ps.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-1.4*pow,l:1,d:.016+Math.random()*.012,r:1.6+Math.random()*2.8,c:cols[i%cols.length],s:Math.random()<.35});}
+  if(!raf)raf=requestAnimationFrame(tick);}
+function tick(){cx.clearRect(0,0,innerWidth,innerHeight);ps=ps.filter(function(p){return p.l>0;});
+  for(var i=0;i<ps.length;i++){var p=ps[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.985;p.vy=p.vy*.985+.11;p.l-=p.d;
+   cx.globalAlpha=Math.max(0,p.l);cx.fillStyle=p.c;
+   if(p.s){cx.save();cx.translate(p.x,p.y);cx.rotate(p.l*9);cx.fillRect(-p.r,-p.r*.45,p.r*2,p.r*.9);cx.restore();}
+   else{cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill();}}
+  cx.globalAlpha=1;raf=ps.length?requestAnimationFrame(tick):0;}
+function fireworks(){if(RM)return;for(var i=0;i<8;i++)(function(i){setTimeout(function(){burst(innerWidth*(.15+Math.random()*.7),innerHeight*(.18+Math.random()*.35),34,null,1.25);},i*170);})(i);}
+function at(el,n,cols){if(!el||!el.getBoundingClientRect)return;var r=el.getBoundingClientRect();if(!r.width)return;burst(r.left+r.width/2,r.top+r.height/2,n||12,cols);}
+window.HDFX={burst:burst,fireworks:fireworks,at:at};
+/* 结算层出现且是胜利时放烟花 */
+var mask=document.querySelector('.mask');
+if(mask){var was=false;new MutationObserver(function(){var on=mask.classList.contains('show');
+  if(on&&!was){setTimeout(function(){if(!mask.classList.contains('show'))return;var h=mask.querySelector('h2');
+    if(!h||mask.querySelector('.spin'))return;
+    if(h.classList.contains('over')||h.classList.contains('lose'))return;
+    if(/认输|和棋|平局|失败|满了|结束|告负/.test(h.textContent))return;fireworks();},120);}
+  was=on;}).observe(mask,{attributes:true,attributeFilter:['class']});}
+/* 键帽按下的轻微触感（支持时） */
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.tools button,.seg button,.diffs button,.mbtn');
+  if(b&&navigator.vibrate&&e.pointerType==='touch'){try{navigator.vibrate(6);}catch(_){}}},{passive:true});
+})();
+</script>
+
 </body>
 </html>
