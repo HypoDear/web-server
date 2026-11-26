@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<!-- design-style: humanist-literary -->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <meta name="theme-color" content="#FAF9F6">
-<title>双城体素小世界</title>
-<meta name="omega:scene" content="webpage">
-<meta name="omega:version" content="1">
+<title>深圳摩天轮</title>
+<meta name="description" content="深圳与东京两座体素小城，海风把摩天轮吹得很慢，各处藏着彩蛋。">
 <style>:root{--paper:#FAF9F6;--ink:#383838;--muted:#F2F0EB;--faded:#6B6960;--line:#E8E6E0;--clay:#DA7756;--clay-deep:#C4623F;--ring:#D6D4CD;--plate:#FDFCFA;
   --serif:'Source Serif 4','Noto Serif SC','Songti SC','STSong','SimSun',Georgia,serif;--sans:'Inter','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif}
 *{box-sizing:border-box}
@@ -112,12 +110,10 @@ body:has(.tw[data-scene="tokyo"]){background:#262522}
 /* Release mobile containment: the scroll strip must never widen the grid. */
 @media(max-width:768px){.tw{grid-template-columns:minmax(0,1fr)}.tw-dock{min-width:0}.tw-views{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;min-width:0;max-width:100%;scrollbar-width:none;margin:0;padding:0;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.tw-chip{flex:none;white-space:nowrap}.tw-views::-webkit-scrollbar{display:none}}
 </style>
-<meta name="omega:source-files" content="html:output/src/双城体素小世界.html,css:output/src/双城体素小世界.css,js:output/src/双城体素小世界.js">
 </head>
 <body>
-<div data-omega-watermark data-omega-edit-ui style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483100;padding:4px 10px;font-family:inherit;font-size:11px;line-height:1;color:inherit;opacity:.4;letter-spacing:.5px;pointer-events:none;user-select:none;-webkit-user-select:none;">狍子AI · Omega 引擎生成</div><main id="twin" class="tw" data-scene="harbor" data-view="all" data-renderer="webgl">
-<!-- section:masthead -->
-<header class="tw-mast" data-dt-card="masthead">
+<main id="twin" class="tw" data-scene="harbor" data-view="all" data-renderer="webgl">
+<header class="tw-mast">
   <div class="tw-head">
     <p class="tw-kicker"><i></i><span id="tw-kicker">深圳宝安 · 欢乐港湾 · 晴</span></p>
     <h1 class="tw-title" id="tw-title">海风把摩天轮吹得很慢</h1>
@@ -125,9 +121,7 @@ body:has(.tw[data-scene="tokyo"]){background:#262522}
   </div>
   <div class="tw-seal" aria-hidden="true"><b id="tw-seal">晴</b><span id="tw-season"><em>海风三级</em><em>午后三点</em></span></div>
 </header>
-<!-- /section:masthead -->
-<!-- section:stage -->
-<section class="tw-stage" data-dt-card="stage" aria-label="体素场景">
+<section class="tw-stage" aria-label="体素场景">
   <p class="tw-loading">正在一块一块搭起来</p>
   <canvas id="tw-air" aria-hidden="true"></canvas>
   <canvas id="tw-world" tabindex="0" role="img" aria-label="体素场景"></canvas>
@@ -136,9 +130,7 @@ body:has(.tw[data-scene="tokyo"]){background:#262522}
   <p class="tw-toast" id="tw-toast" role="status" aria-live="polite"></p>
   <p class="tw-hint">拖动可转一整圈 · 滚轮缩放 · 双击复位 · 点一点小东西</p>
 </section>
-<!-- /section:stage -->
-<!-- section:dock -->
-<footer class="tw-dock" data-dt-card="dock">
+<footer class="tw-dock">
   <div class="tw-scenes" role="tablist" aria-label="切换城市">
     <button type="button" role="tab" data-scene="harbor" aria-selected="true">深圳 · 欢乐港湾</button>
     <button type="button" role="tab" data-scene="tokyo" aria-selected="false">东京 · 街角便利店</button>
@@ -149,13 +141,12 @@ body:has(.tw[data-scene="tokyo"]){background:#262522}
     <button type="button" class="tw-pause" id="tw-pause" aria-pressed="false"><i aria-hidden="true"></i><span>暂停</span></button>
   </div>
 </footer>
-<!-- /section:dock -->
 </main><script>;
 /* ============================================================================
- * 双城体素小世界
+ * 深圳摩天轮
  * 渲染架构沿用「海珠雨后」：实例化立方体(WebGL1 + ANGLE_instanced_arrays) · 正交相机 ·
  * 光源空间阴影贴图 · 屏幕空间遮蔽 · 平面镜像倒影 · 2D 画布天空 · 2D 画布降级渲染
- * 本文件新增：材质通道(自发光/水面/湿地面/玻璃) · 俯视高度图遮蔽 · 点光源 · 光晕叠层 · 两段式手臂 IK
+ * 在此基础上新增：材质通道(自发光/水面/湿地面/玻璃) · 俯视高度图遮蔽 · 点光源 · 光晕叠层 · 两段式手臂 IK
  * ========================================================================== */
 const TAU=Math.PI*2,STRIDE=16;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mix=(a,b,t)=>a+(b-a)*t;
@@ -679,7 +670,7 @@ function tokyoWet(t,s){
   for(let i=0;i<4;i++){const u=((t*.11+i/4)%1),a=u*9+i*2;at(6.6+1.2*Math.sin(i*3)+.5*Math.sin(a),2.4-2.2*u+.3*Math.cos(a*.7),5.2*(1-u)+.05,()=>box(0,0,0,.1,.09,.014,'f2c14e'),a,a*.6,a*.3);}
 }
 /* ============================== 场景一 · 细化层：深圳 · 欢乐港湾 · 晴 ==============================
- * 沿用的小段（hbRail / hbBridge / hbWheelBase …）在上一个文件里；这里是沙盘底座、泻湖与沙滩、
+ * 沿用的小段（hbRail / hbBridge / hbWheelBase …）在前面的「场景一」里；这里是沙盘底座、泻湖与沙滩、
  * 演艺中心、双圈摩天轮、树、鸟、小动物，以及藏在各处的彩蛋。
  * ====================================================================================== */
 const hx0=-9.3,hx1=9.3,hy0=-6.1,hy1=9.6,hzb=-2.3,R2=WR+.4;
@@ -894,7 +885,7 @@ function harborAir(t,s){harborKite(t,s);const E=s.E;
   {const u=(t+9)%41;if(u<14){const k=u/14;at(-6.0+1.6*k+.3*Math.sin(u*.9),-1.5-.6*k,2.6+7.5*k,()=>{rbox(0,0,0,.26,.24,.3,'e2664a',.05);box(0,0,-.17,.05,.05,.05,'e2664a');box(0,0,-.4,.012,.012,.4,'e8e2d4');});}}
 }
 /* ============================== 场景二 · 细化层：东京 · 街角便利店 · 雨后 ==============================
- * 街面沿用上一个文件的 tokyoCore；这里补上沙盘底座与地铁剖面、楼背面的外廊和铁楼梯、屋顶、
+ * 街面沿用前面「场景二」的 tokyoCore；这里补上沙盘底座与地铁剖面、楼背面的外廊和铁楼梯、屋顶、
  * 后巷与小稻荷祠、轻卡、银杏、乌鸦麻雀，以及藏在各处的彩蛋。
  * ====================================================================================== */
 const tx0=-8.3,tx1=8.3,ty0=-6.5,ty1=8.6,tzb=-3.05,RAIL=-2.56;
@@ -1576,87 +1567,9 @@ const SCENES={
   frame(performance.now(),true);requestAnimationFrame(loop);
 })();
 </script>
-<style data-omega-edit-layer>
-[contenteditable="true"]{outline:2px dashed rgba(37,99,235,.7);outline-offset:2px;border-radius:3px;cursor:text;}
-.omega-edit-hotzone{position:fixed;top:0;left:0;width:84px;height:84px;z-index:2147483200;}
-.omega-edit-toggle{position:fixed;top:16px;left:16px;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;background:rgba(20,20,28,.72);color:#fff;font-size:15px;line-height:34px;text-align:center;padding:0;z-index:2147483200;opacity:0;pointer-events:none;transition:opacity .18s;font-family:system-ui,sans-serif;}
-.omega-edit-toggle.is-visible{opacity:1;pointer-events:auto;}
-.omega-edit-toggle.is-editing{background:#2563eb;}
-.omega-edit-flash{position:fixed;top:18px;left:60px;background:rgba(37,99,235,.92);color:#fff;font:13px/1 system-ui,sans-serif;padding:7px 12px;border-radius:7px;z-index:2147483200;opacity:0;transition:opacity .2s;pointer-events:none;}
-.omega-edit-flash.is-show{opacity:1;}
-body.omega-editing [data-omega-dynamic],body.omega-editing [data-query-id]{outline:1px dashed rgba(148,163,184,.5);outline-offset:3px;}
-@media print{.omega-edit-hotzone,.omega-edit-toggle,.omega-edit-flash{display:none!important;}}
-</style>
-<script data-omega-edit-layer>
-(function(){
-  var W=window;var NS=W.__OMEGA__=W.__OMEGA__||{};
-  if(NS.__editLayerReady)return;NS.__editLayerReady=true;
-  // 不可改字的标签（媒体/脚本/表单控件/矢量）：这些没有「直接可读文本」语义,或编辑会破坏结构。
-  var SKIP_TAGS={SCRIPT:1,STYLE:1,NOSCRIPT:1,SVG:1,CANVAS:1,IMG:1,IFRAME:1,VIDEO:1,AUDIO:1,SELECT:1,TEXTAREA:1,INPUT:1,BR:1,HR:1};
-  // 元素是否拥有「直接文本节点」（非空白）。这是「全部文字可改」的核心判据——
-  // 不再靠标签白名单（div/section 里的正文同样命中），与 frontend-slides 一致。
-  function hasOwnText(el){
-    var ns=el.childNodes;
-    for(var i=0;i<ns.length;i++){var c=ns[i];if(c.nodeType===3&&c.nodeValue&&c.nodeValue.replace(/\s+/g,'').length)return true;}
-    return false;
-  }
-  var editing=false,hideTimer=null;
-  var hot=document.createElement('div');hot.className='omega-edit-hotzone';hot.setAttribute('data-omega-edit-ui','');document.body.appendChild(hot);
-  var toggle=document.createElement('button');toggle.className='omega-edit-toggle';toggle.textContent='\u270e';toggle.title='编辑 (E)';toggle.setAttribute('data-omega-edit-ui','');document.body.appendChild(toggle);
-  var flash=document.createElement('div');flash.className='omega-edit-flash';flash.setAttribute('data-omega-edit-ui','');document.body.appendChild(flash);
-  function showToggle(){if(hideTimer){clearTimeout(hideTimer);hideTimer=null;}toggle.classList.add('is-visible');}
-  // 用 JS + 400ms 宽限,不用 CSS ~ 兄弟选择器:按钮 pointer-events 会断 hover 链。
-  function scheduleHide(){if(editing)return;hideTimer=setTimeout(function(){toggle.classList.remove('is-visible');},400);}
-  hot.addEventListener('mouseenter',showToggle);hot.addEventListener('mouseleave',scheduleHide);
-  toggle.addEventListener('mouseenter',showToggle);toggle.addEventListener('mouseleave',scheduleHide);
-  function setEditable(on){editing=on;NS.editing=on;toggle.classList.toggle('is-editing',on);document.body.classList.toggle('omega-editing',on);if(on){showToggle();}else{scheduleHide();}
-    if(!on){Array.prototype.forEach.call(document.body.querySelectorAll('[contenteditable="true"]'),function(el){el.removeAttribute('contenteditable');});return;}
-    var els=document.body.querySelectorAll('*');
-    Array.prototype.forEach.call(els,function(el){
-      if(SKIP_TAGS[el.tagName])return;
-      if(el.closest('[data-omega-edit-ui]'))return;
-      if(el.closest('svg'))return;
-      // 动态区(运行时数据驱动的图表/数字:data-query-id;或显式标注 data-omega-dynamic)不可内联改字——
-      // 「改了白改」(下次查询刷回),且改后无法回写到数据源。编辑态仅给视觉提示(见 .omega-editing 样式)。
-      if(el.closest('[data-omega-dynamic],[data-query-id]'))return;
-      // 自身无直接文本 → 跳过(纯布局容器,其文本子节点会各自命中)。
-      if(!hasOwnText(el))return;
-      // 祖先已可编辑 → 跳过:contenteditable 向下级联,避免重复虚线框与嵌套编辑冲突。
-      // 文档序遍历保证祖先先于后代被标记,故只需看 parentElement.closest。
-      if(el.parentElement&&el.parentElement.closest('[contenteditable="true"]'))return;
-      el.setAttribute('contenteditable','true');});}
-  function flashMsg(t){flash.textContent=t;flash.classList.add('is-show');setTimeout(function(){flash.classList.remove('is-show');},1200);}
-  NS.flashMsg=flashMsg;
-  // 序列化整份文档:剥编辑态 + 删运行期 UI + deck 还原钩子。回写唯一真相源 = HTML。
-  function serialize(){
-    var root=document.documentElement.cloneNode(true);
-    Array.prototype.forEach.call(root.querySelectorAll('[data-omega-edit-ui]'),function(e){if(e.parentNode)e.parentNode.removeChild(e);});
-    Array.prototype.forEach.call(root.querySelectorAll('[contenteditable]'),function(e){e.removeAttribute('contenteditable');});
-    // 动态数据容器(data-query-id)清空已渲染图表 DOM(echarts canvas 等):重载时 loadData() 会重新渲染。
-    // 否则冻结的图表 DOM 会让二次 echarts.init 在同一容器叠加/损坏(重载双重渲染)。仅改克隆,不动 live 文档。
-    Array.prototype.forEach.call(root.querySelectorAll('[data-query-id]'),function(e){e.innerHTML='';});
-    Array.prototype.forEach.call(root.querySelectorAll('.omega-editing'),function(e){e.classList.remove('omega-editing');});
-    if(typeof NS.normalizeSerializedRoot==='function'){try{NS.normalizeSerializedRoot(root);}catch(_e){}}
-    return '<!DOCTYPE html>\n'+root.outerHTML;
-  }
-  function save(){
-    var html=serialize();
-    if(W.parent&&W.parent!==W){try{W.parent.postMessage({type:'omega:artifact-edit',html:html},'*');}catch(_e){}flashMsg('已保存');return;}
-    try{var blob=new Blob([html],{type:'text/html'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=(document.title||'omega')+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);flashMsg('已下载');}catch(_e){flashMsg('保存失败');}
-  }
-  NS.save=save;
-  toggle.addEventListener('click',function(){setEditable(!editing);});
-  window.addEventListener('keydown',function(e){
-    var t=e.target||{};var tag=(t.tagName||'').toUpperCase();
-    if((e.ctrlKey||e.metaKey)&&(e.key==='s'||e.key==='S')){e.preventDefault();save();return;}
-    if(t.isContentEditable||tag==='INPUT'||tag==='TEXTAREA')return;
-    if(e.key==='e'||e.key==='E'){setEditable(!editing);}
-  });
-})();
-</script>
 <a class="hd-back" href="./" title="返回练习合集" aria-label="返回练习合集"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>合集</span></a>
 <style id="hd-back-style">
-.hd-back{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:12px;z-index:2147483647;
+.hd-back{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:12px;z-index:2147483647;box-sizing:border-box;
   display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px 0 9px;border-radius:999px;
   background:rgba(20,22,26,.55);color:#fff;border:1px solid rgba(255,255,255,.28);
   font:600 12.5px/1 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
